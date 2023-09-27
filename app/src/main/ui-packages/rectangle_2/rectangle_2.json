@@ -1,0 +1,66 @@
+{
+  "name": "rectangle_2",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "GnBDZNGGNcRnWayONz1MJ8",
+    "node": "37:2",
+    "version": "4234492426",
+    "component-id": "9f77638ea50a24202471998a97a7c8ed124ed2d1"
+  },
+  "default": "Rectangle 2",
+  "documentation": "asdf",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "vector",
+        "id": "background"
+      }
+    ],
+    "modes": {
+      "Rectangle 2": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "background"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "background",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "background.svg"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "Rectangle 2",
+      "size": {
+        "width": 251.0,
+        "height": 421.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}
