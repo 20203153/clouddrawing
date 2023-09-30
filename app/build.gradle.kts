@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "kr.ac.kookmin.clouddrawing"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "kr.ac.kookmin.clouddrawing"
         minSdk = 33
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -34,12 +34,22 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("x86", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
     }
 }
 
@@ -53,6 +63,9 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.navigation:navigation-fragment:2.7.1")
+    implementation("androidx.navigation:navigation-ui:2.7.1")
 
     val composeVersion = "1.4.3"
     implementation("androidx.compose.animation:animation-core:$composeVersion")
