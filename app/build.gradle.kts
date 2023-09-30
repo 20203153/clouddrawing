@@ -12,6 +12,7 @@ android {
     defaultConfig {
         applicationId = "kr.ac.kookmin.clouddrawing"
         minSdk = 33
+        //noinspection OldTargetApi
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -47,29 +48,46 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.firebase/firebase-bom
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx:21.3.0")
-    implementation("com.google.firebase:firebase-database-ktx:20.2.2")
+    implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx:22.1.2")
+    //noinspection GradleDependency
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
 
     val composeVersion = "1.4.3"
+    //noinspection GradleDependency
     implementation("androidx.compose.animation:animation-core:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.animation:animation:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.foundation:foundation:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui-geometry:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui-graphics:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.foundation:foundation-layout:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.material:material:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.runtime:runtime-rxjava2:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui-text:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui-util:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui-viewbinding:$composeVersion")
+    //noinspection GradleDependency
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.activity:activity-compose:1.7.2")
 
@@ -82,5 +100,6 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    //noinspection GradleDependency
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersion")
 }
