@@ -26,10 +26,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+
+        </activity>
 
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
-            android:value="cd83bfe1b110bf47b190ade8001e195b" />
+            android:value="@string/kakao_map_api_key"
+        />
+        <meta-data
+            android:name="com.google.oauth.web_client_id"
+            android:value="@string/google_oauth_api_id"
+        />
     </application>
 
 </manifest>

@@ -68,6 +68,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.navigation:navigation-fragment:2.7.1")
     implementation("androidx.navigation:navigation-ui:2.7.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     val composeVersion = "1.4.3"
     //noinspection GradleDependency

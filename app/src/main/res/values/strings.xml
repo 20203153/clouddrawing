@@ -43,4 +43,6 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="kakao_map_api_key">cd83bfe1b110bf47b190ade8001e195b</string>
+    <string name="google_oauth_api_id">616811973032-l6qrmj19a53rnfdcm3aksugep450skjd.apps.googleusercontent.com</string>
 </resources>
