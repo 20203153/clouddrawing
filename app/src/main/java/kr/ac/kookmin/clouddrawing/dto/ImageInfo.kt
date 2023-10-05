@@ -1,7 +1,7 @@
 package kr.ac.kookmin.clouddrawing.dto
 
 data class ImageInfo(
-    val userId: String = "",
-    val postId: String = "",
-    val imageURI: String = ""
+    var userId: String = "",
+    var postId: String = "",
+    var imageURI: String = ""
 )

@@ -6,32 +6,31 @@ import com.google.firebase.firestore.ktx.toObject
 import java.util.Date
 
 data class Post(
-    val id: String? = "",
-    val uid: String? = "",
-    val lat: Float? = 0.0F,
-    val lng: Float? = 0.0F,
-    val addressAlias: String? = "",
-    val comment: String? = "",
-    val image: List<ImageInfo> = listOf(),
-    val writeTime: Date?
+    var id: String? = "",
+    var uid: String? = "",
+    var lat: Float? = 0.0F,
+    var lng: Float? = 0.0F,
+    var addressAlias: String? = "",
+    var comment: String? = "",
+    var image: List<ImageInfo> = listOf(),
+    var writeTime: Date?
 ) {
     companion object {
         private val post = FirebaseFirestore.getInstance().collection("post")
         fun getPostById(id: String): Post? {
             var result: Post? = null
             post.document(id).get()
-                .addOnCompleteListener {
-                    result = it.result.toObject<Post>()
-                }
+                .addOnSuccessListener { result = it.toObject<Post>() }
             return result
         }
 
         fun getPostByUID(uid: String): List<Post> {
             val result = mutableListOf<Post>()
+
             post.whereEqualTo("uid", uid).orderBy("writeTime")
                 .get()
-                .addOnCompleteListener {
-                    it.result.documents.forEach { i ->
+                .addOnSuccessListener {
+                    it.documents.forEach { i ->
                         i.toObject<Post>()?.let { j -> result.add(j) }
                     }
                 }
@@ -39,9 +38,13 @@ data class Post(
         }
 
         fun addPost(newPost: Post): Boolean {
+            val id = post.document().id
             var result: Boolean = false
-            post.add(newPost)
-                .addOnCompleteListener { result = true }
+
+            newPost.id = id
+
+            post.document(id).set(newPost)
+                .addOnSuccessListener { result = true }
             return result
         }
     }
@@ -49,34 +52,49 @@ data class Post(
     fun addImage(images: List<ImageInfo>): Boolean {
         var result = false
         this.image + images
+
+        this.image.forEach {
+            if(it.userId == "") it.userId = uid!!
+            if(it.postId == "") it.postId = id!!
+        }
+
         post.document(this.id!!)
             .update("image", this.image)
-            .addOnCompleteListener {
-                result = true
-            }
+            .addOnSuccessListener { result = true }
         return result
     }
 
     fun removeImage(images: List<ImageInfo>): Boolean {
         var result = false
+
+        images.forEach {
+            if(it.userId == "") it.userId = uid!!
+            if(it.postId == "") it.postId = id!!
+        }
+
         post.document(this.id!!)
             .update("image", FieldValue.arrayRemove(images))
-            .addOnCompleteListener {
-                result = true
-            }
+            .addOnSuccessListener { result = true }
         return result
     }
 
     fun update(updatePost: Post): Boolean {
-        val result = false
+        var result = true
 
         val post = post.document(this.id!!)
 
-        if(updatePost.lat != null) post.update("lat", updatePost.lat)
-        if(updatePost.lng != null) post.update("lng", updatePost.lng)
-        if(updatePost.addressAlias != null) post.update("addressAlias", updatePost.addressAlias)
-        if(updatePost.comment != null) post.update("comment", updatePost.comment)
-        if(updatePost.image.isNotEmpty()) post.update("image", FieldValue.arrayUnion(updatePost.image))
+        val update = hashMapOf(
+            "lat" to updatePost.lat,
+            "lng" to updatePost.lng,
+            "addressAlias" to updatePost.addressAlias,
+            "comment" to updatePost.comment,
+            "image" to updatePost.image
+        )
+
+        update.filter { it.value != "" &&
+                (it.value as List<*>).isNotEmpty() }
+        post.update(update)
+            .addOnSuccessListener { result = true }
 
         return result
     }
@@ -85,9 +103,7 @@ data class Post(
         var result = false
         post.document(this.id!!)
             .delete()
-            .addOnCompleteListener {
-                result = true
-            }
+            .addOnSuccessListener { result = true }
         return result
     }
 }
