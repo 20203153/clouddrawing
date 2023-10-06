@@ -32,66 +32,68 @@ class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            makeLoading()
+            make()
         }
     }
-}
 
-@Composable
-fun makeLoading() {
-    return ApplicationTheme {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .shadow(
-                    elevation = 4.dp,
-                    spotColor = Color(0x40000000),
-                    ambientColor = Color(0x40000000)
-                )
-                .width(390.dp)
-                .height(844.dp)
-                .background(color = Color(0xFFE3ECFF))
-        ) {
-            Spacer(Modifier
-                .height(294.dp)
-            )
-            Image(
-                painter = painterResource(R.drawable.loadinglogo),
-                contentDescription = "image description",
-                contentScale = ContentScale.None
-            )
-            Spacer(Modifier.height(11.dp))
-            Box(
-                Modifier
-                    .width(239.dp)
-                    .height(27.dp)
-            ) {
-                Text(
-                    text = "나의 일상을 떠올리는 공간 ",
-                    style = TextStyle(
-                        fontSize = 22.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(600),
-                        color = Color(0xFF001753),
+    companion object {
+        @Composable
+        fun make() {
+            return ApplicationTheme {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .shadow(
+                            elevation = 4.dp,
+                            spotColor = Color(0x40000000),
+                            ambientColor = Color(0x40000000)
+                        )
+                        .width(390.dp)
+                        .height(844.dp)
+                        .background(color = Color(0xFFE3ECFF))
+                ) {
+                    Spacer(Modifier
+                        .height(294.dp)
                     )
-                )
-            }
-            Spacer(Modifier.height(16.dp))
-            Box(
-                Modifier
-                    .width(157.dp)
-                    .height(37.dp)
-            ) {
-                Text(
-                    text = "나만 갖고 있는 추억의 장소를\n구름과 함께 떠올려보세요!",
-                    style = TextStyle(
-                        fontSize = 13.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(600),
-                        color = Color(0xFFA0A0A0),
-                        textAlign = TextAlign.Center,
+                    Image(
+                        painter = painterResource(R.drawable.loadinglogo),
+                        contentDescription = "image description",
+                        contentScale = ContentScale.None
                     )
-                )
+                    Spacer(Modifier.height(11.dp))
+                    Box(
+                        Modifier
+                            .width(239.dp)
+                            .height(27.dp)
+                    ) {
+                        Text(
+                            text = "나의 일상을 떠올리는 공간 ",
+                            style = TextStyle(
+                                fontSize = 22.sp,
+                                fontFamily = FontFamily(Font(R.font.inter)),
+                                fontWeight = FontWeight(600),
+                                color = Color(0xFF001753),
+                            )
+                        )
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    Box(
+                        Modifier
+                            .width(157.dp)
+                            .height(37.dp)
+                    ) {
+                        Text(
+                            text = "나만 갖고 있는 추억의 장소를\n구름과 함께 떠올려보세요!",
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(Font(R.font.inter)),
+                                fontWeight = FontWeight(600),
+                                color = Color(0xFFA0A0A0),
+                                textAlign = TextAlign.Center,
+                            )
+                        )
+                    }
+                }
             }
         }
     }
@@ -100,5 +102,5 @@ fun makeLoading() {
 @Preview(showBackground = true)
 @Composable
 fun LoadingPreview() {
-    makeLoading()
+    LoadingActivity.make()
 }
