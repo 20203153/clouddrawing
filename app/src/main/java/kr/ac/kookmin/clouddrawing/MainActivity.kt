@@ -7,7 +7,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import kr.ac.kookmin.clouddrawing.test.Test
 import kr.ac.kookmin.clouddrawing.theme.ApplicationTheme
 
 class MainActivity : AppCompatActivity() {
@@ -15,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Surface(color = MaterialTheme.colors.background) {
-                Test()
+                // Home()
             }
         }
     }
@@ -25,6 +24,6 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun DefaultPreview() {
     ApplicationTheme {
-       Test()
+       // Home()
     }
 }
