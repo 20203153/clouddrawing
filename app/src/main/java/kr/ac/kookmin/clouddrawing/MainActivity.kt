@@ -5,8 +5,10 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import kr.ac.kookmin.clouddrawing.home.Home
 import kr.ac.kookmin.clouddrawing.theme.ApplicationTheme
 
 class MainActivity : AppCompatActivity() {
@@ -14,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Surface(color = MaterialTheme.colors.background) {
-                // Home()
+                Home()
             }
         }
     }
@@ -24,6 +26,6 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun DefaultPreview() {
     ApplicationTheme {
-       // Home()
+        Home()
     }
 }

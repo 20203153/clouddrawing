@@ -1,0 +1,439 @@
+{
+  "name": "loading",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "GnBDZNGGNcRnWayONz1MJ8",
+    "node": "103:48",
+    "version": "4287647762",
+    "component-id": "3ec160906e6e39e9295595efd59c650df12a7287"
+  },
+  "default": "Loading",
+  "documentation": "20231006loading",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "group",
+        "id": "loadingLogo"
+      },
+      {
+        "type": "text",
+        "id": "loadingText"
+      },
+      {
+        "type": "text",
+        "id": "loadingTitle"
+      },
+      {
+        "type": "group",
+        "id": "g_loading_brush1"
+      },
+      {
+        "type": "group",
+        "id": "g_loading_cloud1"
+      },
+      {
+        "type": "group",
+        "id": "g_loading_cloud2"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_logo"
+      },
+      {
+        "type": "group",
+        "id": "clip0_69_60"
+      },
+      {
+        "type": "group",
+        "id": "gg_loading_brush1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_brectangle1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_brush1"
+      },
+      {
+        "type": "group",
+        "id": "clip1_69_60"
+      },
+      {
+        "type": "group",
+        "id": "gg_loading_cloud1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_rectangle1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_cloud1"
+      },
+      {
+        "type": "group",
+        "id": "clip2_69_60"
+      },
+      {
+        "type": "group",
+        "id": "gg_loading_cloud2"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_rectangle2"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_cloud"
+      }
+    ],
+    "modes": {
+      "Loading": {
+        "rules": [
+          {
+            "id": "top_level",
+            "drop-shadow": {
+              "color": {
+                "alpha": "0.24705882352941178",
+                "hue": "0.0",
+                "saturation": "0.0",
+                "value": "0.0"
+              },
+              "blur": "4.0",
+              "offset-x": "0.0",
+              "offset-y": "4.0",
+              "spread": "0.0",
+              "blend-mode": "normal"
+            },
+            "is-structured": "false",
+            "children": [
+              "loadingLogo",
+              "loadingText",
+              "loadingTitle"
+            ],
+            "background-color": {
+              "alpha": "1.0",
+              "hue": "220.71428571428567",
+              "saturation": "0.1098039215686275",
+              "value": "1.0"
+            }
+          },
+          {
+            "id": "loadingLogo",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "64.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "294.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "250.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "128.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "g_loading_brush1",
+              "g_loading_cloud1",
+              "g_loading_cloud2",
+              "v_loading_logo"
+            ]
+          },
+          {
+            "id": "loadingText",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "64.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "438.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "223.90243902439025",
+              "saturation": "1.0",
+              "value": "0.3215686274509804"
+            },
+            "text-content": "나의 일상을 떠올리는 공간 ",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "22.0",
+            "line-height": "1.2102272727272727",
+            "typeface": "Inter"
+          },
+          {
+            "id": "loadingTitle",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "102.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "481.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.6274509803921569"
+            },
+            "text-content": "나만 갖고 있는 추억의 장소를\n구름과 함께 떠올려보세요!",
+            "overflow": "visible",
+            "text-size": "13.0",
+            "line-height": "1.2102272327129657",
+            "typeface": "Inter"
+          },
+          {
+            "id": "g_loading_brush1",
+            "margin": {
+              "left": "192.2802734375",
+              "top": "22.84423828125",
+              "right": "0.3037109375",
+              "bottom": "47.44384765625"
+            },
+            "is-structured": "false",
+            "children": [
+              "clip0_69_60",
+              "gg_loading_brush1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "g_loading_cloud1",
+            "margin": {
+              "top": "28.64599609375",
+              "right": "151.154296875"
+            },
+            "is-structured": "false",
+            "children": [
+              "clip1_69_60",
+              "gg_loading_cloud1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "g_loading_cloud2",
+            "margin": {
+              "left": "67.460205078125",
+              "right": "83.694091796875",
+              "bottom": "28.64599609375"
+            },
+            "is-structured": "false",
+            "children": [
+              "clip2_69_60",
+              "gg_loading_cloud2"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_logo",
+            "margin": {
+              "left": "45.76123046875",
+              "top": "49.44140625",
+              "right": "24.97314453125",
+              "bottom": "30.80322265625"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_logo.svg"
+          },
+          {
+            "id": "clip0_69_60",
+            "is-structured": "false",
+            "children": [
+              "v_loading_brectangle1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "gg_loading_brush1",
+            "margin": {
+              "left": "23.98291015625",
+              "top": "4.22119140625",
+              "right": "24.0458984375",
+              "bottom": "4.32861328125"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_loading_brush1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_brectangle1",
+            "margin": {
+              "left": "8.389568279618857",
+              "top": "8.470273744967585",
+              "right": "8.38974003947294",
+              "bottom": "8.470079648587102"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_brectangle1.svg"
+          },
+          {
+            "id": "v_loading_brush1",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_brush1.svg"
+          },
+          {
+            "id": "clip1_69_60",
+            "is-structured": "false",
+            "children": [
+              "v_loading_rectangle1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "gg_loading_cloud1",
+            "margin": {
+              "top": "16.55908203125",
+              "bottom": "16.55908203125"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_loading_cloud1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_rectangle1",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_rectangle1.svg"
+          },
+          {
+            "id": "v_loading_cloud1",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_cloud1.svg"
+          },
+          {
+            "id": "clip2_69_60",
+            "is-structured": "false",
+            "children": [
+              "v_loading_rectangle2"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "gg_loading_cloud2",
+            "margin": {
+              "top": "16.55908203125",
+              "bottom": "16.55908203125"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_loading_cloud"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_rectangle2",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_rectangle2.svg"
+          },
+          {
+            "id": "v_loading_cloud",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_cloud.svg"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "Loading",
+      "size": {
+        "width": 390.0,
+        "height": 844.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}

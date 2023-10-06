@@ -1,0 +1,672 @@
+{
+  "name": "sign_up",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "GnBDZNGGNcRnWayONz1MJ8",
+    "node": "124:163",
+    "version": "4287525524",
+    "component-id": "e637847453c71cbf2dc883552a0368725e1287f0"
+  },
+  "default": "SignUp",
+  "documentation": "signup",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "group",
+        "id": "Logo"
+      },
+      {
+        "type": "group",
+        "id": "SingupBtn"
+      },
+      {
+        "type": "group",
+        "id": "loadingLogo"
+      },
+      {
+        "type": "group",
+        "id": "g_loading_brush1"
+      },
+      {
+        "type": "group",
+        "id": "g_loading_cloud1"
+      },
+      {
+        "type": "group",
+        "id": "g_loading_cloud2"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_logo"
+      },
+      {
+        "type": "group",
+        "id": "clip0_69_60"
+      },
+      {
+        "type": "group",
+        "id": "gg_loading_brush1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_brectangle1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_brush1"
+      },
+      {
+        "type": "group",
+        "id": "clip1_69_60"
+      },
+      {
+        "type": "group",
+        "id": "gg_loading_cloud1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_rectangle1"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_cloud1"
+      },
+      {
+        "type": "group",
+        "id": "clip2_69_60"
+      },
+      {
+        "type": "group",
+        "id": "gg_loading_cloud2"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_rectangle2"
+      },
+      {
+        "type": "vector",
+        "id": "v_loading_cloud"
+      },
+      {
+        "type": "group",
+        "id": "Group 16"
+      },
+      {
+        "type": "group",
+        "id": "Group 17"
+      },
+      {
+        "type": "vector",
+        "id": "r_startGoogle"
+      },
+      {
+        "type": "text",
+        "id": "t_startGoogle"
+      },
+      {
+        "type": "group",
+        "id": "Frame"
+      },
+      {
+        "type": "vector",
+        "id": "v_google4"
+      },
+      {
+        "type": "vector",
+        "id": "v_google3"
+      },
+      {
+        "type": "vector",
+        "id": "v_google2"
+      },
+      {
+        "type": "vector",
+        "id": "v_google1"
+      }
+    ],
+    "modes": {
+      "SignUp": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "Logo",
+              "SingupBtn"
+            ],
+            "background-color": {
+              "alpha": "1.0",
+              "hue": "220.71428571428567",
+              "saturation": "0.1098039215686275",
+              "value": "1.0"
+            }
+          },
+          {
+            "id": "Logo",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "70.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "294.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "250.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "128.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "loadingLogo"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "SingupBtn",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "45.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "712.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "587.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "56.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "Group 16"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "loadingLogo",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "250.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "128.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "g_loading_brush1",
+              "g_loading_cloud1",
+              "g_loading_cloud2",
+              "v_loading_logo"
+            ]
+          },
+          {
+            "id": "g_loading_brush1",
+            "margin": {
+              "left": "192.2802734375",
+              "top": "22.84423828125",
+              "right": "0.3037109375",
+              "bottom": "47.44384765625"
+            },
+            "is-structured": "false",
+            "children": [
+              "clip0_69_60",
+              "gg_loading_brush1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "g_loading_cloud1",
+            "margin": {
+              "top": "28.64599609375",
+              "right": "151.154296875"
+            },
+            "is-structured": "false",
+            "children": [
+              "clip1_69_60",
+              "gg_loading_cloud1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "g_loading_cloud2",
+            "margin": {
+              "left": "67.46044921875",
+              "right": "83.69384765625",
+              "bottom": "28.64599609375"
+            },
+            "is-structured": "false",
+            "children": [
+              "clip2_69_60",
+              "gg_loading_cloud2"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_logo",
+            "margin": {
+              "left": "45.76123046875",
+              "top": "49.44140625",
+              "right": "24.97314453125",
+              "bottom": "30.80322265625"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_logo.svg"
+          },
+          {
+            "id": "clip0_69_60",
+            "is-structured": "false",
+            "children": [
+              "v_loading_brectangle1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "gg_loading_brush1",
+            "margin": {
+              "left": "23.98291015625",
+              "top": "4.22119140625",
+              "right": "24.0458984375",
+              "bottom": "4.32861328125"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_loading_brush1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_brectangle1",
+            "margin": {
+              "left": "8.389568279618857",
+              "top": "8.470273744967585",
+              "right": "8.38974003947294",
+              "bottom": "8.470079648587102"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_brectangle1.svg"
+          },
+          {
+            "id": "v_loading_brush1",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_brush1.svg"
+          },
+          {
+            "id": "clip1_69_60",
+            "is-structured": "false",
+            "children": [
+              "v_loading_rectangle1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "gg_loading_cloud1",
+            "margin": {
+              "top": "16.55908203125",
+              "bottom": "16.55908203125"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_loading_cloud1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_rectangle1",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_rectangle1.svg"
+          },
+          {
+            "id": "v_loading_cloud1",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_cloud1.svg"
+          },
+          {
+            "id": "clip2_69_60",
+            "is-structured": "false",
+            "children": [
+              "v_loading_rectangle2"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "gg_loading_cloud2",
+            "margin": {
+              "top": "16.55908203125",
+              "bottom": "16.55908203125"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_loading_cloud"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_loading_rectangle2",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_rectangle2.svg"
+          },
+          {
+            "id": "v_loading_cloud",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_loading_cloud.svg"
+          },
+          {
+            "id": "Group 16",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "587.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "56.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "Group 17"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "Group 17",
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "587.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "56.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "r_startGoogle",
+              "t_startGoogle",
+              "Frame"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "r_startGoogle",
+            "margin": {
+              "bottom": "16.0"
+            },
+            "border-radius": "12.0",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "-143.5"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "0.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "300.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "r_start_google.svg"
+          },
+          {
+            "id": "t_startGoogle",
+            "margin": {
+              "top": "11.0"
+            },
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "51.5"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "0.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "484.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "1.0"
+            },
+            "text-content": "Google로 시작하기",
+            "overflow": "visible",
+            "max-lines": "-1",
+            "text-align": "left",
+            "text-size": "16.0",
+            "line-height": "1.2102272510528564",
+            "typeface": "Inter"
+          },
+          {
+            "id": "Frame",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "79.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "9.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "20.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "20.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "v_google4",
+              "v_google3",
+              "v_google2",
+              "v_google1"
+            ]
+          },
+          {
+            "id": "v_google4",
+            "margin": {
+              "left": "1.66650390625",
+              "top": "1.6669921875",
+              "right": "1.6669921875",
+              "bottom": "1.666015625"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_google4.svg"
+          },
+          {
+            "id": "v_google3",
+            "margin": {
+              "left": "2.62744140625",
+              "top": "1.6669921875",
+              "right": "4.32568359375",
+              "bottom": "11.8701171875"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_google3.svg"
+          },
+          {
+            "id": "v_google2",
+            "margin": {
+              "left": "2.5810546875",
+              "top": "11.689453125",
+              "right": "4.4130859375",
+              "bottom": "1.666015625"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_google2.svg"
+          },
+          {
+            "id": "v_google1",
+            "margin": {
+              "left": "10.0",
+              "top": "8.3330078125",
+              "right": "1.66650390625",
+              "bottom": "3.822265625"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_google1.svg"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "SignUp",
+      "size": {
+        "width": 390.0,
+        "height": 844.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}

@@ -1,0 +1,817 @@
+{
+  "name": "cloud_drawing",
+  "version": 32,
+  "source-key": {
+    "type": "figma",
+    "file": "GnBDZNGGNcRnWayONz1MJ8",
+    "node": "127:415",
+    "version": "4287948049",
+    "component-id": "74e7685b852a2f7f4854f0a14de9ab38ed5976db"
+  },
+  "default": "CloudDrawing",
+  "documentation": "20231006CloudDrawing2",
+  "design": {
+    "atoms": [
+      {
+        "type": "group",
+        "id": "top_level",
+        "root": "true"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawing_text"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawingTitle"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_arrow_close"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawing_save"
+      },
+      {
+        "type": "vector",
+        "id": "r_middle1"
+      },
+      {
+        "type": "vector",
+        "id": "r_middle2"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawingSmallTitle"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_title"
+      },
+      {
+        "type": "group",
+        "id": "g_cd_calendar"
+      },
+      {
+        "type": "group",
+        "id": "g_cd_location"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_location_search"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_who"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawing_picturePlus"
+      },
+      {
+        "type": "vector",
+        "id": "r_picturePlus"
+      },
+      {
+        "type": "vector",
+        "id": "Line 5"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawing_day"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawing_who"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawing_location"
+      },
+      {
+        "type": "vector",
+        "id": "Line 6"
+      },
+      {
+        "type": "vector",
+        "id": "Line 7"
+      },
+      {
+        "type": "vector",
+        "id": "Line 8"
+      },
+      {
+        "type": "text",
+        "id": "t_cloudDrawig_picture"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_calendar2"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_calendar1"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_location2"
+      },
+      {
+        "type": "vector",
+        "id": "v_cd_location1"
+      }
+    ],
+    "modes": {
+      "CloudDrawing": {
+        "rules": [
+          {
+            "id": "top_level",
+            "is-structured": "false",
+            "children": [
+              "t_cloudDrawing_text",
+              "t_cloudDrawingTitle",
+              "v_cd_arrow_close",
+              "t_cloudDrawing_save",
+              "r_middle1",
+              "r_middle2",
+              "t_cloudDrawingSmallTitle",
+              "v_cd_title",
+              "g_cd_calendar",
+              "g_cd_location",
+              "v_cd_location_search",
+              "v_cd_who",
+              "t_cloudDrawing_picturePlus",
+              "r_picturePlus",
+              "Line 5",
+              "t_cloudDrawing_day",
+              "t_cloudDrawing_who",
+              "t_cloudDrawing_location",
+              "Line 6",
+              "Line 7",
+              "Line 8",
+              "t_cloudDrawig_picture"
+            ],
+            "background-color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "1.0"
+            }
+          },
+          {
+            "id": "t_cloudDrawing_text",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "24.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "127.0"
+              }
+            },
+            "font-weight": "500.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.6078431372549019"
+            },
+            "text-content": "어떤 추억이었나요?\n떠올리고 싶은 추억을 그려보세요 :)",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "t_cloudDrawingTitle",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "0.5"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "63.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.27058823529411763"
+            },
+            "text-content": "구름 그리기",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "24.0",
+            "line-height": "1.2102272510528564",
+            "typeface": "Inter"
+          },
+          {
+            "id": "v_cd_arrow_close",
+            "margin": {
+              "left": "13.0",
+              "top": "63.0",
+              "right": "362.0",
+              "bottom": "756.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_arrow_close.svg"
+          },
+          {
+            "id": "t_cloudDrawing_save",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "165.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "65.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "223.7086092715232",
+              "saturation": "0.592156862745098",
+              "value": "1.0"
+            },
+            "text-content": "저장",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "17.0",
+            "line-height": "1.2102272931267233",
+            "typeface": "Inter"
+          },
+          {
+            "id": "r_middle1",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "0.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "289.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "1083.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "15.0"
+              }
+            },
+            "vector-content": "r_middle1.svg"
+          },
+          {
+            "id": "r_middle2",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "0.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "458.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "1083.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "15.0"
+              }
+            },
+            "vector-content": "r_middle2.svg"
+          },
+          {
+            "id": "t_cloudDrawingSmallTitle",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "-130.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "315.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.40784313725490196"
+            },
+            "text-content": "제목",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "v_cd_title",
+            "margin": {
+              "left": "13.0",
+              "top": "316.0",
+              "right": "362.0",
+              "bottom": "513.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_title.svg"
+          },
+          {
+            "id": "g_cd_calendar",
+            "margin": {
+              "left": "13.0",
+              "top": "351.0",
+              "right": "362.0",
+              "bottom": "478.0"
+            },
+            "is-structured": "false",
+            "children": [
+              "v_cd_calendar2",
+              "v_cd_calendar1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "g_cd_location",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "13.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "388.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "20.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "20.0"
+              }
+            },
+            "is-structured": "false",
+            "children": [
+              "v_cd_location2",
+              "v_cd_location1"
+            ],
+            "clip-content": "false"
+          },
+          {
+            "id": "v_cd_location_search",
+            "margin": {
+              "left": "362.0",
+              "top": "394.0",
+              "right": "13.0",
+              "bottom": "435.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_location_search.svg"
+          },
+          {
+            "id": "v_cd_who",
+            "margin": {
+              "left": "14.0",
+              "top": "433.0",
+              "right": "354.0",
+              "bottom": "395.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_who.svg"
+          },
+          {
+            "id": "t_cloudDrawing_picturePlus",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "131.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "659.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "141.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "20.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.7647058823529411"
+            },
+            "text-content": "사진을 추가해보세요. ",
+            "overflow": "visible",
+            "max-lines": "-1",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "r_picturePlus",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "55.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "529.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "280.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "280.0"
+              }
+            },
+            "vector-content": "r_picture_plus.svg"
+          },
+          {
+            "id": "Line 5",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "0.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "101.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "391.0205078125"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "0.0"
+              }
+            },
+            "vector-content": "line_5.svg"
+          },
+          {
+            "id": "t_cloudDrawing_day",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "-115.5"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "352.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.40784313725490196"
+            },
+            "text-content": "방문 날짜 ",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "t_cloudDrawing_who",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "-124.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "432.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.40784313725490196"
+            },
+            "text-content": "누구랑",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "t_cloudDrawing_location",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "-127.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "391.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.40784313725490196"
+            },
+            "annotated-text-content": {
+              "text": "장소*",
+              "annotated-text-span-list": [
+                {
+                  "span-start": "0",
+                  "span-length": "2",
+                  "annotated-text-style": {
+                    "text-size": "15.0"
+                  }
+                },
+                {
+                  "span-start": "2",
+                  "span-length": "1",
+                  "annotated-text-style": {
+                    "text-size": "15.0",
+                    "color": {
+                      "alpha": "1.0",
+                      "hue": "0.0",
+                      "saturation": "0.5607843137254902",
+                      "value": "1.0"
+                    }
+                  }
+                }
+              ]
+            },
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "Line 6",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-0.000642540171611472"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "339.5000000274022"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "392.00128173828125"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "0.0"
+              }
+            },
+            "vector-content": "line_6.svg"
+          },
+          {
+            "id": "Line 7",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-0.000642540171611472"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "379.5000000274022"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "392.00128173828125"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "0.0"
+              }
+            },
+            "vector-content": "line_7.svg"
+          },
+          {
+            "id": "Line 8",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-0.000642540171611472"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "419.5000000274022"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "fixed",
+                "value": "392.00128173828125"
+              },
+              "height-constraints": {
+                "sizing-mode": "fixed",
+                "value": "0.0"
+              }
+            },
+            "vector-content": "line_8.svg"
+          },
+          {
+            "id": "t_cloudDrawig_picture",
+            "alignment": {
+              "horizontal": {
+                "attachment": "center",
+                "offset": "-168.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "490.0"
+              }
+            },
+            "font-weight": "600.0",
+            "color": {
+              "alpha": "1.0",
+              "hue": "0.0",
+              "saturation": "0.0",
+              "value": "0.27058823529411763"
+            },
+            "text-content": "사진",
+            "overflow": "visible",
+            "text-align": "left",
+            "text-size": "15.0",
+            "line-height": "1.2102272033691406",
+            "typeface": "Inter"
+          },
+          {
+            "id": "v_cd_calendar2",
+            "margin": {
+              "top": "1.66650390625",
+              "bottom": "10.0"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_calendar2.svg"
+          },
+          {
+            "id": "v_cd_calendar1",
+            "alignment": {
+              "horizontal": {
+                "attachment": "start",
+                "offset": "-1.0"
+              },
+              "vertical": {
+                "attachment": "start",
+                "offset": "-1.0"
+              }
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_calendar1.svg"
+          },
+          {
+            "id": "v_cd_location2",
+            "margin": {
+              "left": "4.5",
+              "right": "5.5",
+              "bottom": "6.873046875"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_location2.svg"
+          },
+          {
+            "id": "v_cd_location1",
+            "margin": {
+              "top": "9.845703125"
+            },
+            "size-constraints": {
+              "width-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              },
+              "height-constraints": {
+                "sizing-mode": "proportional",
+                "value": "1.0"
+              }
+            },
+            "vector-content": "v_cd_location1.svg"
+          }
+        ]
+      }
+    }
+  },
+  "previews": [
+    {
+      "design": "CloudDrawing",
+      "size": {
+        "width": 390.0,
+        "height": 844.0
+      }
+    }
+  ],
+  "adin-component-search-paths": [],
+  "image-search-paths": [],
+  "vector-search-paths": []
+}
