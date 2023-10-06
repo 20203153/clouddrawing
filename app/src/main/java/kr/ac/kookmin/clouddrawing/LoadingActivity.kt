@@ -28,17 +28,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.ac.kookmin.clouddrawing.theme.ApplicationTheme
 
-class MainActivity : AppCompatActivity() {
+class LoadingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            makeMain()
+            makeLoading()
         }
     }
 }
 
 @Composable
-fun makeMain() {
+fun makeLoading() {
     return ApplicationTheme {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,7 +58,7 @@ fun makeMain() {
             Image(
                 painter = painterResource(R.drawable.loadinglogo),
                 contentDescription = "image description",
-                contentScale = ContentScale.None,
+                contentScale = ContentScale.None
             )
             Spacer(Modifier.height(11.dp))
             Box(
@@ -99,6 +99,6 @@ fun makeMain() {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    makeMain()
+fun LoadingPreview() {
+    makeLoading()
 }
