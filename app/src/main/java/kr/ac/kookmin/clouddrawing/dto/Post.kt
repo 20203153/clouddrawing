@@ -3,6 +3,7 @@ package kr.ac.kookmin.clouddrawing.dto
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.tasks.await
 import java.util.Date
 
 data class Post(
@@ -17,40 +18,33 @@ data class Post(
 ) {
     companion object {
         private val post = FirebaseFirestore.getInstance().collection("post")
-        fun getPostById(id: String): Post? {
+        suspend fun getPostById(id: String): Post? {
             var result: Post? = null
-            post.document(id).get()
-                .addOnSuccessListener { result = it.toObject<Post>() }
+            result = post.document(id).get().await().toObject()
             return result
         }
 
-        fun getPostByUID(uid: String): List<Post> {
-            val result = mutableListOf<Post>()
+        suspend fun getPostByUID(uid: String): List<Post> {
+            val result = mutableListOf<Post?>()
 
-            post.whereEqualTo("uid", uid).orderBy("writeTime")
-                .get()
-                .addOnSuccessListener {
-                    it.documents.forEach { i ->
-                        i.toObject<Post>()?.let { j -> result.add(j) }
-                    }
-                }
-            return result
+            val posts = post.whereEqualTo("uid", uid).orderBy("writeTime")
+                .get().await()
+
+            posts.forEach { result.add(it.toObject()) }
+            return result.filterNotNull()
         }
 
-        fun addPost(newPost: Post): Boolean {
+        suspend fun addPost(newPost: Post): Boolean {
             val id = post.document().id
-            var result: Boolean = false
 
             newPost.id = id
 
-            post.document(id).set(newPost)
-                .addOnSuccessListener { result = true }
-            return result
+            post.document(id).set(newPost).await()
+            return true
         }
     }
 
-    fun addImage(images: List<ImageInfo>): Boolean {
-        var result = false
+    suspend fun addImage(images: List<ImageInfo>): Boolean {
         this.image + images
 
         this.image.forEach {
@@ -59,14 +53,11 @@ data class Post(
         }
 
         post.document(this.id!!)
-            .update("image", this.image)
-            .addOnSuccessListener { result = true }
-        return result
+            .update("image", this.image).await()
+        return true
     }
 
-    fun removeImage(images: List<ImageInfo>): Boolean {
-        var result = false
-
+    suspend fun removeImage(images: List<ImageInfo>): Boolean {
         images.forEach {
             if(it.userId == "") it.userId = uid!!
             if(it.postId == "") it.postId = id!!
@@ -74,13 +65,11 @@ data class Post(
 
         post.document(this.id!!)
             .update("image", FieldValue.arrayRemove(images))
-            .addOnSuccessListener { result = true }
-        return result
+            .await()
+        return true
     }
 
-    fun update(updatePost: Post): Boolean {
-        var result = true
-
+    suspend fun update(updatePost: Post): Boolean {
         val post = post.document(this.id!!)
 
         val update = hashMapOf(
@@ -93,17 +82,14 @@ data class Post(
 
         update.filter { it.value != "" &&
                 (it.value as List<*>).isNotEmpty() }
-        post.update(update)
-            .addOnSuccessListener { result = true }
+        post.update(update).await()
 
-        return result
+        return true
     }
 
-    fun delete(): Boolean {
-        var result = false
+    suspend fun delete(): Boolean {
         post.document(this.id!!)
-            .delete()
-            .addOnSuccessListener { result = true }
-        return result
+            .delete().await()
+        return true
     }
 }

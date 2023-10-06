@@ -64,4 +64,10 @@ data class User(
 
         return true
     }
+
+    suspend fun deleteUser(): Boolean {
+        user.document(this.uid!!)
+            .delete().await()
+        return true
+    }
 }
