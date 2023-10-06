@@ -22,6 +22,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kr.ac.kookmin.clouddrawing.dto.User
 
 class LoginActivity : AppCompatActivity() {
@@ -35,6 +38,7 @@ class LoginActivity : AppCompatActivity() {
 
     private val TAG = "Auth"
 
+    @OptIn(DelicateCoroutinesApi::class)
     private val launcher =
         registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
@@ -57,12 +61,19 @@ class LoginActivity : AppCompatActivity() {
 
                                         if(task.result.additionalUserInfo?.isNewUser == true) {
                                             Log.d(TAG, "signInWithCredential: NewUser")
-                                            suspend {
+                                            GlobalScope.launch {
                                                 val result = User.createCurrentUser()
                                                 Log.d(TAG, "newUser created: $result")
                                                 returnMain()
                                             }
-                                        } else returnMain()
+                                        } else {
+                                            Log.d(TAG, "SignInWithCredential: Update LastLogin")
+                                            GlobalScope.launch {
+                                                val result = User.getCurrentUser()!!
+                                                result.updateLastLogin()
+                                                returnMain()
+                                            }
+                                        }
                                     } else {
                                         Log.d(TAG, "signInWithCredential: Failure")
                                     }

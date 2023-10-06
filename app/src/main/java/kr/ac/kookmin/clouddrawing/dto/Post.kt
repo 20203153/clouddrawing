@@ -4,7 +4,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.tasks.await
-import java.util.Date
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.Query
 
 data class Post(
     var id: String? = "",
@@ -14,20 +15,20 @@ data class Post(
     var addressAlias: String? = "",
     var comment: String? = "",
     var image: List<ImageInfo> = listOf(),
-    var writeTime: Date?
+    var writeTime: Timestamp? = Timestamp.now()
 ) {
     companion object {
         private val post = FirebaseFirestore.getInstance().collection("post")
         suspend fun getPostById(id: String): Post? {
-            var result: Post? = null
-            result = post.document(id).get().await().toObject()
-            return result
+            return post.document(id).get().await().toObject()
         }
 
-        suspend fun getPostByUID(uid: String): List<Post> {
+        suspend fun getPostByUID(uid: String, limit: Long = 10L): List<Post> {
             val result = mutableListOf<Post?>()
 
-            val posts = post.whereEqualTo("uid", uid).orderBy("writeTime")
+            val posts = post.whereEqualTo("uid", uid)
+                .orderBy("writeTime", Query.Direction.DESCENDING)
+                .limit(limit)
                 .get().await()
 
             posts.forEach { result.add(it.toObject()) }
