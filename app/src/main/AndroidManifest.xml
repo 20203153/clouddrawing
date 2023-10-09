@@ -17,6 +17,12 @@
         android:theme="@style/Theme.Clouddrawing"
         tools:targetApi="31">
         <activity
+            android:name=".CloudMindActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeLeftActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
