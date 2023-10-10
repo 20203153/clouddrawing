@@ -34,12 +34,22 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("x86", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
+        }
     }
 }
 
@@ -54,6 +64,8 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.navigation:navigation-fragment:2.5.3")
+    implementation("androidx.navigation:navigation-ui:2.5.3")
 
     val composeVersion = "1.4.3"
     implementation("androidx.compose.animation:animation-core:$composeVersion")
