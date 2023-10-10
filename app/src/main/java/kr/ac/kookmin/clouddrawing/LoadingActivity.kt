@@ -1,13 +1,15 @@
 package kr.ac.kookmin.clouddrawing
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -42,19 +44,16 @@ class LoadingActivity : AppCompatActivity() {
             return ApplicationTheme {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .shadow(
                             elevation = 4.dp,
                             spotColor = Color(0x40000000),
                             ambientColor = Color(0x40000000)
                         )
-                        .width(390.dp)
-                        .height(844.dp)
+                        .fillMaxSize(1f)
                         .background(color = Color(0xFFE3ECFF))
                 ) {
-                    Spacer(Modifier
-                        .height(294.dp)
-                    )
                     Image(
                         painter = painterResource(R.drawable.loadinglogo),
                         contentDescription = "image description",
