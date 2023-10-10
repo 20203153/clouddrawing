@@ -5,7 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -42,12 +47,12 @@ fun CMBackground(content: @Composable () -> Unit) {
 @Composable
 fun CMMain() {
     Surface(
-        shape = RoundedCornerShape(40.dp),
+        shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
         color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
-            .height(599.dp)
-            .padding(top = 16.dp)
+            .height(1100.dp)
+            .padding(top = 250.dp)
     ) {
         Box(
             modifier = Modifier
@@ -55,14 +60,15 @@ fun CMMain() {
                 .padding(16.dp)
         ) {
             CMWho(
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.TopCenter)
+                    .padding(top = 100.dp)
             )
             CMLocation(
                 modifier = Modifier.align(Alignment.Center)
             )
-            tLine(
-                modifier = Modifier.align(Alignment.Center)
-                    .padding(start = 140.dp, end = 140.dp, top = 270.dp, bottom = 572.dp)
+            TLine(
+                modifier = Modifier.align(Alignment.BottomCenter)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 560.dp)
             )
         }
     }
@@ -85,11 +91,11 @@ fun CMLocation(modifier: Modifier = Modifier) {
         contentDescription = "CWLocation",
         modifier = modifier
             .size(22.dp, 16.dp)
-            .padding(start=108.dp, end=273.dp)
+            .padding(start=10.dp, end=10.dp)
     )
 }
 @Composable
-fun tLine(modifier: Modifier = Modifier) {
+fun TLine(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(111.dp, 5.dp)
