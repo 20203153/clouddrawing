@@ -1,6 +1,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,11 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.ui.AppBarConfiguration
-import com.kakao.vectormap.KakaoMap
-import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.MapView
 import kr.ac.kookmin.clouddrawing.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -32,35 +28,54 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val mapView = findViewById<MapView>(R.id.map_view)
-
-        mapView.start(object : MapLifeCycleCallback(){
-            override fun onMapDestroy() {
+        setContent {
+            Box(
+                Modifier
+                    .fillMaxSize(1f)
+                    .background(color = Color(0xFFFFFFFF))
+            ) {
+                SearchBar(
+                    onClick = {
+                        // 클릭 시 동작
+                        // 여기에 원하는 동작을 추가하세요
+                    }
+                )
+                MyCloudBtn(
+                    onClick = {
+                        // 클릭 시 동작
+                        // 여기에 원하는 동작을 추가하세요
+                    }
+                )
+                FriendCloudBtn(
+                    onClick = {
+                        // 클릭 시 동작
+                        // 여기에 원하는 동작을 추가하세요
+                    }
+                )
+                AddCloudBtn(
+                    onClick = {
+                        // 클릭 시 동작
+                        // 여기에 원하는 동작을 추가하세요
+                    }
+                )
+                SearchBtn(
+                    onClick = {
+                        // 클릭 시 동작
+                        // 여기에 원하는 동작을 추가하세요
+                    }
+                )
             }
-
-            override fun onMapError(error: Exception?) {
-            }
-        }, object : KakaoMapReadyCallback(){
-            override fun getPosition(): LatLng {
-                return super.getPosition()
-            }
-
-            override fun onMapReady(kakaoMap: KakaoMap) {
-                var loc = position
-            }
-        })
-
+        }
     }
 }
 
 /*
 AndroidView(
     modifier = Modifier.fillMaxSize(1f),
-    factory = { context -> MapView(context) }
+    factory = { context -> MapView(context).apply(listeners) }
 )
- */
+*/
 
 @Preview(showBackground = true)
 @Composable

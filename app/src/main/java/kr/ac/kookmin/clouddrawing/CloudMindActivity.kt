@@ -47,7 +47,12 @@ fun CMBackground(content: @Composable () -> Unit) {
 @Composable
 fun CMMain() {
     Surface(
-        shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp, bottomStart = 0.dp, bottomEnd = 0.dp),
+        shape = RoundedCornerShape(
+            topStart = 40.dp,
+            topEnd = 40.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
         color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
