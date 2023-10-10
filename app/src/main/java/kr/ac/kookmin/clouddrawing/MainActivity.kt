@@ -1,45 +1,63 @@
+package kr.ac.kookmin.clouddrawing
+
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import kr.ac.kookmin.clouddrawing.R
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.navigation.ui.AppBarConfiguration
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapType
+import com.kakao.vectormap.MapView
+import com.kakao.vectormap.MapViewInfo
+import kr.ac.kookmin.clouddrawing.databinding.ActivityMainBinding
+import kr.ac.kookmin.clouddrawing.test.Test
 import kr.ac.kookmin.clouddrawing.theme.ApplicationTheme
+import java.lang.Exception
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private val appBarConfiguration: AppBarConfiguration? = null
+    private var binding: ActivityMainBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            ApplicationTheme {
-                Column(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    MyCloudBtn()
-                    SearchBar()
-                    Background()
-                    SearchBtn()
-                    FriendBtn()
-                    AddCloudBtn()
-                    Background()
-                }
+        setContentView(R.layout.activity_main)
+
+        val mapView = findViewById<MapView>(R.id.map_view)
+
+        mapView.start(object : MapLifeCycleCallback(){
+            override fun onMapDestroy() {
             }
-        }
+
+            override fun onMapError(error: Exception?) {
+            }
+        }, object : KakaoMapReadyCallback(){
+            override fun getPosition(): LatLng {
+                return super.getPosition()
+            }
+
+            override fun onMapReady(kakaoMap: KakaoMap) {
+                var loc = position
+            }
+        })
+
     }
 }
 
@@ -47,93 +65,112 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Background() {
     Box(
-        modifier = Modifier
+        Modifier
             .width(390.dp)
             .height(844.dp)
             .background(color = Color(0xFFFFFFFF))
     ) {
-        MyCloudBtn()
-        SearchBar()
-        SearchBtn()
-        FriendBtn()
-        AddCloudBtn()
+        SearchBar(
+            onClick = {
+                // 클릭 시 동작
+                // 여기에 원하는 동작을 추가하세요
+            }
+        )
+        MyCloudBtn(
+            onClick = {
+                // 클릭 시 동작
+                // 여기에 원하는 동작을 추가하세요
+            }
+        )
+        FriendCloudBtn(
+            onClick = {
+                // 클릭 시 동작
+                // 여기에 원하는 동작을 추가하세요
+            }
+        )
+        AddCloudBtn(
+            onClick = {
+                // 클릭 시 동작
+                // 여기에 원하는 동작을 추가하세요
+            }
+        )
+        SearchBtn(
+            onClick = {
+                // 클릭 시 동작
+                // 여기에 원하는 동작을 추가하세요
+            }
+        )
+
     }
 }
 
 @Composable
-fun MyCloudBtn() {
+fun SearchBar(onClick: () -> Unit) {
     Image(
-        painter = painterResource(id = R.drawable.mycloudbtn),
-        contentDescription = "My Cloud Button",
+        painter = painterResource(id = R.drawable.r_home_search),
+        contentDescription = "search bar",
         contentScale = ContentScale.None,
         modifier = Modifier
-            .width(40.dp)
+            .offset(x = 57.dp, y = 73.dp)
+            .width(320.dp)
             .height(38.dp)
-            .padding(start = 12.dp, end = 338.dp, top = 73.dp, bottom = 733.dp)
+            .clickable { onClick() } // 클릭 핸들러 추가
     )
 }
-
 @Composable
-fun SearchBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(38.dp)
-            .padding(horizontal = 13.dp, vertical = 73.dp)
-            .shadow(
-                elevation = 5.dp,
-                spotColor = Color(0x0D000000),
-                ambientColor = Color(0x0D000000)
-            )
-            .border(
-                width = 1.dp,
-                color = Color(0xFFF6F6F6),
-                shape = RoundedCornerShape(size = 10.dp)
-            )
-            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 10.dp))
-    ) {
-        SearchBtn()
-    }
-}
-
-@Composable
-fun SearchBtn(){
+fun SearchBtn(onClick: () -> Unit) {
     Image(
         painter = painterResource(id = R.drawable.v_home_search),
-        contentDescription = "Search Button",
+        contentDescription = "search Btn",
         contentScale = ContentScale.None,
         modifier = Modifier
+            .offset(x = 347.83.dp, y = 82.4.dp)
             .width(18.11669.dp)
             .height(17.32211.dp)
-            .background(color = Color(0xFF6A6A6A))
-            .padding(start = 347.83.dp, end = 24.05.dp, top = 82.4.dp, bottom = 744.28.dp)
+            .zIndex(1f) // SearchBtn을 SearchBar 위에 배치
+            .clickable { onClick() }
+    )
+}
+
+
+@Composable
+fun MyCloudBtn(onClick: () -> Unit) {
+    Image(
+        painter = painterResource(id = R.drawable.mycloudbtn),
+        contentDescription = "my cloud btn",
+        contentScale = ContentScale.None,
+        modifier = Modifier
+            .offset(x = 12.dp, y = 73.dp)
+            .width(40.dp)
+            .height(45.dp)
+            .clickable { onClick() } // 클릭 핸들러 추가
     )
 }
 
 @Composable
-fun FriendBtn(){
+fun FriendCloudBtn(onClick: () -> Unit) {
     Image(
         painter = painterResource(id = R.drawable.friendcloud),
-        contentDescription = "Friend Cloud Btn",
+        contentDescription = "friend cloud",
         contentScale = ContentScale.None,
         modifier = Modifier
+            .offset(x = 33.dp, y = 751.dp)
             .width(40.dp)
             .height(40.dp)
-            .padding(start = 33.dp, end = 317.dp, top = 751.dp, bottom = 53.dp)
+            .clickable { onClick() } // 클릭 핸들러 추가
     )
 }
 
 @Composable
-fun AddCloudBtn(){
+fun AddCloudBtn(onClick: () -> Unit) {
     Image(
         painter = painterResource(id = R.drawable.addcloud),
-        contentDescription = "Add Cloud Btn",
+        contentDescription = "add cloud btn",
         contentScale = ContentScale.None,
         modifier = Modifier
+            .offset(x = 318.dp, y = 751.dp)
             .width(40.dp)
             .height(40.dp)
-            .padding(start = 318.dp, end = 32.dp, top = 751.dp, bottom = 53.dp)
+            .clickable { onClick() } // 클릭 핸들러 추가
     )
 }
-
-
