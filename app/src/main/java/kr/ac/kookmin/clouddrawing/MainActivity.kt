@@ -18,13 +18,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.navigation.ui.AppBarConfiguration
+import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapReadyCallback
+import com.kakao.vectormap.LatLng
+import com.kakao.vectormap.MapLifeCycleCallback
+import com.kakao.vectormap.MapView
 import kr.ac.kookmin.clouddrawing.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private val appBarConfiguration: AppBarConfiguration? = null
     private var binding: ActivityMainBinding? = null
+
+    private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +43,27 @@ class MainActivity : AppCompatActivity() {
                     .fillMaxSize(1f)
                     .background(color = Color(0xFFFFFFFF))
             ) {
+                KakaoMapContainer(
+                    modifier = Modifier.fillMaxSize(1f),
+                    lifeCycle = object: MapLifeCycleCallback() {
+                        override fun onMapDestroy() {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onMapError(error: Exception?) {
+                            TODO("Not yet implemented")
+                        }
+                    },
+                    readyCallback = object: KakaoMapReadyCallback() {
+                        override fun onMapReady(kakaoMap: KakaoMap) {
+
+                        }
+
+                        override fun getPosition(): LatLng {
+                            return super.getPosition()
+                        }
+                    }
+                )
                 SearchBar(
                     onClick = {
                         // 클릭 시 동작
@@ -68,6 +97,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        // mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // mapView.pause()
+    }
 }
 
 /*
@@ -76,6 +115,20 @@ AndroidView(
     factory = { context -> MapView(context).apply(listeners) }
 )
 */
+
+@Composable
+fun KakaoMapContainer(
+    modifier: Modifier,
+    lifeCycle: MapLifeCycleCallback,
+    readyCallback: KakaoMapReadyCallback
+) {
+    AndroidView(
+        factory = { context -> MapView(context).apply {
+            this.start(lifeCycle, readyCallback)
+        }},
+        modifier = modifier
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
