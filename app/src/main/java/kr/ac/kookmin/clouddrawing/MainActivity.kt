@@ -6,23 +6,37 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -33,8 +47,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.databinding.ActivityMainBinding
 
-class MyViewModel : ViewModel(){
-    // ViewModel 내에서 관리할 데이터 및 상태를 정의합니다.
+class SearchBarModel : ViewModel(){
+    var search: String = ""
 }
 
 class MainActivity : AppCompatActivity() {
@@ -43,41 +57,45 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
 
-    @SuppressLint("StateoFlowValueCalledInComposition")
+    @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mapView = MapView(applicationContext)
         val mapViewFlow = MutableStateFlow(mapView)
+        val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
 
         setContent {
-            val myViewModel = MyViewModel()
-
             Box(
                 Modifier
                     .fillMaxSize(1f)
-                    .background(color = Color(0xFFFFFFFF))
+                    .background(color = Color.Transparent)
             ) {
                 KakaoMapComponent(
                     modifier = Modifier.fillMaxSize(1f),
-                    mapView = mapViewFlow.value
+                    mapView = mapView
                 )
-                SearchBar{
-                    //클릭 핸들러 동작
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 12.dp, end = 12.dp, top = 73.dp)
+                        .fillMaxWidth(1f),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MyCloudBtn({ })
+                    Spacer(Modifier.width(5.dp))
+                    SearchBar(searchBar, { })
                 }
-                MyCloudBtn{
-
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(bottom = 53.dp, start = 33.dp, end = 33.dp)
+                        .fillMaxWidth(1f),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    FriendCloudBtn({ })
+                    AddCloudBtn({ })
                 }
-                FriendCloudBtn {
-
-                }
-                AddCloudBtn{
-
-                }
-                SearchBtn{
-
-                }
-
             }
         }
 
@@ -122,157 +140,152 @@ AndroidView(
 @Preview(showBackground = true)
 @Composable
 fun MainActivityPre() {
-    val myViewModel = MyViewModel()
+    val myViewModel = SearchBarModel()
+
     Box(
         Modifier
             .fillMaxSize(1f)
             .background(color = Color(0xFFFFFFFF))
     ) {
-        SearchBar{
-            // 클릭 시 동작
-            // 여기에 원하는 동작을 추가하세요
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 12.dp, end = 12.dp, top = 73.dp)
+                .fillMaxWidth(1f),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            MyCloudBtn({ })
+            Spacer(Modifier.width(5.dp))
+            SearchBar(myViewModel, { })
         }
-        SearchBtn{
-
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 53.dp, start = 33.dp, end = 33.dp)
+                .fillMaxWidth(1f),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            FriendCloudBtn({ })
+            AddCloudBtn({ })
         }
-
-        MyCloudBtn{
-
-        }
-
-        FriendCloudBtn {
-
-        }
-        AddCloudBtn{
-
-        }
-
-
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(onClick: () -> Unit) {
-    val myViewModel = MyViewModel()
-    Box(
+fun SearchBar(viewModel: SearchBarModel, onSearch: () -> Unit) {
+    var searchValue by remember {
+       mutableStateOf(viewModel.search)
+    }
+
+    Row(
         modifier = Modifier
-            .fillMaxSize()
-            .clickable { onClick() } // 전체 영역에 대한 클릭 핸들러
+            .shadow(
+                elevation = 5.dp,
+                spotColor = Color(0x0D000000),
+                ambientColor = Color(0x0D000000)
+            )
+            .border(
+                width = 1.dp,
+                color = Color(0xFFF6F6F6),
+                shape = RoundedCornerShape(size = 10.dp)
+            )
+            .width(340.dp)
+            .height(38.dp)
+            .background(
+                color = Color(0xFFFFFFFF),
+                shape = RoundedCornerShape(size = 10.dp)
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Box(
+        BasicTextField(
             modifier = Modifier
-                .offset(x = 57.dp, y = 73.dp)
-                .width(320.dp)
                 .height(38.dp)
-                //.align(Alignment.TopStart) // 원하는 위치로 설정
+                .padding(horizontal = 8.dp, vertical = 10.dp)
+                .fillMaxWidth(0.9f),
+            value = searchValue,
+            onValueChange = {
+                searchValue = it
+                viewModel.search = it
+            },
+            singleLine = true,
+        )
+        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            IconButton(
+                onClick = onSearch,
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(38.dp)
+                    .background(Color.Transparent)
+            ) {
+                Image(
+                    modifier = Modifier
+                        .height(18.dp)
+                        .width(18.dp),
+                    painter = painterResource(id = R.drawable.v_home_search),
+                    contentDescription = "",
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyCloudBtn(myCloud: () -> Unit) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+        IconButton(
+            onClick = myCloud,
+            modifier = Modifier
+                .padding(0.dp)
+                .width(40.dp)
+                .height(38.dp)
+                .background(
+                    Color(0xFFD2E1FF),
+                    RoundedCornerShape(10.dp)
+                )
         ) {
             Image(
-                painter = painterResource(id = R.drawable.r_home_search),
-                contentDescription = "search bar",
-                contentScale = ContentScale.None
+                modifier = Modifier
+                    .height(17.1.dp)
+                    .width(10.dp),
+                painter = painterResource(id = R.drawable.v_arrow_open),
+                contentDescription = "",
+                contentScale = ContentScale.Fit
             )
         }
     }
 }
+
 @Composable
-fun SearchBtn(onClick: () -> Unit) {
-    Box(
+fun FriendCloudBtn(friendCloud: () -> Unit) {
+    IconButton(
+        onClick = friendCloud,
         modifier = Modifier
-            .fillMaxSize()
-            .clickable { onClick() }
-    ) {
+            .width(40.dp)
+            .height(40.dp)
+    ){
         Image(
-            painter = painterResource(id = R.drawable.v_home_search),
-            contentDescription = "search Btn",
-            contentScale = ContentScale.Crop, // 이미지의 크기를 보존하면서 잘라내기
-            modifier = Modifier
-                .offset(x = 347.83.dp, y = 82.4.dp)
-                .width(17.dp) // 원하는 너비로 설정
-                .height(17.dp) // 원하는 높이로 설정
+            painter = painterResource(id = R.drawable.friendcloud),
+            contentDescription = "friend cloud",
+            contentScale = ContentScale.None
         )
     }
 }
 
-
 @Composable
-fun MyCloudBtn(onClick: () -> Unit) {
-    val myViewModel = MyViewModel()
-    Box(
+fun AddCloudBtn(addCloud: () -> Unit) {
+    IconButton(
         modifier = Modifier
-            .fillMaxSize()
-            .clickable { onClick() } // 클릭 핸들러 추가
-    ){
-        Box(
-            modifier = Modifier
-                .offset(x = 12.dp, y = 73.dp)
-                .width(40.dp)
-                .height(45.dp)
-
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.mycloudbtn),
-                contentDescription = "my cloud btn",
-                contentScale = ContentScale.None,
-
-            )
-        }
+            .width(40.dp)
+            .height(40.dp),
+        onClick = addCloud
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.addcloud),
+            contentDescription = "add cloud btn",
+            contentScale = ContentScale.None,
+        )
     }
-
-    
-}
-
-@Composable
-fun FriendCloudBtn(onClick: () -> Unit) {
-    val myViewModel = MyViewModel()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clickable { onClick()}
-            .padding(20.dp)
-
-    ){
-        Box(
-            modifier = Modifier
-                .width(40.dp)
-                .height(40.dp)
-                .align(Alignment.BottomStart)
-
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.friendcloud),
-                contentDescription = "friend cloud",
-                contentScale = ContentScale.None
-            )
-        }
-    }
-
-
-}
-
-@Composable
-fun AddCloudBtn(onClick: () -> Unit) {
-    val myViewModel = MyViewModel()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clickable { onClick() } // 클릭 핸들러 추가
-            .padding(20.dp)
-
-    ){
-        Box(
-            modifier = Modifier
-                .width(40.dp)
-                .height(40.dp)
-                .align(Alignment.BottomEnd)
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.addcloud),
-                contentDescription = "add cloud btn",
-                contentScale = ContentScale.None,
-
-            )
-        }
-    }
-
-
 }
