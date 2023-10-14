@@ -92,6 +92,10 @@ dependencies {
     // 카카오맵 sdk implementation 추가
     implementation("com.kakao.maps.open:android:2.6.0")
 
+    // 뷰 모델 라이브러리 의존성 추가
+    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.3.1")
+
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
