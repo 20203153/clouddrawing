@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,12 @@ class HomeLeftActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Box(Modifier.background(color = Color(0xFFFFFFFF))) {
+                // Arrow Close Button
                 Box(
                     Modifier
                         .padding(end = 20.dp, top = 16.dp)
                         .align(Alignment.TopEnd)
+                        .clickable { /* TODO: Handle Arrow Close click event here */ }
                 )
                 {
                     Image(
@@ -45,6 +48,8 @@ class HomeLeftActivity : ComponentActivity() {
                             .height(25.dp)
                     )
                 }
+
+                // Main Content
                 Column(
                     modifier = Modifier.fillMaxHeight(1f)
                         .width(193.dp)
@@ -52,7 +57,6 @@ class HomeLeftActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-
                     Spacer(Modifier.height(53.dp))
                     Image(
                         painter = painterResource(id = R.drawable.g_profile),
@@ -62,6 +66,8 @@ class HomeLeftActivity : ComponentActivity() {
                             .height(80.dp)
                     )
                     Spacer(Modifier.height(44.dp))
+
+                    // 내 정보 Text Button
                     Text(
                         text = "내 정보",
                         style = TextStyle(
@@ -69,14 +75,19 @@ class HomeLeftActivity : ComponentActivity() {
                             fontFamily = FontFamily.SansSerif,
                             fontWeight = FontWeight.W600,
                             color = Color(0xFF7D7D7D)
-                        )
+                        ),
+                        modifier = Modifier.clickable { /* TODO: Handle 내 정보 click event here */ }
                     )
                     Spacer(Modifier.height(48.dp))
                     MyCloudText()
                 }
+
+                // Logout Button
                 Box(
-                    Modifier.padding()
+                    Modifier
+                        .padding()
                         .align(Alignment.BottomStart)
+                        .clickable { /* TODO: Handle Logout click event here */ }
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logout),
@@ -90,15 +101,17 @@ class HomeLeftActivity : ComponentActivity() {
         }
     }
 }
+
 @Preview
 @Composable
 fun MyScreen() {
     Box(Modifier.background(color = Color(0xFFFFFFFF))) {
-        Box(Modifier
-            .padding(end = 20.dp, top = 16.dp)
-            .align(Alignment.TopEnd)
-        )
-        {
+        Box(
+            Modifier
+                .padding(end = 20.dp, top = 16.dp)
+                .align(Alignment.TopEnd)
+                .clickable { /* Arrow Close 클릭시 수행할 액션 */ }
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.v_arrow_close),
                 contentDescription = "Arrow Close",
@@ -107,11 +120,11 @@ fun MyScreen() {
                     .height(25.dp)
             )
         }
-        Column (
+        Column(
             modifier = Modifier.fillMaxHeight(1f)
                 .width(193.dp)
                 .fillMaxHeight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(94.dp))
             Image(
@@ -129,14 +142,17 @@ fun MyScreen() {
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.W600,
                     color = Color(0xFF7D7D7D)
-                )
+                ),
+                modifier = Modifier.clickable { /* "내 정보" 클릭시 수행할 액션 */ }
             )
             Spacer(Modifier.height(48.dp))
             MyCloudText()
         }
-        Box(Modifier.
-            padding(start = 23.dp, bottom = 8.dp)
-            .align(Alignment.BottomStart)
+        Box(
+            Modifier
+                .padding(start = 23.dp, bottom = 8.dp)
+                .align(Alignment.BottomStart)
+                .clickable { /* Logout 클릭시 수행할 액션 */ }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logout),
