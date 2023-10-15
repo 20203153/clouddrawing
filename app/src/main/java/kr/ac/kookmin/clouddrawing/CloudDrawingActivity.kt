@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ class CloudDrawingActivity : ComponentActivity() {
                 CDMiddleImage()
                 CDMiddleSearch()
                 CDBottom()
+                CDTextField()
             }
         }
     }
@@ -56,6 +58,7 @@ fun CDBackground(content: @Composable () -> Unit) {
         CDMiddleImage()
         CDMiddleSearch()
         CDBottom()
+        CDTextField()
     }
 }
 @Composable
@@ -286,6 +289,65 @@ fun CDBottom(){
         )
     }
 }
+
+@Composable
+fun CDTextField(){
+    var title = ""
+    // var title by rememberSaveable { mutableStateOf("") }
+    TextField(
+        modifier = Modifier
+            .padding(start = 115.dp, end = 40.dp, top = 322.dp, bottom = 540.dp),
+            //.width(300.dp)
+            //.height(50.dp),
+        value = title,
+        onValueChange = { title = it },
+        singleLine = true
+    )
+    var date = ""
+    // var date by rememberSaveable { mutableStateOf("") }
+    TextField(
+        modifier = Modifier
+            .padding(start = 115.dp, end = 40.dp, top = 362.dp, bottom = 500.dp),
+        //.width(300.dp)
+        //.height(50.dp),
+        value = date,
+        onValueChange = { date = it },
+        singleLine = true
+    )
+    var locations = ""
+    // var locations by rememberSaveable { mutableStateOf("") }
+    TextField(
+        modifier = Modifier
+            .padding(start = 115.dp, end = 40.dp, top = 402.dp, bottom = 460.dp),
+        //.width(300.dp)
+        //.height(50.dp),
+        value = locations,
+        onValueChange = { locations = it },
+        singleLine = true
+    )
+    var friends = ""
+    // var friends by rememberSaveable { mutableStateOf("") }
+    TextField(
+        modifier = Modifier
+            .padding(start = 115.dp, end = 40.dp, top = 442.dp, bottom = 420.dp),
+        //.width(300.dp)
+        //.height(50.dp),
+        value = friends,
+        onValueChange = { friends = it },
+        singleLine = true
+    )
+    var maincontent = ""
+    // var friends by rememberSaveable { mutableStateOf("") }
+    TextField(
+        modifier = Modifier
+            .padding(start = 5.dp, end = 5.dp, top = 110.dp, bottom = 300.dp)
+        .width(400.dp)
+        .height(175.dp),
+        value = maincontent,
+        onValueChange = { maincontent = it },
+    )
+}
+
 @Preview
 @Composable
 fun CDPreview(){
