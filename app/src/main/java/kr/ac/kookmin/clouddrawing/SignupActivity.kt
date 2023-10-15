@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +19,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kr.ac.kookmin.clouddrawing.components.GoogleSignupBtn
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            make()
+            make({ })
         }
     }
 
@@ -53,23 +51,9 @@ class SignupActivity : AppCompatActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Bottom,
                     modifier = Modifier
-                        .fillMaxSize(1f)) {
-                    IconButton(
-                        onClick = onClickGoogle,
-                        modifier = Modifier
-                            .width(300.dp)
-                            .height(40.dp)
-                            .background(
-                                color = Color(0xFF6891FF),
-                                shape = RoundedCornerShape(size = 12.dp)
-                            )
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.register_google),
-                            contentDescription = "image description",
-                            contentScale = ContentScale.None
-                        )
-                    }
+                        .fillMaxSize(1f)
+                ) {
+                    GoogleSignupBtn(onClickGoogle)
                     Spacer(Modifier.height(85.dp))
                 }
             }

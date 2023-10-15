@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
+import kr.ac.kookmin.clouddrawing.components.LogoutBtn
 
 class HomeLeftActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,21 +39,15 @@ class HomeLeftActivity : ComponentActivity() {
                     Modifier
                         .padding(end = 20.dp, top = 16.dp)
                         .align(Alignment.TopEnd)
-                        .clickable { /* TODO: Handle Arrow Close click event here */ }
                 )
                 {
-                    Image(
-                        painter = painterResource(id = R.drawable.v_arrow_close),
-                        contentDescription = "Arrow Close",
-                        modifier = Modifier
-                            .width(15.dp)
-                            .height(25.dp)
-                    )
+                    LeftCloseBtn({ })
                 }
 
                 // Main Content
                 Column(
-                    modifier = Modifier.fillMaxHeight(1f)
+                    modifier = Modifier
+                        .fillMaxHeight(1f)
                         .width(193.dp)
                         .fillMaxHeight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -110,18 +106,12 @@ fun MyScreen() {
             Modifier
                 .padding(end = 20.dp, top = 16.dp)
                 .align(Alignment.TopEnd)
-                .clickable { /* Arrow Close 클릭시 수행할 액션 */ }
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.v_arrow_close),
-                contentDescription = "Arrow Close",
-                modifier = Modifier
-                    .width(15.dp)
-                    .height(25.dp)
-            )
+            LeftCloseBtn({ })
         }
         Column(
-            modifier = Modifier.fillMaxHeight(1f)
+            modifier = Modifier
+                .fillMaxHeight(1f)
                 .width(193.dp)
                 .fillMaxHeight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -150,17 +140,10 @@ fun MyScreen() {
         }
         Box(
             Modifier
-                .padding(start = 23.dp, bottom = 8.dp)
                 .align(Alignment.BottomStart)
-                .clickable { /* Logout 클릭시 수행할 액션 */ }
+                .padding(bottom = 8.dp, start = 7.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logout),
-                contentDescription = "Logout",
-                modifier = Modifier
-                    .width(67.dp)
-                    .height(17.dp)
-            )
+            LogoutBtn({ })
         }
     }
 }
