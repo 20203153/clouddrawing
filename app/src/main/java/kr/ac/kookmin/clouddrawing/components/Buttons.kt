@@ -114,7 +114,9 @@ fun AddCloudBtn(@PreviewParameter(UnitPreviw::class) addCloud: () -> Unit) {
 
 @Preview(name = "GoogleSignupBtn", showBackground = true)
 @Composable
-fun GoogleSignupBtn(@PreviewParameter(UnitPreviw::class) onClickGoogle: () -> Unit) {
+fun GoogleSignupBtn(@PreviewParameter(UnitPreviw::class) onClickGoogle: () -> Unit,
+    innerContent: () -> Unit = {}
+) {
     IconButton(
         onClick = onClickGoogle,
         modifier = Modifier
@@ -147,7 +149,9 @@ fun GoogleSignupBtn(@PreviewParameter(UnitPreviw::class) onClickGoogle: () -> Un
                     color = Color(0xFFFFFFFF),
                 )
             )
+            innerContent
         }
+
     }
 }
 

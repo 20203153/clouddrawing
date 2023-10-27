@@ -1,7 +1,9 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
@@ -21,6 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -48,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         mapView = MapView(applicationContext)
         val mapViewFlow = MutableStateFlow(mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
+        val context = this
 
         setContent {
             Box(
@@ -77,8 +82,13 @@ class MainActivity : AppCompatActivity() {
                         .fillMaxWidth(1f),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    FriendCloudBtn({ })
-                    AddCloudBtn({ })
+                    FriendCloudBtn(friendCloud = {
+                        startActivity(Intent(context, SignupActivity::class.java))
+                    })
+                    AddCloudBtn(addCloud = {
+                        Firebase.auth.signOut()
+                        Toast.makeText(applicationContext, "Logout!", Toast.LENGTH_LONG).show()
+                    })
                 }
             }
         }
