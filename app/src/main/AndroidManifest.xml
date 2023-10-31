@@ -19,9 +19,9 @@
         <activity
             android:name=".CloudMindActivity"
             android:exported="false" />
-        <activity
-            android:name=".HomeLeftActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".HomeLeftActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".MainActivity"
             android:exported="true">
