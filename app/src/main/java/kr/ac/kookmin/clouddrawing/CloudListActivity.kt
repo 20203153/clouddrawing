@@ -66,7 +66,9 @@ fun CLBackground(content: @Composable () -> Unit) {
     ) {
         CLTopText()
         CLTopBack()
-
+        CLCntBox()
+        CLCloudText()
+        CLCloudCard()
     }
 }
 
@@ -95,6 +97,29 @@ fun CLTopText() {
 }
 
 @Composable
+fun CLCloudText() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 40.dp, end = 258.dp, top = 220.dp, bottom = 601.dp)
+            .width(92.dp)
+            .height(23.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "구름 모아보기",
+            style = TextStyle(
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(700),
+                color = Color(0xFF474747),
+                )
+        )
+    }
+}
+
+@Composable
 fun CLTopBack(){
     Image(
         painter = painterResource(id = R.drawable.v_cd_arrow_close),
@@ -104,4 +129,319 @@ fun CLTopBack(){
             .width(32.dp)
             .height(32.dp)
     )
+}
+
+@Composable
+fun CLCntBox() {
+    Box(
+        modifier = Modifier
+            .shadow(
+                elevation = 20.dp,
+                spotColor = Color(0x0D000000),
+                ambientColor = Color(0x0D000000)
+            )
+            .border(
+                width = 1.dp,
+                color = Color(0xFFF4F4F4),
+                shape = RoundedCornerShape(size = 20.dp)
+            )
+            .padding(start = 31.dp, end = 31.dp, top = 108.dp)
+            .width(328.dp)
+            .height(97.dp)
+            .background(color = Color(0xFFB4CCFF), shape = RoundedCornerShape(size = 20.dp))
+    ) {
+        CLTodayText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+
+        ClTodayCnt(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+
+        CLMonthText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+
+        ClMonthCnt(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+        CLUntilText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+        ClUntilCnt(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+        CLCntText1(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+        CLCntText2(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+        CLCntText3(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        )
+    }
+}
+
+@Composable
+fun CLTodayText(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 67.dp, end = 170.dp, top = 17.dp, bottom = 59.dp)
+            .width(91.dp)
+            .height(21.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "오늘은 구름을",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(600),
+                color = Color(0xFFFFFFFF),
+
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun CLMonthText(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 51.dp, end = 170.dp, top = 41.dp, bottom = 35.dp)
+            .width(91.dp)
+            .height(21.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "이번 달은 구름을",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(600),
+                color = Color(0xFFFFFFFF),
+
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun CLUntilText(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 51.dp, end = 170.dp, top = 65.dp, bottom = 11.dp)
+            .width(107.dp)
+            .height(21.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "지금까지 구름을",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(600),
+                color = Color(0xFFFFFFFF),
+
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun ClTodayCnt(modifier: Modifier = Modifier){
+    Box(
+        modifier = Modifier
+            .padding(start = 157.dp, end = 145.dp, top = 14.dp, bottom = 62.dp)
+            .width(26.dp)
+            .height(21.dp),
+    ){
+        Text(
+            text = "1",
+            style = TextStyle(
+                fontSize = 17.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(700),
+                color = Color(0xFF6891FF),
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun ClMonthCnt(modifier: Modifier = Modifier){
+    Box(
+        modifier = Modifier
+            .padding(start = 157.dp, end = 145.dp, top = 38.dp, bottom = 38.dp)
+            .width(26.dp)
+            .height(21.dp),
+    ){
+        Text(
+            text = "1",
+            style = TextStyle(
+                fontSize = 17.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(700),
+                color = Color(0xFF6891FF),
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun ClUntilCnt(modifier: Modifier = Modifier){
+    Box(
+        modifier = Modifier
+            .padding(start = 157.dp, end = 145.dp, top = 65.dp, bottom = 14.dp)
+            .width(26.dp)
+            .height(21.dp),
+    ){
+        Text(
+            text = "1",
+            style = TextStyle(
+                fontSize = 17.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(700),
+                color = Color(0xFF6891FF),
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun CLCntText1(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 183.dp, end = 55.dp, top = 16.dp, bottom = 62.dp)
+            .width(77.dp)
+            .height(18.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "개 그렸어요. ",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(600),
+                color = Color(0xFFFFFFFF),
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun CLCntText2(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 183.dp, end = 55.dp, top = 40.dp, bottom = 38.dp)
+            .width(77.dp)
+            .height(18.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "개 그렸어요. ",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(600),
+                color = Color(0xFFFFFFFF),
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+
+@Composable
+fun CLCntText3(modifier: Modifier = Modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(start = 183.dp, end = 55.dp, top = 64.dp, bottom = 14.dp)
+            .width(77.dp)
+            .height(18.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "개 그렸어요. ",
+            style = TextStyle(
+                fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.inter)),
+                fontWeight = FontWeight(600),
+                color = Color(0xFFFFFFFF),
+                textAlign = TextAlign.Center,
+            )
+        )
+    }
+}
+@Composable
+fun CLCloudCard(){
+    Box(
+        modifier = Modifier
+            .width(100.dp)
+            .height(100.dp)
+            .padding(start = 38.dp, end = 252.dp, top = 261.dp, bottom = 483.dp)
+            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 20.dp))
+            .border(width = 1.dp, color = Color(0xFFF4F4F4), shape = RoundedCornerShape(size = 20.dp))
+            .shadow(elevation = 20.dp, spotColor = Color(0x0D000000), ambientColor = Color(0x0D000000))
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(start = 6.dp, end = 13.dp, top = 30.dp, bottom = 40.dp)
+                .width(81.dp)
+                .height(30.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "TB_Title ",
+                style = TextStyle(
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFF474747),
+                )
+
+            )
+        }
+
+
+    }
 }
