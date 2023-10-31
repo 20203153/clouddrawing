@@ -60,7 +60,7 @@ fun HomeLeftContent(
                 modifier = Modifier
                     .fillMaxHeight(1f)
                     .width(193.dp)
-                    .padding(top = 97.dp)
+                    .padding(top = 53.dp)
                     .fillMaxHeight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
