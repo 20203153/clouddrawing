@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
-import kotlin.let as let1
+import kotlin.let as let
 
 class MyInformationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,8 +74,15 @@ fun MIBackground(onBackClick: () -> Unit = {}, content: @Composable () -> Unit =
 }
 @Composable
 fun MITopBack(onClick: () -> Unit = {}){
-    LeftCloseBtn(onClick = onClick)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)  // 원하는 패딩 값 적용
+    ) {
+        LeftCloseBtn(onClick = onClick)
+    }
 }
+
 
 @Composable
 fun MITopText() {
@@ -129,7 +136,7 @@ fun MISideText() {
 fun MIProfile() {
     val context = LocalContext.current
     val imageUri = remember { mutableStateOf<Uri?>(null) }
-    val bitmap = imageUri.value?.let1 { uri ->
+    val bitmap = imageUri.value?.let { uri ->
         remember(uri) {
             BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
         }
@@ -160,7 +167,7 @@ fun MIProfile() {
                 painter = painterResource(id = R.drawable.profileplus),
                 contentDescription = "MIProfileDefault",
                 modifier = Modifier
-                    .padding(top = 100.dp, bottom = 600.dp, start = 20.dp)
+                    .padding(top = 5.dp, bottom = 500.dp, start = 20.dp)
                     .width(100.dp)
                     .height(100.dp)
                     .clickable {
@@ -174,6 +181,7 @@ fun MIProfile() {
         }
     }
 }
+
 
 
 @Composable
@@ -232,44 +240,3 @@ fun MIEmailData() {
     )
 }
 
-
-//@Composable
-//fun MIProfile() {
-//    Box(
-//        modifier = Modifier.fillMaxSize(),
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.profileplus),
-//            contentDescription = "MIProfilePlus",
-//            modifier = Modifier
-//                .padding(top = 100.dp, bottom = 600.dp, start = 20.dp)
-//                .width(100.dp)  // Increase size by changing these values
-//                .height(100.dp)
-//        )
-//    }
-//}
-
-//@Composable
-//fun MISideText() {
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .fillMaxHeight()
-//            .padding(start = 320.dp, end = 10.dp, top = 60.dp, bottom = 760.dp)
-//            .width(121.dp)
-//            .height(24.dp),
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Text(
-//            text = "수정",
-//            style = TextStyle(
-//                fontSize = 17.sp,
-//                fontFamily = FontFamily(Font(R.font.inter)),
-//                fontWeight = FontWeight(600),
-//                color = Color(0xFF6891FF),
-//
-//                )
-//        )
-//    }
-//}
