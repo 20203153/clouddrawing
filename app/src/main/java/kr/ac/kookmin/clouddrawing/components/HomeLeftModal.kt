@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kr.ac.kookmin.clouddrawing.CloudListActivity
 import kr.ac.kookmin.clouddrawing.MyInformationActivity
 import kr.ac.kookmin.clouddrawing.R
 
@@ -137,6 +138,7 @@ fun HomeLeftContent(
 
 @Composable
 fun MyCloudText() {
+    val context = LocalContext.current
     Text(
         text = "나의 구름",
         style = TextStyle(
@@ -145,6 +147,8 @@ fun MyCloudText() {
             fontWeight = FontWeight.W600,
             color = Color(0xFF454545)
         ),
-        modifier = Modifier.clickable { /* TODO: Handle 나의 구름 click event here */ }
+        modifier = Modifier.clickable {
+            val intent = Intent(context, CloudListActivity::class.java)
+            context.startActivity(intent) }
     )
 }
