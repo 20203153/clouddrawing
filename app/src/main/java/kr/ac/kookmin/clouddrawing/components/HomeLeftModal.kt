@@ -1,5 +1,6 @@
 package kr.ac.kookmin.clouddrawing.components
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +34,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.ac.kookmin.clouddrawing.MyInformationActivity
-import kr.ac.kookmin.clouddrawing.CloudListActivity
 import kr.ac.kookmin.clouddrawing.R
 
+@SuppressLint("UnrememberedMutableState")
+@Preview(widthDp = 390, heightDp = 844)
+@Composable
+fun PreviewHomeLeftModal() {
+    val isDrawerOpen = mutableStateOf(false)
+
+    CMBackground {
+        Button(
+            onClick = { isDrawerOpen.value = !isDrawerOpen.value }
+        ) {
+            Text("Open/Close")
+        }
+
+        HomeLeftContent(isDrawerOpen = isDrawerOpen)
+    }
+}
 
 @Composable
 fun HomeLeftContent(
@@ -117,9 +134,9 @@ fun HomeLeftContent(
     }
 }
 
+
 @Composable
 fun MyCloudText() {
-    val context = LocalContext.current
     Text(
         text = "나의 구름",
         style = TextStyle(
@@ -128,27 +145,6 @@ fun MyCloudText() {
             fontWeight = FontWeight.W600,
             color = Color(0xFF454545)
         ),
-        modifier = Modifier.clickable {
-            val intent = Intent(context, CloudListActivity::class.java)
-            context.startActivity(intent)
-        }
+        modifier = Modifier.clickable { /* TODO: Handle 나의 구름 click event here */ }
     )
 }
-
-//@Composable
-//fun MyCloudText() {
-//    Text(
-//        text = "나의 구름",
-//        style = TextStyle(
-//            fontSize = 20.sp,
-//            fontFamily = FontFamily.SansSerif,
-//            fontWeight = FontWeight.W600,
-//            color = Color(0xFF454545)
-//        ),
-//        modifier = Modifier.clickable {
-//            val intent = Intent(context, CloudListActivity::class.java)
-//            context.startActivity(intent)
-//        }
-//    )
-//}
-
