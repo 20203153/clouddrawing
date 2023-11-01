@@ -88,7 +88,7 @@ fun CloudContent(
             Spacer(Modifier.width(1.dp))
         } // Header done.
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
-        CCContentBox()
+        CCContentBox(verticalScroll)
     }
 }
 

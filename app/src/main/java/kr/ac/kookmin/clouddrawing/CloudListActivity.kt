@@ -6,22 +6,14 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-
-import androidx.compose.foundation.layout.Column
-
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -114,7 +106,7 @@ fun CLCloudText() {
                 fontFamily = FontFamily(Font(R.font.inter)),
                 fontWeight = FontWeight(700),
                 color = Color(0xFF474747),
-                )
+            )
         )
     }
 }
@@ -283,6 +275,7 @@ fun ClTodayCnt(modifier: Modifier = Modifier){
             .padding(start = 157.dp, end = 145.dp, top = 14.dp, bottom = 62.dp)
             .width(26.dp)
             .height(21.dp),
+        contentAlignment = Alignment.CenterEnd
     ){
         Text(
             text = "1",
@@ -291,8 +284,9 @@ fun ClTodayCnt(modifier: Modifier = Modifier){
                 fontFamily = FontFamily(Font(R.font.inter)),
                 fontWeight = FontWeight(700),
                 color = Color(0xFF6891FF),
-                textAlign = TextAlign.Center,
-            )
+                textAlign = TextAlign.End,
+
+                )
         )
     }
 }
@@ -304,6 +298,7 @@ fun ClMonthCnt(modifier: Modifier = Modifier){
             .padding(start = 157.dp, end = 145.dp, top = 38.dp, bottom = 38.dp)
             .width(26.dp)
             .height(21.dp),
+        contentAlignment = Alignment.CenterEnd
     ){
         Text(
             text = "1",
@@ -325,6 +320,7 @@ fun ClUntilCnt(modifier: Modifier = Modifier){
             .padding(start = 157.dp, end = 145.dp, top = 65.dp, bottom = 14.dp)
             .width(26.dp)
             .height(21.dp),
+        contentAlignment = Alignment.CenterEnd
     ){
         Text(
             text = "1",
@@ -410,13 +406,14 @@ fun CLCntText3(modifier: Modifier = Modifier) {
         )
     }
 }
+
 @Composable
 fun CLCloudCard(){
     Box(
         modifier = Modifier
+            .padding(start = 38.dp, end = 252.dp, top = 261.dp, bottom = 483.dp)
             .width(100.dp)
             .height(100.dp)
-            .padding(start = 38.dp, end = 252.dp, top = 261.dp, bottom = 483.dp)
             .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 20.dp))
             .border(width = 1.dp, color = Color(0xFFF4F4F4), shape = RoundedCornerShape(size = 20.dp))
             .shadow(elevation = 20.dp, spotColor = Color(0x0D000000), ambientColor = Color(0x0D000000))
@@ -431,17 +428,72 @@ fun CLCloudCard(){
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "TB_Title ",
+                text = "TB_Title",
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
                     fontWeight = FontWeight(700),
                     color = Color(0xFF474747),
-                )
-
+                ),
+                modifier = Modifier.align(Alignment.TopStart)
             )
         }
 
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(start = 49.dp, end = 13.dp, top = 8.dp, bottom = 84.dp)
+                .width(46.dp)
+                .height(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "TB_date",
+                style = TextStyle(
+                    fontSize = 7.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF9C9C9C),
+                ),
+                modifier = Modifier.align(Alignment.TopStart)
+            )
+        }
 
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(start = 17.dp, end = 13.dp, top = 71.dp, bottom = 19.dp)
+                .width(70.dp)
+                .height(10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "TB_place",
+                style = TextStyle(
+                    fontSize = 8.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF727272),
+                ),
+                modifier = Modifier.align(Alignment.TopStart)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(start = 5.dp, end = 85.dp, top = 71.dp, bottom = 19.dp)
+                .width(10.dp)
+                .height(10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.f_cm_location),
+                contentDescription = "image description",
+
+                )
+        }
     }
 }
