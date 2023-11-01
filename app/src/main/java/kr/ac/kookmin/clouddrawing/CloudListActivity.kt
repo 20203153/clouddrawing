@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 
 
 class CloudListActivity : ComponentActivity() {
@@ -111,17 +112,29 @@ fun CLCloudText() {
     }
 }
 
+//@Composable
+//fun CLTopBack(){
+//    Image(
+//        painter = painterResource(id = R.drawable.v_cd_arrow_close),
+//        contentDescription = "CDArrow Close",
+//        modifier = Modifier
+//            .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)
+//            .width(32.dp)
+//            .height(32.dp)
+//    )
+//}
+
 @Composable
-fun CLTopBack(){
-    Image(
-        painter = painterResource(id = R.drawable.v_cd_arrow_close),
-        contentDescription = "CDArrow Close",
+fun CLTopBack(onClick: () -> Unit = {}){
+    Box(
         modifier = Modifier
+            .fillMaxSize()
             .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)
-            .width(32.dp)
-            .height(32.dp)
-    )
+    ) {
+        LeftCloseBtn(onClick = onClick)
+    }
 }
+
 
 @Composable
 fun CLCntBox() {

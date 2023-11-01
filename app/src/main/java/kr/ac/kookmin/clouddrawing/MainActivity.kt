@@ -40,6 +40,8 @@ import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
 import kr.ac.kookmin.clouddrawing.components.SearchBar
 import kr.ac.kookmin.clouddrawing.components.SearchBarModel
+import android.content.Intent
+
 
 class MainActivity : AppCompatActivity() {
     private val appBarConfiguration: AppBarConfiguration? = null
