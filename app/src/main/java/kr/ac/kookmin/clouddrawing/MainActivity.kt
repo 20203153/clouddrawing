@@ -34,6 +34,7 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
+import kr.ac.kookmin.clouddrawing.components.CloudMindModal
 import kr.ac.kookmin.clouddrawing.components.HomeLeftContent
 import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
 
     private lateinit var isLeftOpen: MutableState<Boolean>
+    private lateinit var isCloudMindOpen: MutableState<Boolean>
 
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             isLeftOpen = remember { mutableStateOf(false) }
+            isCloudMindOpen = remember { mutableStateOf(false) }
 
             Box(Modifier.fillMaxSize()) {
                 KakaoMapComponent(
@@ -74,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                         isLeftOpen.value = true
                     }
                     Spacer(Modifier.width(5.dp))
-                    SearchBar(searchBar, { })
+                    SearchBar(searchBar, onSearch = { isCloudMindOpen.value = true })
                 }
 
                 Row(
@@ -88,18 +91,22 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 AnimatedVisibility(
-                    visible = isLeftOpen.value,
+                    visible = ( isLeftOpen.value || isCloudMindOpen.value ),
                     modifier = Modifier.fillMaxSize(1f),
                     enter = fadeIn(),
                     exit = fadeOut()
                 ){
                     Box(
-                        Modifier.fillMaxSize(1f)
-                            .background(Color.Black.copy(alpha=0.5f))
-                            .clickable { isLeftOpen.value = false }
+                        Modifier
+                            .fillMaxSize(1f)
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .clickable {
+                                listOf(isLeftOpen, isCloudMindOpen).forEach { it.value = false }
+                            }
                     )
                 }
                 HomeLeftContent(isDrawerOpen = isLeftOpen)
+                CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
         }
 

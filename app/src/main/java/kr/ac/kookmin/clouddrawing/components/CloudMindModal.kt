@@ -58,7 +58,7 @@ fun PreviewBackground() {
             Text("Open/Close")
         }
 
-        CMMain(isDrawerOpen = isDrawerOpen)
+        CloudMindModal(isDrawerOpen = isDrawerOpen)
     }
 }
 
@@ -74,7 +74,7 @@ fun CMBackground(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun CMMain(
+fun CloudMindModal(
     function: () -> Unit = {},
     isDrawerOpen: MutableState<Boolean> = mutableStateOf(true),
     scrollState: ScrollState = rememberScrollState()
