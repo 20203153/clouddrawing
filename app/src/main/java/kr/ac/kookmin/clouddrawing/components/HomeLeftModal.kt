@@ -1,5 +1,6 @@
 package kr.ac.kookmin.clouddrawing.components
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandHorizontally
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -29,14 +31,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kr.ac.kookmin.clouddrawing.MyInformationActivity
 import kr.ac.kookmin.clouddrawing.R
 
-@Preview
 @Composable
 fun HomeLeftContent(
     function: () -> Unit = {},
     isDrawerOpen: MutableState<Boolean> = mutableStateOf(true)
 ) {
+    // 현재 Composable의 Context를 가져옵니다.
+    val context = LocalContext.current
+
     fun onDismissRequest() {
         val it = isDrawerOpen.value
         isDrawerOpen.value = !it
@@ -82,7 +87,11 @@ fun HomeLeftContent(
                         fontWeight = FontWeight.W600,
                         color = Color(0xFF7D7D7D)
                     ),
-                    modifier = Modifier.clickable { /* TODO: Handle 내 정보 click event here */ }
+                    modifier = Modifier.clickable {
+                        // MyInformationActivity로 이동하기 위한 Intent를 생성합니다.
+                        val intent = Intent(context, MyInformationActivity::class.java)
+                        context.startActivity(intent)
+                    }
                 )
                 Spacer(Modifier.height(48.dp))
                 MyCloudText()
@@ -105,6 +114,7 @@ fun HomeLeftContent(
         }
     }
 }
+
 
 @Composable
 fun MyCloudText() {
