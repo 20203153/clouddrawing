@@ -31,6 +31,10 @@
             android:name=".SignupActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".CloudDrawingActivity"
+            android:exported="false"/>
+
 
         <!-- Main Activity (without LAUNCHER category now) -->
         <activity

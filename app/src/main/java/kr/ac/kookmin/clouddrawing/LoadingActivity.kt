@@ -42,9 +42,9 @@ class LoadingActivity : AppCompatActivity() {
             make()
         }
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, SignupActivity::class.java))
+            startActivity(Intent(this,SignupActivity::class.java))
             finish()
-        }, 2000)
+        }, 2500)
     }
 
     override fun onResume() {
