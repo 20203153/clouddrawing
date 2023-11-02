@@ -50,13 +50,16 @@ fun PreviewHomeLeftModal() {
             Text("Open/Close")
         }
 
-        HomeLeftContent(isDrawerOpen = isDrawerOpen)
+        HomeLeftModal(
+            logoutButton = {},
+            isDrawerOpen = isDrawerOpen
+        )
     }
 }
 
 @Composable
-fun HomeLeftContent(
-    function: () -> Unit = {},
+fun HomeLeftModal(
+    logoutButton: () -> Unit = {},
     isDrawerOpen: MutableState<Boolean> = mutableStateOf(true)
 ) {
     // 현재 Composable의 Context를 가져옵니다.
@@ -121,7 +124,7 @@ fun HomeLeftContent(
                 Modifier
                     .padding(bottom = 11.dp, start = 7.dp)
                     .align(Alignment.BottomStart)
-                    .clickable { /* TODO: Handle Logout click event here */ }
+                    .clickable { logoutButton() }
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logout),

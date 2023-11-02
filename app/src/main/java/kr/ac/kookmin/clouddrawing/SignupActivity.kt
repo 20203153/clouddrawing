@@ -1,6 +1,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.app.Activity
+import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
@@ -40,6 +41,7 @@ import kr.ac.kookmin.clouddrawing.dto.User
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var instance: SignupActivity
 
     private var showOneTapUI = true
     private lateinit var oneTapClient: SignInClient
@@ -100,6 +102,9 @@ class SignupActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        instance = this
+
         setContent {
             make(onClickGoogle = {
                 oneTapClient.beginSignIn(signUpRequest)
@@ -131,7 +136,7 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun returnMain() {
-        finish()
+        startActivity(Intent(instance, MainActivity::class.java))
     }
 
     private fun initSignIn() {

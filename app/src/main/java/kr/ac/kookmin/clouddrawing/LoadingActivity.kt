@@ -9,12 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,8 +32,12 @@ import androidx.compose.ui.unit.sp
 import kr.ac.kookmin.clouddrawing.theme.ApplicationTheme
 
 class LoadingActivity : AppCompatActivity() {
+    private lateinit var instance: LoadingActivity
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        instance = this
+
         setContent {
             make()
         }
@@ -43,6 +45,10 @@ class LoadingActivity : AppCompatActivity() {
             startActivity(Intent(this, SignupActivity::class.java))
             finish()
         }, 2000)
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     companion object {
@@ -67,38 +73,26 @@ class LoadingActivity : AppCompatActivity() {
                         contentScale = ContentScale.None
                     )
                     Spacer(Modifier.height(11.dp))
-                    Box(
-                        Modifier
-                            .width(239.dp)
-                            .height(27.dp)
-                    ) {
-                        Text(
-                            text = "나의 일상을 떠올리는 공간 ",
-                            style = TextStyle(
-                                fontSize = 22.sp,
-                                fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(600),
-                                color = Color(0xFF001753),
-                            )
+                    Text(
+                        text = "나의 일상을 떠올리는 공간 ",
+                        style = TextStyle(
+                            fontSize = 22.sp,
+                            fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(600),
+                            color = Color(0xFF001753),
                         )
-                    }
+                    )
                     Spacer(Modifier.height(16.dp))
-                    Box(
-                        Modifier
-                            .width(157.dp)
-                            .height(37.dp)
-                    ) {
-                        Text(
-                            text = "나만 갖고 있는 추억의 장소를\n구름과 함께 떠올려보세요!",
-                            style = TextStyle(
-                                fontSize = 13.sp,
-                                fontFamily = FontFamily(Font(R.font.inter)),
-                                fontWeight = FontWeight(600),
-                                color = Color(0xFFA0A0A0),
-                                textAlign = TextAlign.Center,
-                            )
+                    Text(
+                        text = "나만 갖고 있는 추억의 장소를\n구름과 함께 떠올려보세요!",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily(Font(R.font.inter)),
+                            fontWeight = FontWeight(600),
+                            color = Color(0xFFA0A0A0),
+                            textAlign = TextAlign.Center,
                         )
-                    }
+                    )
                 }
             }
         }

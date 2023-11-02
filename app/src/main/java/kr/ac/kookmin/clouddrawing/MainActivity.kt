@@ -2,9 +2,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -29,8 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -39,7 +37,7 @@ import com.kakao.vectormap.MapView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
 import kr.ac.kookmin.clouddrawing.components.CloudMindModal
-import kr.ac.kookmin.clouddrawing.components.HomeLeftContent
+import kr.ac.kookmin.clouddrawing.components.HomeLeftModal
 import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
 import kr.ac.kookmin.clouddrawing.components.SearchBar
@@ -98,10 +96,7 @@ class MainActivity : AppCompatActivity() {
                         startActivity(Intent(context, SignupActivity::class.java))
                     })
                      */
-                    AddCloudBtn(addCloud = {
-                        Firebase.auth.signOut()
-                        Toast.makeText(applicationContext, "Logout!", Toast.LENGTH_LONG).show()
-                    })
+                    AddCloudBtn(addCloud = { /* TODO: AddCloud Button */ })
                 }
 
                 AnimatedVisibility(
@@ -119,7 +114,10 @@ class MainActivity : AppCompatActivity() {
                             }
                     )
                 }
-                HomeLeftContent(isDrawerOpen = isLeftOpen)
+                HomeLeftModal(
+                    logoutButton = { Firebase.auth.signOut(); finish() },
+                    isDrawerOpen = isLeftOpen
+                )
                 CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
         }
