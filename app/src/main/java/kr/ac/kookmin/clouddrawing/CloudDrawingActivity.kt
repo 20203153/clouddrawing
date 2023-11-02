@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -279,6 +282,13 @@ fun CDMiddleSearch(){
 }
 @Composable
 fun CDBottom(){
+    LazyVerticalGrid( //사진 상자
+        columns = GridCells.Fixed(3),
+        modifier = Modifier
+            .padding(start = 15.dp, end = 15.dp, top = 665.dp, bottom = 15.dp)
+            .size(365.dp, 200.dp)
+            .background(color = Color(0xFFF5F5F5))
+    ) {}
     Box(
         modifier = Modifier
             .padding(start = 15.dp, end = 349.dp, top = 620.dp, bottom = 175.dp)
@@ -296,12 +306,6 @@ fun CDBottom(){
             )
         )
     }
-    Box( //사진 상자
-        modifier = Modifier
-            .padding(start = 15.dp, end = 15.dp, top = 665.dp, bottom = 15.dp)
-            .size(365.dp, 200.dp)
-            .background(color = Color(0xFFF5F5F5))
-    )
 }
 
 @Composable
