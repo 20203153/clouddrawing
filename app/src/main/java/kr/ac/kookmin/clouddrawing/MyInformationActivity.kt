@@ -77,7 +77,7 @@ fun MITopBack(onClick: () -> Unit = {}){
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)  // 원하는 패딩 값 적용
+            .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)
     ) {
         LeftCloseBtn(onClick = onClick)
     }
@@ -160,8 +160,13 @@ fun MIProfile() {
                     .height(100.dp)
                     .clickable {
                         launcher.launch("image/*")
+
                     }
             )
+            MINameText()
+            MIEmailText()
+            MINameData()
+            MIEmailData()
         } else {
             Image(
                 painter = painterResource(id = R.drawable.profileplus),
