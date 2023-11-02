@@ -44,7 +44,6 @@ import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
 import kr.ac.kookmin.clouddrawing.components.SearchBar
 import kr.ac.kookmin.clouddrawing.components.SearchBarModel
-import android.content.Intent
 
 
 class MainActivity : AppCompatActivity() {
@@ -94,9 +93,11 @@ class MainActivity : AppCompatActivity() {
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    /*
                     FriendCloudBtn(friendCloud = {
                         startActivity(Intent(context, SignupActivity::class.java))
                     })
+                     */
                     AddCloudBtn(addCloud = {
                         Firebase.auth.signOut()
                         Toast.makeText(applicationContext, "Logout!", Toast.LENGTH_LONG).show()
