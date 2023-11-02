@@ -1,6 +1,9 @@
 package kr.ac.kookmin.clouddrawing
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
@@ -36,6 +39,10 @@ class LoadingActivity : AppCompatActivity() {
         setContent {
             make()
         }
+        Handler(Looper.getMainLooper()).postDelayed({
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }, 2000)
     }
 
     companion object {

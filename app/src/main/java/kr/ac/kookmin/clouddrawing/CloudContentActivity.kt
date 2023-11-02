@@ -48,7 +48,8 @@ class CloudContentActivity : ComponentActivity() {
             val verticalScroll = rememberScrollState()
 
             CloudContent(
-                verticalScroll = verticalScroll
+                verticalScroll = verticalScroll,
+                leftCloseBtn = { finish() }
             )
         }
     }
@@ -87,7 +88,7 @@ fun CloudContent(
             Spacer(Modifier.width(1.dp))
         } // Header done.
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
-        CCContentBox()
+        CCContentBox(verticalScroll)
     }
 }
 
@@ -222,12 +223,3 @@ fun CCContentImage(modifier: Modifier = Modifier) {
 
     }
 }
-
-
-
-
-
-
-
-
-

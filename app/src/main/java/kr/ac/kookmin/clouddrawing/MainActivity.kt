@@ -1,3 +1,4 @@
+
 package kr.ac.kookmin.clouddrawing
 
 import android.annotation.SuppressLint
@@ -6,7 +7,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -15,11 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
@@ -32,54 +38,60 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
-import kr.ac.kookmin.clouddrawing.components.FriendCloudBtn
+import kr.ac.kookmin.clouddrawing.components.CloudMindModal
+import kr.ac.kookmin.clouddrawing.components.HomeLeftContent
 import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
 import kr.ac.kookmin.clouddrawing.components.SearchBar
 import kr.ac.kookmin.clouddrawing.components.SearchBarModel
-import kr.ac.kookmin.clouddrawing.databinding.ActivityMainBinding
+import android.content.Intent
+
 
 class MainActivity : AppCompatActivity() {
     private val appBarConfiguration: AppBarConfiguration? = null
-    private var binding: ActivityMainBinding? = null
-
     private lateinit var mapView: MapView
+
+    private lateinit var isLeftOpen: MutableState<Boolean>
+    private lateinit var isCloudMindOpen: MutableState<Boolean>
 
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mapView = MapView(applicationContext)
-        val mapViewFlow = MutableStateFlow(mapView)
+        val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
         val context = this
 
         setContent {
-            Box(
-                Modifier
-                    .fillMaxSize(1f)
-                    .background(color = Color.Transparent)
-            ) {
+            isLeftOpen = remember { mutableStateOf(false) }
+            isCloudMindOpen = remember { mutableStateOf(false) }
+
+            Box(Modifier.fillMaxSize()) {
                 KakaoMapComponent(
-                    modifier = Modifier.fillMaxSize(1f),
+                    modifier = Modifier.fillMaxSize(),
                     mapView = mapView
                 )
+
                 Row(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(start = 12.dp, end = 12.dp, top = 73.dp)
-                        .fillMaxWidth(1f),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    MyCloudBtn({ })
+                    MyCloudBtn {
+                        isLeftOpen.value = true
+                    }
                     Spacer(Modifier.width(5.dp))
-                    SearchBar(searchBar, { })
+                    SearchBar(searchBar, onSearch = { isCloudMindOpen.value = true })
                 }
+
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .padding(bottom = 53.dp, start = 33.dp, end = 33.dp)
-                        .fillMaxWidth(1f),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     FriendCloudBtn(friendCloud = {
@@ -90,10 +102,28 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(applicationContext, "Logout!", Toast.LENGTH_LONG).show()
                     })
                 }
+
+                AnimatedVisibility(
+                    visible = ( isLeftOpen.value || isCloudMindOpen.value ),
+                    modifier = Modifier.fillMaxSize(1f),
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ){
+                    Box(
+                        Modifier
+                            .fillMaxSize(1f)
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .clickable {
+                                listOf(isLeftOpen, isCloudMindOpen).forEach { it.value = false }
+                            }
+                    )
+                }
+                HomeLeftContent(isDrawerOpen = isLeftOpen)
+                CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
         }
 
-        mapView.start(object: MapLifeCycleCallback() {
+        mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 TODO("Not yet implemented")
             }
@@ -102,15 +132,15 @@ class MainActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         },
-        object: KakaoMapReadyCallback() {
-            override fun onMapReady(kakaoMap: KakaoMap) {
+            object : KakaoMapReadyCallback() {
+                override fun onMapReady(kakaoMap: KakaoMap) {
 
-            }
+                }
 
-            override fun getPosition(): LatLng {
-                return super.getPosition()
-            }
-        })
+                override fun getPosition(): LatLng {
+                    return super.getPosition()
+                }
+            })
     }
 
     override fun onResume() {
@@ -121,39 +151,5 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mapView.pause()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainActivityPre() {
-    val myViewModel = SearchBarModel()
-
-    Box(
-        Modifier
-            .fillMaxSize(1f)
-            .background(color = Color(0xFFFFFFFF))
-    ) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp, end = 12.dp, top = 73.dp)
-                .fillMaxWidth(1f),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            MyCloudBtn({ })
-            Spacer(Modifier.width(5.dp))
-            SearchBar(myViewModel, { })
-        }
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(bottom = 53.dp, start = 33.dp, end = 33.dp)
-                .fillMaxWidth(1f),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            FriendCloudBtn({ })
-            AddCloudBtn({ })
-        }
     }
 }

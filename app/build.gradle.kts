@@ -87,6 +87,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-viewbinding:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.activity:activity-compose:1.7.2")
+    implementation ("androidx.compose.material:material:$composeVersion")
+
 
 
     //Compose Constraintlayout
@@ -97,6 +99,13 @@ dependencies {
 
     // 뷰 모델 라이브러리 의존성 추가
     implementation ("androidx.lifecycle:lifecycle-viewmodel:2.3.1")
+
+    // 이미지 업로드 (갤러리 접속)
+    implementation ("androidx.activity:activity-compose:1.3.1")
+    implementation ("androidx.core:core-ktx:1.7.0")
+    implementation ("io.coil-kt:coil-compose:1.3.2")
+
+
 
 
     testImplementation("junit:junit:4.13.2")
