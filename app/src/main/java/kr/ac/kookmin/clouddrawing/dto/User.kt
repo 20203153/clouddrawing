@@ -2,12 +2,10 @@ package kr.ac.kookmin.clouddrawing.dto
 
 import android.util.Log
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldPath
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.toObject
+import com.google.firebase.Firebase
 import kotlinx.coroutines.tasks.await
 
 data class User(
