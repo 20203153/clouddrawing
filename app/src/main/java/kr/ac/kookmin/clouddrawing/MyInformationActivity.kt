@@ -2,24 +2,27 @@ package kr.ac.kookmin.clouddrawing
 
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,104 +39,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
-import kotlin.let as let
 
 class MyInformationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_my_information)
-        setContent{
-            MIBackground(onBackClick = { finish() }) {
 
-            }
+        val name = mutableStateOf("User 이름")
+        val email = mutableStateOf("User 이메일")
+
+        setContent {
+            MyInformation(
+                name = name,
+                email = email,
+
+                onBackClick = { finish() },
+                onDoneClick = { /* TODO: 수정 버튼 클릭했을 때 */ }
+            )
         }
     }
 }
 
+
 @Preview
 @Composable
-fun MIPreview(){
-    MIBackground({}) {
-    }
-}
+fun MyInformation(
+    name: MutableState<String> = mutableStateOf("User 이름"),
+    email: MutableState<String> = mutableStateOf("User 이메일"),
 
-
-@Composable
-fun MIBackground(onBackClick: () -> Unit = {}, content: @Composable () -> Unit = {}) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFFFFF))
-    ) {
-        MITopBack(onBackClick)
-        MITopText()
-        MISideText()
-        MIProfile()
-
-    }
-}
-@Composable
-fun MITopBack(onClick: () -> Unit = {}){
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)
-    ) {
-        LeftCloseBtn(onClick = onClick)
-    }
-}
-
-
-@Composable
-fun MITopText() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 134.dp, end = 135.dp, top = 60.dp, bottom = 760.dp)
-            .width(121.dp)
-            .height(24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "내 정보",
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFF474747),
-
-                )
-        )
-    }
-}
-
-@Composable
-fun MISideText() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 320.dp, end = 10.dp, top = 60.dp, bottom = 760.dp)
-            .width(121.dp)
-            .height(24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "수정",
-            style = TextStyle(
-                fontSize = 17.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFF6891FF),
-
-                )
-        )
-    }
-}
-
-@Composable
-fun MIProfile() {
+    onBackClick: () -> Unit = {},
+    onDoneClick: (
+        it: MutableState<Uri?>
+    ) -> Unit = {},
+    content: @Composable () -> Unit = {}
+) {
     val context = LocalContext.current
     val imageUri = remember { mutableStateOf<Uri?>(null) }
     val bitmap = imageUri.value?.let { uri ->
@@ -146,16 +84,49 @@ fun MIProfile() {
         imageUri.value = uri
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFFFFFF)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(1f)
+                .padding(start=13.dp, top=71.dp, end=14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            LeftCloseBtn(onClick = onBackClick)
+            Text(
+                text = "내 정보",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF474747),
+
+                    )
+            )
+            IconButton(
+                onClick = { onDoneClick(imageUri) }
+            ) {
+                Text(
+                    text = "수정",
+                    style = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(600),
+                        color = Color(0xFF6891FF),
+                    )
+                )
+            }
+        }
+        Spacer(Modifier.height(36.dp))
         if (bitmap != null) {
             Image(
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = "MIProfilePlus",
                 modifier = Modifier
-                    .padding(top = 100.dp, bottom = 600.dp, start = 20.dp)
                     .width(100.dp)
                     .height(100.dp)
                     .clickable {
@@ -163,85 +134,73 @@ fun MIProfile() {
 
                     }
             )
-            MINameText()
-            MIEmailText()
-            MINameData()
-            MIEmailData()
         } else {
             Image(
                 painter = painterResource(id = R.drawable.profileplus),
                 contentDescription = "MIProfileDefault",
                 modifier = Modifier
-                    .padding(top = 5.dp, bottom = 500.dp, start = 20.dp)
                     .width(100.dp)
                     .height(100.dp)
                     .clickable {
                         launcher.launch("image/*")
                     }
             )
-            MINameText()
-            MIEmailText()
-            MINameData()
-            MIEmailData()
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(1f)
+                .padding(start=39.dp, end=36.dp, top=41.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "이름",
+                modifier = Modifier,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF2D2D2D)
+                )
+            )
+            Text(
+                text = name.value,
+                modifier = Modifier,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF2D2D2D)
+                )
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(1f)
+                .padding(start=39.dp, end=36.dp, top=24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "이메일",
+                modifier = Modifier,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF2D2D2D)
+                )
+            )
+
+            Text(
+                text = email.value,
+                modifier = Modifier,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF2D2D2D)
+                )
+            )
         }
     }
 }
-
-
-
-@Composable
-fun MINameText() {
-    Text(
-        text = "이름",
-        modifier = Modifier.padding(top = 10.dp, bottom = 300.dp, start = 10.dp, end = 300.dp),
-        style = TextStyle(
-            fontSize = 15.sp,
-            fontFamily = FontFamily(Font(R.font.inter)),
-            fontWeight = FontWeight(600),
-            color = Color(0xFF2D2D2D)
-        )
-    )
-}
-
-@Composable
-fun MIEmailText() {
-    Text(
-        text = "이메일",
-        modifier = Modifier.padding(top = 10.dp, bottom = 200.dp, start = 10.dp, end = 285.dp),
-        style = TextStyle(
-            fontSize = 15.sp,
-            fontFamily = FontFamily(Font(R.font.inter)),
-            fontWeight = FontWeight(600),
-            color = Color(0xFF2D2D2D)
-        )
-    )
-}
-
-@Composable
-fun MINameData() {
-    Text(
-        text = "User 이름",
-        modifier = Modifier.padding(top = 10.dp, bottom = 300.dp, start = 293.dp, end = 30.dp),
-        style = TextStyle(
-            fontSize = 15.sp,
-            fontFamily = FontFamily(Font(R.font.inter)),
-            fontWeight = FontWeight(600),
-            color = Color(0xFF2D2D2D)
-        )
-    )
-}
-
-@Composable
-fun MIEmailData() {
-    Text(
-        text = "User 이메일",
-        modifier = Modifier.padding(top = 10.dp, bottom = 200.dp, start = 280.dp, end = 28.dp),
-        style = TextStyle(
-            fontSize = 15.sp,
-            fontFamily = FontFamily(Font(R.font.inter)),
-            fontWeight = FontWeight(600),
-            color = Color(0xFF2D2D2D)
-        )
-    )
-}
-
