@@ -132,6 +132,12 @@ class SignupActivity : AppCompatActivity() {
             returnMain()
         }
 
+        auth.addAuthStateListener {
+            if(it.currentUser == null) {
+                User.logoutCurrentUser()
+            }
+        }
+
         initSignIn()
     }
 

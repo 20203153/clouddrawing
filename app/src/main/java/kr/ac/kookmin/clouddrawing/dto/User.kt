@@ -1,11 +1,11 @@
 package kr.ac.kookmin.clouddrawing.dto
 
 import android.util.Log
+import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import com.google.firebase.Firebase
 import kotlinx.coroutines.tasks.await
 
 data class User(
@@ -17,6 +17,7 @@ data class User(
 ) {
     companion object {
         private val TAG = "UserDTO"
+        private var _USER: User? = null
 
         private val user = FirebaseFirestore.getInstance().collection("user")
         suspend fun getUserById(uid: String): User? {
@@ -29,22 +30,33 @@ data class User(
         }
 
         suspend fun getCurrentUser(): User? {
-            return try {
-                val it = Firebase.auth.currentUser
+            return if (_USER != null) {
+                _USER
+            }
+            else {
+                try {
+                    val it = Firebase.auth.currentUser
 
-                if (it != null) {
-                    val user = user.document(it.uid).get().await()
-                    Log.d(TAG, "User currentUser get success")
+                    if (it != null) {
+                        val user = user.document(it.uid).get().await()
+                        Log.d(TAG, "User currentUser get success")
 
-                    return user.toObject<User>()
-                } else {
-                    Log.e(TAG, "User currentGet failed. User is not login.")
+                        _USER = user.toObject()
+                        return _USER
+                    } else {
+                        Log.e(TAG, "User currentGet failed. User is not login.")
+                        null
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "User currentGet failed. ${e.localizedMessage}")
                     null
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "User currentGet failed. ${e.localizedMessage}")
-                return null
             }
+        }
+
+        fun logoutCurrentUser() {
+            Firebase.auth.signOut()
+            _USER = null
         }
 
         suspend fun createCurrentUser(): Boolean {
@@ -76,6 +88,9 @@ data class User(
             )
             update.filter { it.value != null }
             user.update(update).await()
+
+            if(_USER?.uid == updateUser.uid)
+                _USER = updateUser
 
             Log.d(TAG, "User update success")
             true

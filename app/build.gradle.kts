@@ -68,6 +68,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.5.3")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
 
     val composeVersion = "1.4.3"
     implementation("androidx.compose.animation:animation-core:$composeVersion")
@@ -103,7 +104,7 @@ dependencies {
     // 이미지 업로드 (갤러리 접속)
     implementation ("androidx.activity:activity-compose:1.3.1")
     implementation ("androidx.core:core-ktx:1.7.0")
-    implementation ("io.coil-kt:coil-compose:1.3.2")
+    implementation ("io.coil-kt:coil-compose:2.4.0")
 
 
 

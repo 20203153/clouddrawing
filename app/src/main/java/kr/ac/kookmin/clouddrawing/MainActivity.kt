@@ -3,7 +3,9 @@ package kr.ac.kookmin.clouddrawing
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -35,7 +37,10 @@ import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
 import kr.ac.kookmin.clouddrawing.components.CloudMindModal
 import kr.ac.kookmin.clouddrawing.components.HomeLeftModal
@@ -43,6 +48,7 @@ import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
 import kr.ac.kookmin.clouddrawing.components.SearchBar
 import kr.ac.kookmin.clouddrawing.components.SearchBarModel
+import kr.ac.kookmin.clouddrawing.dto.User
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,6 +66,9 @@ class MainActivity : AppCompatActivity() {
         val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
         val context = this
+
+        var user: User? = null
+        val profileUri = mutableStateOf<Uri?>(null)
 
         setContent {
             isLeftOpen = remember { mutableStateOf(false) }
@@ -119,7 +128,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 HomeLeftModal(
                     logoutButton = { Firebase.auth.signOut(); finish() },
-                    isDrawerOpen = isLeftOpen
+                    isDrawerOpen = isLeftOpen,
+                    profileUri = profileUri
                 )
                 CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
@@ -134,15 +144,23 @@ class MainActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         },
-            object : KakaoMapReadyCallback() {
-                override fun onMapReady(kakaoMap: KakaoMap) {
+        object : KakaoMapReadyCallback() {
+            override fun onMapReady(kakaoMap: KakaoMap) {
 
-                }
+            }
 
-                override fun getPosition(): LatLng {
-                    return super.getPosition()
-                }
-            })
+            override fun getPosition(): LatLng {
+                return super.getPosition()
+            }
+        })
+
+        CoroutineScope(Dispatchers.Main).launch {
+            user = User.getCurrentUser()
+            if(user != null) {
+                profileUri.value = Uri.parse(user!!.photoURL)
+                Log.d("MainActivity", profileUri.value.toString())
+            }
+        }.start()
     }
 
     override fun onResume() {
