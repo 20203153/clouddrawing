@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var kakaoMap: KakaoMap
 
+    private var user: User? = null
+    private val profileUri = mutableStateOf<Uri?>(null)
+
     companion object {
         private val LOCATION_PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -96,9 +99,6 @@ class MainActivity : AppCompatActivity() {
         val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
         val context = this
-
-        var user: User?
-        val profileUri = mutableStateOf<Uri?>(null)
 
         setContent {
             isLeftOpen = remember { mutableStateOf(false) }
@@ -215,6 +215,14 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mapView.resume()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            user = User.getCurrentUser()
+            if (user != null) {
+                profileUri.value = Uri.parse(user!!.photoURL)
+                Log.d("MainActivity", profileUri.value.toString())
+            }
+        }
     }
 
     override fun onPause() {
