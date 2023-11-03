@@ -39,14 +39,15 @@ class SearchBarModel : ViewModel(){
 @Composable
 fun SearchBar(
     viewModel: SearchBarModel = SearchBarModel(),
-    onSearch: () -> Unit = {}
+    onSearch: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     var searchValue by remember {
         mutableStateOf(viewModel.search)
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .shadow(
                 elevation = 5.dp,
                 spotColor = Color(0x0D000000),
@@ -69,7 +70,7 @@ fun SearchBar(
             modifier = Modifier
                 .height(38.dp)
                 .padding(horizontal = 8.dp, vertical = 10.dp)
-                .fillMaxWidth(0.9f),
+                .fillMaxWidth(1f),
             value = searchValue,
             onValueChange = {
                 searchValue = it

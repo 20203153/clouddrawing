@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                         isLeftOpen.value = true
                     }
                     Spacer(Modifier.width(5.dp))
-                    SearchBar(searchBar, onSearch = { isCloudMindOpen.value = true })
+                    SearchBar(searchBar, onSearch = { isCloudMindOpen.value = true }, Modifier.fillMaxWidth(1f))
                 }
 
                 Row(
@@ -209,6 +210,20 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.pause()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
     }
 
     override fun onRequestPermissionsResult(

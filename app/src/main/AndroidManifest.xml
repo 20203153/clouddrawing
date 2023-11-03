@@ -39,7 +39,9 @@
         <!-- Main Activity (without LAUNCHER category now) -->
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:configChanges="screenSize|orientation"
+        />
 
         <!-- Loading Activity (This is the new splash screen) -->
         <activity
