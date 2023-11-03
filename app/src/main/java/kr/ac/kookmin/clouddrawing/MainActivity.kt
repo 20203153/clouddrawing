@@ -1,11 +1,18 @@
 
 package kr.ac.kookmin.clouddrawing
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -28,19 +35,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdateFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
 import kr.ac.kookmin.clouddrawing.components.CloudMindModal
 import kr.ac.kookmin.clouddrawing.components.HomeLeftModal
@@ -58,16 +73,30 @@ class MainActivity : AppCompatActivity() {
     private lateinit var isLeftOpen: MutableState<Boolean>
     private lateinit var isCloudMindOpen: MutableState<Boolean>
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var kakaoMap: KakaoMap
+
+    companion object {
+        private val LOCATION_PERMISSIONS = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        private const val REQUEST_CODE_LOCATION_PERMISSIONS = 10005
+        private const val TAG = "MainActivity"
+    }
+
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         mapView = MapView(applicationContext)
+
         val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
         val context = this
 
-        var user: User? = null
+        var user: User?
         val profileUri = mutableStateOf<Uri?>(null)
 
         setContent {
@@ -101,11 +130,7 @@ class MainActivity : AppCompatActivity() {
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    /*
-                    FriendCloudBtn(friendCloud = {
-                        startActivity(Intent(context, SignupActivity::class.java))
-                    })
-                     */
+                    /* FriendCloudBtn(friendCloud = { }) */
                     AddCloudBtn(addCloud = {
                         startActivity(Intent(context, CloudDrawingActivity::class.java))
                     })
@@ -127,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 HomeLeftModal(
-                    logoutButton = { Firebase.auth.signOut(); finish() },
+                    logoutButton = { User.logoutCurrentUser(); finish() },
                     isDrawerOpen = isLeftOpen,
                     profileUri = profileUri
                 )
@@ -146,7 +171,7 @@ class MainActivity : AppCompatActivity() {
         },
         object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
-
+                this@MainActivity.kakaoMap = kakaoMap
             }
 
             override fun getPosition(): LatLng {
@@ -160,16 +185,82 @@ class MainActivity : AppCompatActivity() {
                 profileUri.value = Uri.parse(user!!.photoURL)
                 Log.d("MainActivity", profileUri.value.toString())
             }
-        }.start()
+
+            val location = loadCurrentLocation(500L, 1000L)
+
+            if (location != null) {
+                val camera = CameraUpdateFactory.newCenterPosition(
+                    LatLng.from(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
+                Log.d(TAG, "lat: ${location.latitude}, lng: ${location.longitude}")
+                kakaoMap.moveCamera(camera)
+
+                /* val labelLayer = kakaoMap.labelManager?.layer
+
+                val labelOptions = LabelOptions.from(LatLng.from(
+                    location.latitude,
+                    location.longitude
+                )).setStyles(viewConvertToBitmap(this@MainActivity, R.drawable.f_cm_location))
+
+                labelLayer?.addLabel(labelOptions) */
+
+            }
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.resume()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode) {
+            REQUEST_CODE_LOCATION_PERMISSIONS -> {
+                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.d("MainActivity", "LocationPermission granted.")
+                } else {
+                    val settingsIntent = Intent()
+                    settingsIntent.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    settingsIntent.data = Uri.fromParts("package", packageName, null)
+                    startActivity(settingsIntent)
+
+                    Toast.makeText(this, "위치권한을 얻지 못했습니다!\n위치권한을 허용해주세요!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        mapView.pause()
+    private suspend fun loadCurrentLocation(limitTime: Long, cachingExpiresIn: Long): Location? {
+        return if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                LOCATION_PERMISSIONS,
+                REQUEST_CODE_LOCATION_PERMISSIONS
+            )
+
+            null
+        } else {
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+            fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, object: CancellationToken() {
+                override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken = CancellationTokenSource().token
+                override fun isCancellationRequested(): Boolean = false
+            }).await()
+        }
+    }
+
+    private fun viewConvertToBitmap(context: Context, drawableId: Int): Bitmap? {
+        val drawable = ContextCompat.getDrawable(context, drawableId)
+        val bitmap = Bitmap.createBitmap(
+            drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        return bitmap
     }
 }
