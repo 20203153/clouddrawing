@@ -73,8 +73,8 @@ class SignupActivity : AppCompatActivity() {
                                         if(task.result.additionalUserInfo?.isNewUser == true) {
                                             Log.d(TAG, "signInWithCredential: NewUser")
                                             GlobalScope.launch {
-                                                val result = User.createCurrentUser()
-                                                Log.d(TAG, "newUser created: $result")
+                                                User.createCurrentUser()
+                                                Log.d(TAG, "newUser created: ${User.getCurrentUser()?.uid ?: ""}")
                                                 returnMain()
                                             }
                                         } else {
@@ -83,8 +83,11 @@ class SignupActivity : AppCompatActivity() {
                                                 val result = User.getCurrentUser()
                                                 if(result != null) {
                                                     result.updateLastLogin()
-                                                    returnMain()
+                                                } else {
+                                                    User.createCurrentUser()
+                                                    Log.d(TAG, "newUser created: ${User.getCurrentUser()?.uid ?: ""}")
                                                 }
+                                                returnMain()
                                             }
                                         }
                                     } else {
