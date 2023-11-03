@@ -80,9 +80,11 @@ class SignupActivity : AppCompatActivity() {
                                         } else {
                                             Log.d(TAG, "SignInWithCredential: Update LastLogin")
                                             GlobalScope.launch {
-                                                val result = User.getCurrentUser()!!
-                                                result.updateLastLogin()
-                                                returnMain()
+                                                val result = User.getCurrentUser()
+                                                if(result != null) {
+                                                    result.updateLastLogin()
+                                                    returnMain()
+                                                }
                                             }
                                         }
                                     } else {
