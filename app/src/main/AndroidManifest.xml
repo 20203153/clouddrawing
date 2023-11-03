@@ -45,7 +45,7 @@
         <activity
             android:name=".LoadingActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"> <!-- Optional: Use a theme without ActionBar for splash -->
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"> <!-- Optional: Use a theme without ActionBar for splash -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

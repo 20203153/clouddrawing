@@ -62,7 +62,6 @@ fun HomeLeftModal(
     logoutButton: () -> Unit = {},
     isDrawerOpen: MutableState<Boolean> = mutableStateOf(true)
 ) {
-    // 현재 Composable의 Context를 가져옵니다.
     val context = LocalContext.current
 
     fun onDismissRequest() {

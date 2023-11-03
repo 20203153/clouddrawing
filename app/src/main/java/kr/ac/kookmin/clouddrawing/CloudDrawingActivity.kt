@@ -116,7 +116,7 @@ fun CDBackground(
         Row(
             modifier = Modifier
                 .fillMaxWidth(1f)
-                .padding(start = 13.dp, top = 63.dp, end = 14.dp, bottom = 13.dp),
+                .padding(start = 13.dp, top = 33.dp, end = 14.dp, bottom = 13.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {

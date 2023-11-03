@@ -2,6 +2,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -96,7 +97,9 @@ class MainActivity : AppCompatActivity() {
                         startActivity(Intent(context, SignupActivity::class.java))
                     })
                      */
-                    AddCloudBtn(addCloud = { /* TODO: AddCloud Button */ })
+                    AddCloudBtn(addCloud = {
+                        startActivity(Intent(context, CloudDrawingActivity::class.java))
+                    })
                 }
 
                 AnimatedVisibility(

@@ -92,7 +92,7 @@ fun MyInformation(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(1f)
-                .padding(start=13.dp, top=71.dp, end=14.dp),
+                .padding(start=22.dp, top=10.dp, end=15.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -204,3 +204,4 @@ fun MyInformation(
         }
     }
 }
+

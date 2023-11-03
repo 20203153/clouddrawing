@@ -39,10 +39,10 @@ class LoadingActivity : AppCompatActivity() {
         instance = this
 
         setContent {
-            make()
+            make( )
         }
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this,SignupActivity::class.java))
+            startActivity(Intent(this,MainActivity::class.java))
             finish()
         }, 2500)
     }
@@ -54,6 +54,7 @@ class LoadingActivity : AppCompatActivity() {
     companion object {
         @Composable
         fun make() {
+
             return ApplicationTheme {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
