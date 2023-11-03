@@ -42,7 +42,7 @@ class LoadingActivity : AppCompatActivity() {
             make( )
         }
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this,MainActivity::class.java))
+            startActivity(Intent(this, SignupActivity::class.java))
             finish()
         }, 2500)
     }
