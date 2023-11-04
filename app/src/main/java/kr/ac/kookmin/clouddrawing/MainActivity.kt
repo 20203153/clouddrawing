@@ -64,6 +64,7 @@ import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
 import kr.ac.kookmin.clouddrawing.components.SearchBar
 import kr.ac.kookmin.clouddrawing.components.SearchBarModel
+import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
 
 
@@ -207,6 +208,13 @@ class MainActivity : AppCompatActivity() {
                 )
                 Log.d(TAG, "lat: ${lat}, lng: ${lng}")
                 kakaoMap.moveCamera(camera)
+
+                val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
+                if (clouds.isNotEmpty()) {
+                    clouds.forEach {
+                        Log.d(TAG, "${it.title}, ${it.lat}/${it.lng}")
+                    }
+                }
 
                 /* val labelLayer = kakaoMap.labelManager?.layer
 
