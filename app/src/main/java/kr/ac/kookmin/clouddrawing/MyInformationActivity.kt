@@ -8,6 +8,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +24,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -58,6 +63,7 @@ class MyInformationActivity : AppCompatActivity() {
         val name = mutableStateOf("")
         val email = mutableStateOf("")
         val uri = mutableStateOf<Uri?>(null)
+        val loading = mutableStateOf(false)
 
         var user: User? = null
 
@@ -66,9 +72,13 @@ class MyInformationActivity : AppCompatActivity() {
                 name = name,
                 email = email,
                 profileUri = uri,
+                loading = loading,
 
                 onBackClick = { finish() },
                 onDoneClick = {
+                    if(loading.value) return@MyInformation
+                    loading.value = true
+
                     if(it.value != null) {
                         CoroutineScope(Dispatchers.Main).launch {
                             val storageRef = Firebase.storage.reference
@@ -106,6 +116,7 @@ fun MyInformation(
     name: MutableState<String> = mutableStateOf("User 이름"),
     email: MutableState<String> = mutableStateOf("User 이메일"),
     profileUri: MutableState<Uri?> = mutableStateOf(null),
+    loading: MutableState<Boolean> = mutableStateOf(false),
 
     onBackClick: () -> Unit = {},
     onDoneClick: (
@@ -259,6 +270,27 @@ fun MyInformation(
                     fontWeight = FontWeight(600),
                     color = Color(0xFF2D2D2D)
                 )
+            )
+        }
+    }
+
+    AnimatedVisibility(
+        visible = loading.value,
+        modifier = Modifier.fillMaxSize(1f),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(1f)
+                .background(Color.Black.copy(alpha = 0.5f)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.width(64.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                trackColor = MaterialTheme.colorScheme.secondary
             )
         }
     }

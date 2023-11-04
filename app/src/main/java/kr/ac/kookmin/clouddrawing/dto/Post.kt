@@ -1,6 +1,5 @@
 package kr.ac.kookmin.clouddrawing.dto
 
-import android.net.Uri
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,7 +16,7 @@ data class Post(
     var addressAlias: String? = "",
     var friends: String? = "",
     var comment: String? = "",
-    var image: MutableList<Uri> = mutableListOf(),
+    var image: MutableList<String> = mutableListOf(),
     var writeTime: Timestamp? = Timestamp.now(),
     var postTime: Timestamp? = Timestamp.now()
 ) {

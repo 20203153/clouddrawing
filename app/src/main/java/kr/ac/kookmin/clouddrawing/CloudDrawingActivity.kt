@@ -133,7 +133,7 @@ class CloudDrawingActivity : ComponentActivity() {
                                 val photoRef = storageRef.child("post/${user!!.uid}/${id}/${index}")
 
                                 photoRef.putFile(uri).await()
-                                post.image.add(photoRef.downloadUrl.await())
+                                post.image.add(photoRef.downloadUrl.await().toString())
                             }
                             post.update(post)
 
