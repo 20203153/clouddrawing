@@ -1,5 +1,6 @@
 package kr.ac.kookmin.clouddrawing
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -7,6 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -30,8 +34,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -51,8 +56,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
+import kr.ac.kookmin.clouddrawing.components.SaveButton
+import kr.ac.kookmin.clouddrawing.dto.Post
+import kr.ac.kookmin.clouddrawing.dto.User
 
 
 class CloudDrawingActivity : ComponentActivity() {
@@ -64,6 +78,10 @@ class CloudDrawingActivity : ComponentActivity() {
         val locations = mutableStateOf("")
         val friends = mutableStateOf("")
         val mainContent = mutableStateOf("")
+        val loading: MutableState<Boolean> = mutableStateOf(false)
+
+        val lat = intent.getDoubleExtra("lat", 0.0)
+        val lng = intent.getDoubleExtra("lng", 0.0)
 
         setContent {
             val scrollState = rememberScrollState()
@@ -74,14 +92,54 @@ class CloudDrawingActivity : ComponentActivity() {
                 locations = locations,
                 friends = friends,
                 mainContent = mainContent,
+                loading = loading,
                 scrollState = scrollState,
                 onClickBack = { finish() },
-                onClickSave = { /* TODO: Save button clicked */ }
+                onClickSave = {
+                    if(!loading.value) {
+                        loading.value = true
+
+                        CoroutineScope(Dispatchers.Main).launch {
+                            var post = Post(
+                                uid = User.getCurrentUser()!!.uid,
+                                title = title.value,
+                                lat = lat,
+                                lng = lng,
+                                addressAlias = locations.value,
+                                friends = friends.value,
+                                comment = mainContent.value,
+                            )
+
+                            val id = Post.addPost(post)
+                            val user = User.getCurrentUser()
+                            val storageRef = Firebase.storage.reference
+
+                            post = Post.getPostById(id)!!
+                            val list: MutableList<Uri> = mutableListOf()
+
+                            it.forEachIndexed { index, uri ->
+                                val photoRef = storageRef.child("post/${user!!.uid}/${id}/${index}")
+
+                                photoRef.putFile(uri).await()
+                                post.image.add(photoRef.downloadUrl.await())
+                            }
+                            post.update(post)
+
+                            Toast.makeText(
+                                this@CloudDrawingActivity,
+                                "구름이 그려졌습니다! :D",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            finish()
+                        }
+                    }
+                }
             )
         }
     }
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @OptIn(ExperimentalCoilApi::class)
 @Preview
 @Composable
@@ -91,6 +149,7 @@ fun CDBackground(
     locations: MutableState<String> = mutableStateOf(""),
     friends: MutableState<String> = mutableStateOf(""),
     mainContent: MutableState<String> = mutableStateOf(""),
+    loading: MutableState<Boolean> = mutableStateOf(false),
     scrollState: ScrollState = rememberScrollState(),
 
     onClickBack: () -> Unit = {},
@@ -100,11 +159,14 @@ fun CDBackground(
 ) {
     val context = LocalContext.current
     var selectImages by remember {
-        mutableStateOf(listOf<Uri>())
+        mutableStateOf(mutableListOf<Uri>())
     }
     val getPhotoFromGallery =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) {
-            selectImages = it
+            selectImages = selectImages.union(it).toMutableList()
+            selectImages.filterIndexed { index, uri ->
+                index < 3
+            }
         }
 
     Column(
@@ -130,15 +192,7 @@ fun CDBackground(
                     color = Color(0xFF454545),
                 )
             )
-            Text(
-                text = "저장",
-                style = TextStyle(
-                    fontSize = 17.sp,
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.W600,
-                    color = Color(0xFF6891FF),
-                )
-            )
+            SaveButton { onClickSave(selectImages) }
         }
         Box(
             modifier = Modifier
@@ -150,14 +204,26 @@ fun CDBackground(
                 )
         )
 
-        TextField(
+        BasicTextField(
             modifier = Modifier
                 .padding(top = 5.dp, start = 5.dp, end = 5.dp)
                 .fillMaxWidth(1f)
                 .defaultMinSize(minHeight = 250.dp),
             value = mainContent.value,
             onValueChange = { textValue -> mainContent.value = textValue },
-            placeholder = { Text(text = "어떤 추억이 있었냐요?\n나중에 떠올리고 싶은 추억을 그려보세요 :)") },
+            decorationBox = { innerTextField ->
+                Box(
+                    Modifier
+                        .fillMaxWidth(1f)
+                        .padding(10.dp, 0.dp)
+                        .background(Color.White, RoundedCornerShape(10.dp))
+                ) {
+                    if(mainContent.value.isEmpty()) {
+                        Text(text = "어떤 추억이 있었냐요?\n나중에 떠올리고 싶은 추억을 그려보세요 :)")
+                    }
+                    innerTextField.invoke()
+                }
+            }
         )
         Box(
             modifier = Modifier
@@ -348,9 +414,10 @@ fun CDBackground(
             items(selectImages) { uri ->
                 if(selectImages.size > 3) {
                     Toast.makeText(context, "사진은 4장 이상 고를 수 없습니다", Toast.LENGTH_LONG).show()
+                    selectImages = mutableListOf()
                 } else {
                     Image(
-                        painter = rememberImagePainter(uri),
+                        painter = rememberAsyncImagePainter(uri),
                         contentScale = ContentScale.Crop,
                         contentDescription = null,
                         modifier = Modifier
@@ -359,6 +426,27 @@ fun CDBackground(
                     )
                 }
             }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = loading.value,
+        modifier = Modifier.fillMaxSize(1f),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(1f)
+                .background(Color.Black.copy(alpha = 0.5f)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.width(64.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                trackColor = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }

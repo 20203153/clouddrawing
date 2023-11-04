@@ -78,6 +78,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var kakaoMap: KakaoMap
 
+    private var lat: Double = 0.0
+    private var lng: Double = 0.0
+
     private var user: User? = null
     private val profileUri = mutableStateOf<Uri?>(null)
 
@@ -133,7 +136,11 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     /* FriendCloudBtn(friendCloud = { }) */
                     AddCloudBtn(addCloud = {
-                        startActivity(Intent(context, CloudDrawingActivity::class.java))
+                        val intent = Intent(context, CloudDrawingActivity::class.java)
+                        intent.putExtra("lat", lat)
+                        intent.putExtra("lng", lng)
+
+                        startActivity(intent)
                     })
                 }
 
@@ -190,13 +197,15 @@ class MainActivity : AppCompatActivity() {
             val location = loadCurrentLocation(500L, 1000L)
 
             if (location != null) {
+                lat = location.latitude
+                lng = location.longitude
                 val camera = CameraUpdateFactory.newCenterPosition(
                     LatLng.from(
-                        location.latitude,
-                        location.longitude
+                        lat,
+                        lng
                     )
                 )
-                Log.d(TAG, "lat: ${location.latitude}, lng: ${location.longitude}")
+                Log.d(TAG, "lat: ${lat}, lng: ${lng}")
                 kakaoMap.moveCamera(camera)
 
                 /* val labelLayer = kakaoMap.labelManager?.layer

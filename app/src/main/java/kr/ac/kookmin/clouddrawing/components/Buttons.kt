@@ -2,6 +2,7 @@ package kr.ac.kookmin.clouddrawing.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -204,4 +205,20 @@ fun LeftCloseBtn(@PreviewParameter(UnitPreviw::class) onClick: () -> Unit) {
             contentScale = ContentScale.Fit
         )
     }
+}
+
+@Preview(name="SaveBtn", showBackground = true)
+@Composable
+fun SaveButton(@PreviewParameter(UnitPreviw::class) onClick: () -> Unit) {
+     Text(
+        text = "저장",
+        style = TextStyle(
+            fontSize = 17.sp,
+            fontFamily = FontFamily.SansSerif,
+            fontWeight = FontWeight.W600,
+            color = Color(0xFF6891FF),
+        ),
+         modifier = Modifier.width(32.dp).height(21.dp)
+             .clickable { onClick() }
+     )
 }
