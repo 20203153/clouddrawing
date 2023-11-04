@@ -35,8 +35,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -55,26 +59,33 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kr.ac.kookmin.clouddrawing.CloudDrawingActivity.Companion.timeFormat
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 import kr.ac.kookmin.clouddrawing.components.SaveButton
 import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class CloudDrawingActivity : ComponentActivity() {
+    companion object {
+        @SuppressLint("SimpleDateFormat")
+        val timeFormat = SimpleDateFormat("yyyy-MM-dd E")
+    }
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val title = mutableStateOf("")
-        val date = mutableStateOf("")
         val locations = mutableStateOf("")
         val friends = mutableStateOf("")
         val mainContent = mutableStateOf("")
@@ -85,6 +96,7 @@ class CloudDrawingActivity : ComponentActivity() {
 
         setContent {
             val scrollState = rememberScrollState()
+            val date = rememberDatePickerState(Date().time)
 
             CDBackground(
                 title = title,
@@ -108,6 +120,7 @@ class CloudDrawingActivity : ComponentActivity() {
                                 addressAlias = locations.value,
                                 friends = friends.value,
                                 comment = mainContent.value,
+                                postTime = Timestamp(Date(date.selectedDateMillis!!))
                             )
 
                             val id = Post.addPost(post)
@@ -115,7 +128,6 @@ class CloudDrawingActivity : ComponentActivity() {
                             val storageRef = Firebase.storage.reference
 
                             post = Post.getPostById(id)!!
-                            val list: MutableList<Uri> = mutableListOf()
 
                             it.forEachIndexed { index, uri ->
                                 val photoRef = storageRef.child("post/${user!!.uid}/${id}/${index}")
@@ -140,12 +152,12 @@ class CloudDrawingActivity : ComponentActivity() {
 }
 
 @SuppressLint("MutableCollectionMutableState")
-@OptIn(ExperimentalCoilApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun CDBackground(
     title: MutableState<String> = mutableStateOf(""),
-    date: MutableState<String> = mutableStateOf(""),
+    date: DatePickerState = rememberDatePickerState(Date().time),
     locations: MutableState<String> = mutableStateOf(""),
     friends: MutableState<String> = mutableStateOf(""),
     mainContent: MutableState<String> = mutableStateOf(""),
@@ -168,6 +180,9 @@ fun CDBackground(
                 index < 3
             }
         }
+    var calendarVisible by remember {
+        mutableStateOf(false)
+    }
 
     Column(
         modifier = Modifier
@@ -300,12 +315,28 @@ fun CDBackground(
                     )
                 )
             }
-            BasicTextField(
-                modifier = Modifier.size(height=18.dp, width=200.dp),
-                value = date.value,
-                onValueChange = { textValue -> date.value = textValue},
-                singleLine = true
-            )
+            Row() {
+                Text(
+                    text = timeFormat.format(Date(date.selectedDateMillis ?: 0)),
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.W600,
+                        color = Color(0xFF686868),
+                    ),
+                )
+                Spacer(Modifier.width(22.dp))
+                Text(
+                    text = "달력 띄우기!",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.W600,
+                        color = Color.Blue,
+                    ),
+                    modifier = Modifier.clickable { calendarVisible = true }
+                )
+            }
         }
         Row(
             Modifier
@@ -446,6 +477,27 @@ fun CDBackground(
                 modifier = Modifier.width(64.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 trackColor = MaterialTheme.colorScheme.secondary
+            )
+        }
+    }
+    AnimatedVisibility(
+        visible = calendarVisible,
+        modifier = Modifier.fillMaxSize(1f),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(1f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable { calendarVisible = false },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            DatePicker(
+                modifier = Modifier.fillMaxWidth(1f)
+                    .background(Color.White, RoundedCornerShape(10.dp)),
+                state = date
             )
         }
     }
