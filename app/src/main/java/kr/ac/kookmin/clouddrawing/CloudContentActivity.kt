@@ -3,31 +3,38 @@ package kr.ac.kookmin.clouddrawing
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -37,20 +44,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kr.ac.kookmin.clouddrawing.CloudDrawingActivity.Companion.timeFormat
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
+import kr.ac.kookmin.clouddrawing.dto.Post
+import java.util.Date
 
 
 class CloudContentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val postId = intent.getStringExtra("postId")
+
+        val post = mutableStateOf<Post?>(null)
+
         setContent {
             val verticalScroll = rememberScrollState()
 
             CloudContent(
                 verticalScroll = verticalScroll,
-                leftCloseBtn = { finish() }
+                leftCloseBtn = { finish() },
+                post = post
             )
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            if (postId == null) finish()
+
+            post.value = Post.getPostById(postId!!)
+            if (post.value == null) finish()
         }
     }
 }
@@ -59,7 +85,8 @@ class CloudContentActivity : ComponentActivity() {
 @Composable
 fun CloudContent(
     leftCloseBtn: () -> Unit = {},
-    verticalScroll: ScrollState = rememberScrollState()
+    verticalScroll: ScrollState = rememberScrollState(),
+    post:MutableState<Post?> = mutableStateOf(null)
 ) {
     Column(
         modifier = Modifier
@@ -70,7 +97,7 @@ fun CloudContent(
     ) {
         Row(
             modifier = Modifier
-                .padding(start = 31.dp, end = 31.dp, top=60.dp)
+                .padding(start = 31.dp, end = 31.dp, top = 60.dp)
                 .fillMaxWidth(1f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -88,14 +115,39 @@ fun CloudContent(
             Spacer(Modifier.width(1.dp))
         } // Header done.
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
-        CCContentBox(verticalScroll)
+        CCContentBox(
+            verticalScroll,
+            post
+        )
+    }
+
+    AnimatedVisibility(
+        visible = post.value == null,
+        modifier = Modifier.fillMaxSize(1f),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(1f)
+                .background(Color.Black.copy(alpha = 0.5f)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.width(64.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                trackColor = MaterialTheme.colorScheme.secondary
+            )
+        }
     }
 }
 
 @Preview
 @Composable
 fun CCContentBox(
-    verticalScroll: ScrollState = rememberScrollState()
+    verticalScroll: ScrollState = rememberScrollState(),
+    post:MutableState<Post?> = mutableStateOf(null)
 ){
     Column(
         modifier = Modifier
@@ -113,13 +165,13 @@ fun CCContentBox(
                 shape = RoundedCornerShape(size = 20.dp)
             )
             .verticalScroll(verticalScroll)
-            .fillMaxHeight(1f),
+            .fillMaxSize(1f),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(23.dp))
         Text(
-            text = "TB_Title",
+            text = post.value?.title ?: "",
             style = TextStyle(
                 fontSize = 16.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
@@ -143,7 +195,7 @@ fun CCContentBox(
                 )
                 Spacer(Modifier.width(7.dp))
                 Text(
-                    text = "TB_Location",
+                    text = post.value?.addressAlias ?: "",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -152,15 +204,27 @@ fun CCContentBox(
                     )
                 )
             }
-            Text(
-                text = "2023.10.29",
-                style = TextStyle(
-                    fontSize = 10.sp,
-                    fontFamily = FontFamily(Font(R.font.inter)),
-                    fontWeight = FontWeight(600),
-                    color = Color(0xFF9C9C9C),
+
+            if(post.value == null)
+                Text(
+                    text = timeFormat.format(Date()),
+                    style = TextStyle(
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(600),
+                        color = Color(0xFF9C9C9C),
+                    )
                 )
-            )
+            else
+                Text(
+                    text = timeFormat.format(post.value!!.writeTime!!.toDate()),
+                    style = TextStyle(
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(600),
+                        color = Color(0xFF9C9C9C),
+                    )
+                )
         }
         Row(
             modifier = Modifier
@@ -181,7 +245,7 @@ fun CCContentBox(
                 )
                 Spacer(Modifier.width(7.dp))
                 Text(
-                    text = "TB_who",
+                    text = post.value?.friends ?: "",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -194,7 +258,7 @@ fun CCContentBox(
             Spacer(Modifier.width(1.dp))
         }
         Text(
-            text = "TB_Content",
+            text = post.value?.comment ?: "",
             style = TextStyle(
                 fontSize = 12.sp,
                 fontFamily = FontFamily(Font(R.font.inter)),
@@ -203,23 +267,41 @@ fun CCContentBox(
             ),
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 23.dp, end = 23.dp, top = 29.dp, bottom=29.dp)
+                .padding(start = 23.dp, end = 23.dp, top = 29.dp, bottom = 29.dp)
         )
-        CCContentImage()
-        Spacer(Modifier.height(30.dp))
-        // 수정된 부분 끝
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier.fillMaxSize(1f)
+        ) {
+            CCContentImage(post = post)
+        }
     }
+
 }
 
 
 @Composable
-fun CCContentImage(modifier: Modifier = Modifier) {
-    Box(
+fun CCContentImage(
+    modifier: Modifier = Modifier,
+    post: MutableState<Post?> = mutableStateOf(null)
+) {
+    Row(
         modifier = Modifier
-            .width(252.dp)
-            .height(250.dp)
-            .background(color = Color(0xFFD9D9D9))
+            .height(120.dp)
+            .fillMaxWidth(1f)
+            .padding(start=14.dp, end=14.dp, bottom=13.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
+        post.value?.image?.forEach { uri ->
+            AsyncImage(
+                model = uri,
+                contentDescription = "",
+                modifier = Modifier.size(120.dp)
+                    .padding(start=5.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
 }

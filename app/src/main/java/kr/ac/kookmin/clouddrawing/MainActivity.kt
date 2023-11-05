@@ -52,6 +52,8 @@ import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.LabelLayerOptions
+import com.kakao.vectormap.label.LabelOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -181,6 +183,15 @@ class MainActivity : AppCompatActivity() {
         object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 this@MainActivity.kakaoMap = kakaoMap
+
+                kakaoMap.setOnLabelClickListener { _, _, label ->
+                    val postId = label.layer.layerId
+
+                    val intent = Intent(context, CloudContentActivity::class.java)
+                    intent.putExtra("postId", postId)
+
+                    startActivity(intent)
+                }
             }
 
             override fun getPosition(): LatLng {
@@ -209,22 +220,24 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "lat: ${lat}, lng: ${lng}")
                 kakaoMap.moveCamera(camera)
 
+                val labelManager = kakaoMap.labelManager
+                val labelLayer = labelManager?.layer
+
                 val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
                 if (clouds.isNotEmpty()) {
                     clouds.forEach {
-                        Log.d(TAG, "${it.title}, ${it.lat}/${it.lng}")
+                        labelManager?.addLayer(LabelLayerOptions.from(it.id!!)
+                            .setClickable(true)
+                        )?.addLabel(LabelOptions.from(LatLng.from(
+                            it.lat!!,
+                            it.lng!!
+                        )).setStyles(viewConvertToBitmap(
+                            this@MainActivity,
+                            R.drawable.v_cloud_icon,
+                            80, 80))
+                        )
                     }
                 }
-
-                /* val labelLayer = kakaoMap.labelManager?.layer
-
-                val labelOptions = LabelOptions.from(LatLng.from(
-                    location.latitude,
-                    location.longitude
-                )).setStyles(viewConvertToBitmap(this@MainActivity, R.drawable.f_cm_location))
-
-                labelLayer?.addLabel(labelOptions) */
-
             }
         }
     }
@@ -293,9 +306,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun viewConvertToBitmap(context: Context, drawableId: Int): Bitmap? {
+    private fun viewConvertToBitmap(context: Context, drawableId: Int, resX: Int? = null, resY: Int? = null): Bitmap? {
         val drawable = ContextCompat.getDrawable(context, drawableId)
-        val bitmap = Bitmap.createBitmap(
+        val bitmap = if(resX != null || resY != null) Bitmap.createScaledBitmap(
+            Bitmap.createBitmap(
+                drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+            ), resX ?: drawable.intrinsicHeight, resY ?: drawable.intrinsicWidth,
+            false
+        )
+        else Bitmap.createBitmap(
             drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)

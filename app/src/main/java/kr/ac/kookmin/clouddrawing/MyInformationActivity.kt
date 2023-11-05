@@ -200,7 +200,6 @@ fun MyInformation(
                     .clip(CircleShape)
                     .clickable {
                         launcher.launch("image/*")
-
                     }
             )
         } else {
