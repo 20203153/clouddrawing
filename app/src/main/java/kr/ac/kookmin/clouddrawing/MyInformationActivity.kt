@@ -137,7 +137,7 @@ fun MyInformation(
     }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        profileUri.value = uri
+        if(uri != null) profileUri.value = uri
     }
 
     Column(

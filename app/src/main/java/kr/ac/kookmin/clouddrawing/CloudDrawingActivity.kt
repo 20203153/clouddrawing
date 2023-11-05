@@ -176,7 +176,7 @@ fun CDBackground(
     val getPhotoFromGallery =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) {
             selectImages = selectImages.union(it).toMutableList()
-            selectImages.filterIndexed { index, uri ->
+            selectImages.filterIndexed { index, _ ->
                 index < 3
             }
         }
