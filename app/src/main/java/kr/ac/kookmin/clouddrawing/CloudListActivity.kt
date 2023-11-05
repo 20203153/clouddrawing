@@ -5,22 +5,31 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -31,480 +40,222 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.common.collect.Table
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
-
 
 class CloudListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CLBackground(onBackClick = { onBackPressed() }) {
-                // 컨텐츠를 여기에 배치합니다.
-            }
+            val verticalScroll = rememberScrollState()
+
+            CloudList(
+                verticalScroll = verticalScroll,
+                leftCloseBtn = { finish() }
+            )
         }
     }
 }
 
 @Preview
 @Composable
-fun CLPreview(){
-    CLBackground(onBackClick = {
-        // 미리보기에서는 뒤로 가기 동작이 필요하지 않으므로 로그를 찍거나 빈 람다를 제공합니다.
-        Log.d("CLPreview", "Back pressed in preview")
-    }){
-
-    }
-}
-
-
-@Composable
-fun CLBackground(onBackClick: () -> Unit, content: @Composable () -> Unit) {
-
-    Box(
+fun CloudList(
+    leftCloseBtn: () -> Unit = {},
+    verticalScroll: ScrollState = rememberScrollState()
+) {
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFFFFF))
+            .fillMaxSize(1f)
+            .background(color = Color(0xFFFFFFFF))
     ) {
-        CLTopText()
-        CLTopBack(onBackClick)
-        CLCntBox()
-        CLCloudText()
-        CLCloudCard()
-    }
-}
-
-@Composable
-fun CLTopText() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 134.dp, end = 135.dp, top = 60.dp, bottom = 760.dp)
-            .width(121.dp)
-            .height(24.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "내가 그린 구름",
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFF474747),
-
-                ),
-                overflow = TextOverflow.Visible
-        )
-    }
-}
-
-@Composable
-fun CLCloudText() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 40.dp, end = 258.dp, top = 220.dp, bottom = 601.dp)
-            .width(92.dp)
-            .height(23.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "구름 모아보기",
-            style = TextStyle(
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(700),
-                color = Color(0xFF474747),
+        Row(
+            modifier = Modifier
+                .padding(start = 31.dp, end = 31.dp, top = 60.dp)
+                .fillMaxWidth(1f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LeftCloseBtn(leftCloseBtn)
+            Text(
+                text = "내가 그린 구름",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF474747)
+                )
             )
-        )
+            Spacer(Modifier.width(1.dp))
+        } // Header done.
+        Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 31.dp, end = 31.dp, bottom = 10.dp)
+                .shadow(
+                    elevation = 20.dp, spotColor = Color(0x0D000000),
+                    ambientColor = Color(0x0D000000)
+                )
+                .border(
+                    width = 1.dp, color = Color(0xFFF4F4F4),
+                    shape = RoundedCornerShape(size = 20.dp)
+                )
+                .background(
+                    color = Color(0xFFB4CCFF),
+                    shape = RoundedCornerShape(size = 20.dp)
+                )
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, // 가운데 정렬
+                verticalArrangement = Arrangement.Center // 수직 중앙 정렬
+            ) {
+                Text(
+                    text = "오늘은 구름 1 개를 그렸어요. \n이번 달 구름 1 개를 그렸어요. \n지금까지 구름 1 개를 그렸어요. ",
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(600),
+                        color = Color(0xFFFFFFFF),
+                    ),
+                    maxLines = 4,
+                    textAlign = TextAlign.End
+                )
+                Spacer(Modifier.height(10.dp))
+            }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(start = 40.dp),
+                horizontalArrangement = Arrangement.Start
+            ){
+                Text(text = "구름 모아보기",
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(700),
+                        color = Color(0xFF474747),
+                        ))
+                Spacer(Modifier.height(10.dp))
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(start = 40.dp),
+                horizontalArrangement = Arrangement.Start
+            ){
+
+                CLContentCard()
+
+            }
+        }
     }
-}
 
+@Preview
 @Composable
-fun CLTopBack(onBackClick: () -> Unit = {}){
-    Box(
+fun CLContentCard(){
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 31.dp, end = 327.dp, top = 57.dp, bottom = 760.dp)
-    ) {
-        LeftCloseBtn(onClick = onBackClick)
-    }
-}
-
-
-@Composable
-fun CLCntBox() {
-    Box(
-        modifier = Modifier
+            .width(100.dp)
+            .height(110.dp)
+            .padding(top =10.dp)
             .shadow(
-                elevation = 20.dp,
-                spotColor = Color(0x0D000000),
+                elevation = 20.dp, spotColor = Color(0x0D000000),
                 ambientColor = Color(0x0D000000)
             )
             .border(
-                width = 1.dp,
-                color = Color(0xFFF4F4F4),
+                width = 1.dp, color = Color(0xFFF4F4F4),
                 shape = RoundedCornerShape(size = 20.dp)
             )
-            .padding(start = 31.dp, end = 31.dp, top = 108.dp)
-            .width(328.dp)
-            .height(97.dp)
-            .background(color = Color(0xFFB4CCFF), shape = RoundedCornerShape(size = 20.dp))
-    ) {
-        CLTodayText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-
-        ClTodayCnt(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-
-        CLMonthText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-
-        ClMonthCnt(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-        CLUntilText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-        ClUntilCnt(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-        CLCntText1(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-        CLCntText2(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-        CLCntText3(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-        )
-    }
-}
-
-@Composable
-fun CLTodayText(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 67.dp, end = 170.dp, top = 17.dp, bottom = 59.dp)
-            .width(91.dp)
-            .height(21.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "오늘은 구름을",
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
+            .background(
                 color = Color(0xFFFFFFFF),
-
-                textAlign = TextAlign.Center,
+                shape = RoundedCornerShape(size = 20.dp)
             )
-        )
-    }
-}
-
-@Composable
-fun CLMonthText(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 51.dp, end = 170.dp, top = 41.dp, bottom = 35.dp)
-            .width(91.dp)
-            .height(21.dp),
-        contentAlignment = Alignment.Center
+            .fillMaxHeight(1f),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "이번 달은 구름을",
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFFFFFFFF),
-
-                textAlign = TextAlign.Center,
-            )
-        )
-    }
-}
-
-@Composable
-fun CLUntilText(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 51.dp, end = 170.dp, top = 65.dp, bottom = 11.dp)
-            .width(107.dp)
-            .height(21.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "지금까지 구름을",
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFFFFFFFF),
-
-                textAlign = TextAlign.Center,
-            )
-        )
-    }
-}
-
-@Composable
-fun ClTodayCnt(modifier: Modifier = Modifier){
-    Box(
-        modifier = Modifier
-            .padding(start = 157.dp, end = 145.dp, top = 14.dp, bottom = 62.dp)
-            .width(26.dp)
-            .height(21.dp),
-        contentAlignment = Alignment.CenterEnd
-    ){
-        Text(
-            text = "1",
-            style = TextStyle(
-                fontSize = 17.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(700),
-                color = Color(0xFF6891FF),
-                textAlign = TextAlign.End,
-
+        Spacer(Modifier.height(10.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(end = 5.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Text(
+                text = "2023.11.09",
+                style = TextStyle(
+                    fontSize = 7.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(600),
+                    color = Color(0xFF9C9C9C),
                 )
-        )
-    }
-}
-
-@Composable
-fun ClMonthCnt(modifier: Modifier = Modifier){
-    Box(
-        modifier = Modifier
-            .padding(start = 157.dp, end = 145.dp, top = 38.dp, bottom = 38.dp)
-            .width(26.dp)
-            .height(21.dp),
-        contentAlignment = Alignment.CenterEnd
-    ){
-        Text(
-            text = "1",
-            style = TextStyle(
-                fontSize = 17.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(700),
-                color = Color(0xFF6891FF),
-                textAlign = TextAlign.Center,
             )
-        )
-    }
-}
+        }
 
-@Composable
-fun ClUntilCnt(modifier: Modifier = Modifier){
-    Box(
-        modifier = Modifier
-            .padding(start = 157.dp, end = 145.dp, top = 65.dp, bottom = 14.dp)
-            .width(26.dp)
-            .height(21.dp),
-        contentAlignment = Alignment.CenterEnd
-    ){
-        Text(
-            text = "1",
-            style = TextStyle(
-                fontSize = 17.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(700),
-                color = Color(0xFF6891FF),
-                textAlign = TextAlign.Center,
-            )
-        )
-    }
-}
-
-@Composable
-fun CLCntText1(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 183.dp, end = 55.dp, top = 16.dp, bottom = 62.dp)
-            .width(77.dp)
-            .height(18.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "개 그렸어요. ",
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFFFFFFFF),
-                textAlign = TextAlign.Center,
-            )
-        )
-    }
-}
-
-@Composable
-fun CLCntText2(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 183.dp, end = 55.dp, top = 40.dp, bottom = 38.dp)
-            .width(77.dp)
-            .height(18.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "개 그렸어요. ",
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFFFFFFFF),
-                textAlign = TextAlign.Center,
-            )
-        )
-    }
-}
-
-@Composable
-fun CLCntText3(modifier: Modifier = Modifier) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 183.dp, end = 55.dp, top = 64.dp, bottom = 14.dp)
-            .width(77.dp)
-            .height(18.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "개 그렸어요. ",
-            style = TextStyle(
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.inter)),
-                fontWeight = FontWeight(600),
-                color = Color(0xFFFFFFFF),
-                textAlign = TextAlign.Center,
-            )
-        )
-    }
-}
-
-@Composable
-fun CLCloudCard(){
-    Box(
-        modifier = Modifier
-            .padding(start = 38.dp, end = 252.dp, top = 261.dp, bottom = 483.dp)
-            .width(100.dp)
-            .height(100.dp)
-            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 20.dp))
-            .border(width = 1.dp, color = Color(0xFFF4F4F4), shape = RoundedCornerShape(size = 20.dp))
-            .shadow(elevation = 20.dp, spotColor = Color(0x0D000000), ambientColor = Color(0x0D000000))
-    ){
-        Box(
+        Spacer(Modifier.height(10.dp))
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(start = 6.dp, end = 13.dp, top = 30.dp, bottom = 40.dp)
-                .width(81.dp)
-                .height(30.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth(1f)
+                .padding(top=7.dp),
+            horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "TB_Title",
                 style = TextStyle(
                     fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
-                    fontWeight = FontWeight(700),
-                    color = Color(0xFF474747),
-                ),
-                modifier = Modifier.align(Alignment.TopStart)
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(start = 49.dp, end = 13.dp, top = 8.dp, bottom = 84.dp)
-                .width(46.dp)
-                .height(8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "TB_date",
-                style = TextStyle(
-                    fontSize = 7.sp,
-                    fontFamily = FontFamily(Font(R.font.inter)),
                     fontWeight = FontWeight(600),
-                    color = Color(0xFF9C9C9C),
-                ),
-                modifier = Modifier.align(Alignment.TopStart)
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(start = 17.dp, end = 13.dp, top = 71.dp, bottom = 19.dp)
-                .width(70.dp)
-                .height(10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "TB_place",
-                style = TextStyle(
-                    fontSize = 8.sp,
-                    fontFamily = FontFamily(Font(R.font.inter)),
-                    fontWeight = FontWeight(600),
-                    color = Color(0xFF727272),
-                ),
-                modifier = Modifier.align(Alignment.TopStart)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(start = 5.dp, end = 85.dp, top = 71.dp, bottom = 19.dp)
-                .width(10.dp)
-                .height(10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.f_cm_location),
-                contentDescription = "image description",
-
+                    color = Color(0xFF474747)
                 )
+            )
         }
-    }
-}
+
+        Spacer(Modifier.height(18.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top=10.dp, start = 5.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(Modifier.height(16.dp)) {
+                Image(
+                    painter = painterResource(id = R.drawable.f_cm_location),
+                    contentDescription = "place icon",
+                    modifier = Modifier
+                        .width(10.dp)
+                        .height(10.dp)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = "TB_Location",
+                    style = TextStyle(
+                        fontSize = 8.sp,
+                        fontFamily = FontFamily(Font(R.font.inter)),
+                        fontWeight = FontWeight(600),
+                        color = Color(0xFF727272),
+                    )
+                )
+            }
+
+        }
+
+
+    }}
+
+
+
+
+
+
+
+
+
+
+
+
