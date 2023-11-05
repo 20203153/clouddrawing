@@ -39,12 +39,14 @@ data class Post(
         }
 
         suspend fun addPost(newPost: Post): String {
-            val id = post.document().id
+            newPost.id.let { if(it == null) post.document().id }
 
-            newPost.id = id
+            post.document(newPost.id!!).set(newPost).await()
+            return newPost.id!!
+        }
 
-            post.document(id).set(newPost).await()
-            return id
+        fun getNewPostId(): String {
+            return post.document().id
         }
     }
 
