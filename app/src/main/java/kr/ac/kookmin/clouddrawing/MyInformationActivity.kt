@@ -64,7 +64,6 @@ class MyInformationActivity : AppCompatActivity() {
         val email = mutableStateOf("")
         val uri = mutableStateOf<Uri?>(null)
         val loading = mutableStateOf(false)
-
         var user: User? = null
 
         setContent {

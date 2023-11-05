@@ -1,6 +1,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +39,8 @@ class CloudListActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CLBackground {
+            CLBackground(onBackClick = { onBackPressed() }) {
+                // 컨텐츠를 여기에 배치합니다.
             }
         }
     }
@@ -46,14 +49,17 @@ class CloudListActivity : ComponentActivity() {
 @Preview
 @Composable
 fun CLPreview(){
-    CLBackground {
+    CLBackground(onBackClick = {
+        // 미리보기에서는 뒤로 가기 동작이 필요하지 않으므로 로그를 찍거나 빈 람다를 제공합니다.
+        Log.d("CLPreview", "Back pressed in preview")
+    }){
 
     }
 }
 
 
 @Composable
-fun CLBackground(content: @Composable () -> Unit) {
+fun CLBackground(onBackClick: () -> Unit, content: @Composable () -> Unit) {
 
     Box(
         modifier = Modifier
@@ -61,7 +67,7 @@ fun CLBackground(content: @Composable () -> Unit) {
             .background(Color(0xFFFFFFFF))
     ) {
         CLTopText()
-        CLTopBack()
+        CLTopBack(onBackClick)
         CLCntBox()
         CLCloudText()
         CLCloudCard()
@@ -87,7 +93,8 @@ fun CLTopText() {
                 fontWeight = FontWeight(600),
                 color = Color(0xFF474747),
 
-                )
+                ),
+                overflow = TextOverflow.Visible
         )
     }
 }
