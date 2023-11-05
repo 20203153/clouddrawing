@@ -127,14 +127,16 @@ class CloudDrawingActivity : ComponentActivity() {
                             val user = User.getCurrentUser()
                             val storageRef = Firebase.storage.reference
 
-                            post = Post.getPostById(id)!!
-
                             it.forEachIndexed { index, uri ->
                                 val photoRef = storageRef.child("post/${user!!.uid}/${id}/${index}")
 
                                 photoRef.putFile(uri).await()
                                 post.image.add(photoRef.downloadUrl.await().toString())
                             }
+
+                            post = Post.getPostById(id)!!
+
+
                             post.update(post)
 
                             Toast.makeText(
