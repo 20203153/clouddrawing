@@ -78,7 +78,7 @@ class MyInformationActivity : AppCompatActivity() {
                     if(loading.value) return@MyInformation
                     loading.value = true
 
-                    if(it.value != null) {
+                    if(it.value != null && !(it.value!!.scheme == "http" || it.value!!.scheme == "https")) {
                         CoroutineScope(Dispatchers.Main).launch {
                             val storageRef = Firebase.storage.reference
                             val profileRef = storageRef.child("profile/${user!!.uid}")

@@ -112,7 +112,10 @@ class CloudDrawingActivity : ComponentActivity() {
                         loading.value = true
 
                         CoroutineScope(Dispatchers.Main).launch {
+                            val id = Post.getNewPostId()
+
                             var post = Post(
+                                id = id,
                                 uid = User.getCurrentUser()!!.uid,
                                 title = title.value,
                                 lat = lat,
@@ -123,7 +126,6 @@ class CloudDrawingActivity : ComponentActivity() {
                                 postTime = Timestamp(Date(date.selectedDateMillis!!))
                             )
 
-                            val id = Post.addPost(post)
                             val user = User.getCurrentUser()
                             val storageRef = Firebase.storage.reference
 
@@ -134,10 +136,7 @@ class CloudDrawingActivity : ComponentActivity() {
                                 post.image.add(photoRef.downloadUrl.await().toString())
                             }
 
-                            post = Post.getPostById(id)!!
-
-
-                            post.update(post)
+                            Post.addPost(post)
 
                             Toast.makeText(
                                 this@CloudDrawingActivity,
