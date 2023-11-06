@@ -10,6 +10,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -195,7 +196,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun getPosition(): LatLng {
-                return super.getPosition()
+                return getCurrentLatLng()
+            }
+
+            override fun getZoomLevel(): Int {
+                return 18
             }
         })
 
@@ -284,6 +289,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun getCurrentLatLng() : LatLng {
+        var uLat = 37.402005
+        var uLng = 127.108621
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                LOCATION_PERMISSIONS,
+                REQUEST_CODE_LOCATION_PERMISSIONS
+            )
+        } else {
+            val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+
+            val userCurrentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            uLat = userCurrentLocation!!.latitude
+            uLng = userCurrentLocation!!.longitude
+        }
+
+        return LatLng.from(uLat, uLng)
     }
 
     private suspend fun loadCurrentLocation(limitTime: Long, cachingExpiresIn: Long): Location? {
