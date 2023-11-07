@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.ui.AppBarConfiguration
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -73,14 +74,18 @@ import kr.ac.kookmin.clouddrawing.dto.User
 
 class MainActivity : AppCompatActivity() {
     private val appBarConfiguration: AppBarConfiguration? = null
-    private lateinit var mapView: MapView
 
     private lateinit var isLeftOpen: MutableState<Boolean>
     private lateinit var isCloudMindOpen: MutableState<Boolean>
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private lateinit var kakaoMap: KakaoMap
+    private val kakaoMap: MutableLiveData<KakaoMap> by lazy {
+        MutableLiveData(null)
+    }
+    private val mapView: MutableLiveData<MapView> by lazy {
+        MutableLiveData(null)
+    }
 
     private var lat: Double = 0.0
     private var lng: Double = 0.0
@@ -101,7 +106,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mapView = MapView(applicationContext)
+        mapView.value = MapView(applicationContext)
 
         val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
@@ -114,7 +119,7 @@ class MainActivity : AppCompatActivity() {
             Box(Modifier.fillMaxSize()) {
                 KakaoMapComponent(
                     modifier = Modifier.fillMaxSize(),
-                    mapView = mapView
+                    mapView = mapView.value!!
                 )
 
                 Row(
@@ -172,7 +177,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        mapView.start(object : MapLifeCycleCallback() {
+        mapView.value?.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 TODO("Not yet implemented")
             }
@@ -183,7 +188,7 @@ class MainActivity : AppCompatActivity() {
         },
         object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
-                this@MainActivity.kakaoMap = kakaoMap
+                this@MainActivity.kakaoMap.value = kakaoMap
 
                 kakaoMap.setOnLabelClickListener { _, _, label ->
                     val postId = label.layer.layerId
@@ -223,9 +228,9 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
                 Log.d(TAG, "lat: ${lat}, lng: ${lng}")
-                kakaoMap.moveCamera(camera)
+                kakaoMap.value?.moveCamera(camera)
 
-                val labelManager = kakaoMap.labelManager
+                val labelManager = kakaoMap.value?.labelManager
                 val labelLayer = labelManager?.layer
 
                 val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
@@ -249,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        mapView.resume()
+        mapView.value?.resume()
 
         CoroutineScope(Dispatchers.Main).launch {
             user = User.getCurrentUser()
@@ -262,7 +267,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        mapView.pause()
+        mapView.value?.pause()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
