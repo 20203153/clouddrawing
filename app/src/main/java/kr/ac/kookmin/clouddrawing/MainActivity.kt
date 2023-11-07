@@ -55,7 +55,10 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
+import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -189,6 +192,17 @@ class MainActivity : AppCompatActivity() {
         object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 this@MainActivity.kakaoMap.value = kakaoMap
+
+                val styles : LabelStyles? = kakaoMap.labelManager?.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.vector)))
+                val options : LabelOptions = LabelOptions.from(getCurrentLatLng()).setStyles(styles)
+                val layer = kakaoMap.labelManager?.layer
+                val label = layer?.addLabel(options)
+                if(label == null) {
+                    Log.e("asd", "라벨이 없어")
+                } else {
+                    Log.e("asdf", "라벨 있어")
+                }
+                label?.show(true)
 
                 kakaoMap.setOnLabelClickListener { _, _, label ->
                     val postId = label.layer.layerId
