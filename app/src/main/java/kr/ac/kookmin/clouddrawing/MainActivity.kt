@@ -192,17 +192,17 @@ class MainActivity : AppCompatActivity() {
         object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 this@MainActivity.kakaoMap.value = kakaoMap
+                val locationManager = applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
+                var isGpsOn = locationManager.isLocationEnabled
 
                 val styles : LabelStyles? = kakaoMap.labelManager?.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.vector)))
                 val options : LabelOptions = LabelOptions.from(getCurrentLatLng()).setStyles(styles)
                 val layer = kakaoMap.labelManager?.layer
-                val label = layer?.addLabel(options)
-                if(label == null) {
-                    Log.e("asd", "라벨이 없어")
-                } else {
-                    Log.e("asdf", "라벨 있어")
+
+                if (isGpsOn) {
+                    val label = layer?.addLabel(options)
+                    label?.show(true)
                 }
-                label?.show(true)
 
                 kakaoMap.setOnLabelClickListener { _, _, label ->
                     val postId = label.layer.layerId
@@ -313,21 +313,23 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLatLng() : LatLng {
         var uLat = 37.402005
         var uLng = 127.108621
+        val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+        var isGpsOn = locationManager.isLocationEnabled
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (isGpsOn) {
+                val userCurrentLocation = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+                uLat = userCurrentLocation!!.latitude
+                uLng = userCurrentLocation!!.longitude
+            }
+        } else {
             ActivityCompat.requestPermissions(
                 this,
                 LOCATION_PERMISSIONS,
                 REQUEST_CODE_LOCATION_PERMISSIONS
             )
-        } else {
-            val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
-
-            val userCurrentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-
-            uLat = userCurrentLocation!!.latitude
-            uLng = userCurrentLocation!!.longitude
         }
 
         return LatLng.from(uLat, uLng)
