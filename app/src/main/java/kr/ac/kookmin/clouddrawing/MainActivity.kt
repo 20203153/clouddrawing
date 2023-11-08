@@ -55,7 +55,6 @@ import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
-import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
@@ -179,6 +178,24 @@ class MainActivity : AppCompatActivity() {
                 CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.value?.resume()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            user = User.getCurrentUser()
+            if (user != null) {
+                profileUri.value = Uri.parse(user!!.photoURL)
+                Log.d("MainActivity", profileUri.value.toString())
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val context = this
 
         mapView.value?.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
@@ -195,7 +212,9 @@ class MainActivity : AppCompatActivity() {
                 val locationManager = applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
                 var isGpsOn = locationManager.isLocationEnabled
 
-                val styles : LabelStyles? = kakaoMap.labelManager?.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.vector)))
+                val styles : LabelStyles? = kakaoMap.labelManager?.addLabelStyles(
+                    LabelStyles.from(
+                        LabelStyle.from(R.drawable.vector)))
                 val options : LabelOptions = LabelOptions.from(getCurrentLatLng()).setStyles(styles)
                 val layer = kakaoMap.labelManager?.layer
 
@@ -250,9 +269,11 @@ class MainActivity : AppCompatActivity() {
                 val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
                 if (clouds.isNotEmpty()) {
                     clouds.forEach {
-                        labelManager?.addLayer(LabelLayerOptions.from(it.id!!)
+                        labelManager?.addLayer(
+                            LabelLayerOptions.from(it.id!!)
                             .setClickable(true)
-                        )?.addLabel(LabelOptions.from(LatLng.from(
+                        )?.addLabel(
+                            LabelOptions.from(LatLng.from(
                             it.lat!!,
                             it.lng!!
                         )).setStyles(viewConvertToBitmap(
@@ -262,19 +283,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView.value?.resume()
-
-        CoroutineScope(Dispatchers.Main).launch {
-            user = User.getCurrentUser()
-            if (user != null) {
-                profileUri.value = Uri.parse(user!!.photoURL)
-                Log.d("MainActivity", profileUri.value.toString())
             }
         }
     }
