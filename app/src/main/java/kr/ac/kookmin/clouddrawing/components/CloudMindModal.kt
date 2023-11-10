@@ -1,6 +1,5 @@
 package kr.ac.kookmin.clouddrawing.components
 
-
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
@@ -9,18 +8,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -43,7 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.ac.kookmin.clouddrawing.R
-
 
 @SuppressLint("UnrememberedMutableState")
 @Preview(widthDp = 390, heightDp = 844)
@@ -93,7 +80,7 @@ fun CloudMindModal(
     ) {
         Column(
             modifier = Modifier
-                .padding(top=150.dp)
+                .padding(top = 150.dp)
                 .fillMaxWidth(1f)
                 .fillMaxHeight(1f)
                 .verticalScroll(scrollState)
@@ -102,8 +89,7 @@ fun CloudMindModal(
                     topEnd = 40.dp,
                     bottomStart = 0.dp,
                     bottomEnd = 0.dp
-                ))
-            ,
+                )),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(21.dp))
@@ -238,7 +224,6 @@ fun CMWho(modifier: Modifier = Modifier) {
     )
 }
 
-
 @Composable
 fun CMLocation(modifier: Modifier = Modifier) {
     Image(
@@ -248,6 +233,7 @@ fun CMLocation(modifier: Modifier = Modifier) {
             .size(20.dp, 20.dp)
     )
 }
+
 @Composable
 fun TLine(modifier: Modifier = Modifier) {
     Box(
