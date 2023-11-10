@@ -89,6 +89,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation ("androidx.compose.material:material:$composeVersion")
+    implementation ("androidx.core:core:1.6.0") //알림기능
 
 
 

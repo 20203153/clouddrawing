@@ -56,6 +56,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -327,16 +328,23 @@ fun CDBackground(
                     ),
                 )
                 Spacer(Modifier.width(22.dp))
-                Text(
-                    text = "달력 띄우기!",
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.W600,
-                        color = Color.Blue,
-                    ),
+//                Text(
+//                    text = "달력 띄우기!",
+//                    style = TextStyle(
+//                        fontSize = 15.sp,
+//                        fontFamily = FontFamily.SansSerif,
+//                        fontWeight = FontWeight.W600,
+//                        color = Color.Blue,
+//                    ),
+//                    modifier = Modifier.clickable { calendarVisible = true }
+//                )
+                Spacer(Modifier.width(22.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.calendar), // 'calendar_image'는 XML 이미지 파일의 리소스 이름입니다.
+                    contentDescription = "달력",
                     modifier = Modifier.clickable { calendarVisible = true }
                 )
+
             }
         }
         Row(
@@ -359,7 +367,7 @@ fun CDBackground(
                 )
                 Spacer(Modifier.width(22.dp))
                 Text(
-                    text = "장소",
+                    text = "주소",
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily.SansSerif,
@@ -368,12 +376,20 @@ fun CDBackground(
                     )
                 )
             }
-            BasicTextField(
+//            BasicTextField(
+//                modifier = Modifier.size(height=18.dp, width=200.dp),
+//                value = locations.value,
+//                onValueChange = { textValue -> locations.value = textValue},
+//                singleLine = true
+//            )
+            // 주소 자동기입칸 (상학 수정)
+            Text(
+                text = locations.value,
                 modifier = Modifier.size(height=18.dp, width=200.dp),
-                value = locations.value,
-                onValueChange = { textValue -> locations.value = textValue},
-                singleLine = true
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis //텍스트가 지정된 너비를 넘어갈 경우 말줄임표(...)를 표시, 필요하면 쓰고 없으면 지워 상학오빠 !
             )
+
         }
         Row(
             Modifier
@@ -387,15 +403,15 @@ fun CDBackground(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.v_cd_who),
-                    contentDescription = "CDWho",
+                    painter = painterResource(id = R.drawable.location_tag),
+                    contentDescription = "LocationTag",
                     modifier = Modifier
                         .width(15.dp)
                         .height(15.dp)
                 )
                 Spacer(Modifier.width(22.dp))
                 Text(
-                    text = "누구랑",
+                    text = "장소명",
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily.SansSerif,
