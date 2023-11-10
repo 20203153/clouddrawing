@@ -56,6 +56,8 @@ import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
 import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -176,6 +178,24 @@ class MainActivity : AppCompatActivity() {
                 CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.value?.resume()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            user = User.getCurrentUser()
+            if (user != null) {
+                profileUri.value = Uri.parse(user!!.photoURL)
+                Log.d("MainActivity", profileUri.value.toString())
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val context = this
 
         mapView.value?.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
@@ -189,6 +209,19 @@ class MainActivity : AppCompatActivity() {
         object : KakaoMapReadyCallback() {
             override fun onMapReady(kakaoMap: KakaoMap) {
                 this@MainActivity.kakaoMap.value = kakaoMap
+                val locationManager = applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
+                var isGpsOn = locationManager.isLocationEnabled
+
+                val styles : LabelStyles? = kakaoMap.labelManager?.addLabelStyles(
+                    LabelStyles.from(
+                        LabelStyle.from(R.drawable.vector)))
+                val options : LabelOptions = LabelOptions.from(getCurrentLatLng()).setStyles(styles)
+                val layer = kakaoMap.labelManager?.layer
+
+                if (isGpsOn) {
+                    val label = layer?.addLabel(options)
+                    label?.show(true)
+                }
 
                 kakaoMap.setOnLabelClickListener { _, _, label ->
                     val postId = label.layer.layerId
@@ -236,9 +269,11 @@ class MainActivity : AppCompatActivity() {
                 val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
                 if (clouds.isNotEmpty()) {
                     clouds.forEach {
-                        labelManager?.addLayer(LabelLayerOptions.from(it.id!!)
+                        labelManager?.addLayer(
+                            LabelLayerOptions.from(it.id!!)
                             .setClickable(true)
-                        )?.addLabel(LabelOptions.from(LatLng.from(
+                        )?.addLabel(
+                            LabelOptions.from(LatLng.from(
                             it.lat!!,
                             it.lng!!
                         )).setStyles(viewConvertToBitmap(
@@ -248,19 +283,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView.value?.resume()
-
-        CoroutineScope(Dispatchers.Main).launch {
-            user = User.getCurrentUser()
-            if (user != null) {
-                profileUri.value = Uri.parse(user!!.photoURL)
-                Log.d("MainActivity", profileUri.value.toString())
             }
         }
     }
@@ -299,21 +321,23 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLatLng() : LatLng {
         var uLat = 37.402005
         var uLng = 127.108621
+        val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+        var isGpsOn = locationManager.isLocationEnabled
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (isGpsOn) {
+                val userCurrentLocation = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+                uLat = userCurrentLocation!!.latitude
+                uLng = userCurrentLocation!!.longitude
+            }
+        } else {
             ActivityCompat.requestPermissions(
                 this,
                 LOCATION_PERMISSIONS,
                 REQUEST_CODE_LOCATION_PERMISSIONS
             )
-        } else {
-            val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
-
-            val userCurrentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-
-            uLat = userCurrentLocation!!.latitude
-            uLng = userCurrentLocation!!.longitude
         }
 
         return LatLng.from(uLat, uLng)
