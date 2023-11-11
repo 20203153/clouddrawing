@@ -82,6 +82,7 @@ data class Post(
             "comment" to updatePost.comment,
             "image" to updatePost.image
         )
+        update.filter { it.value != null }
 
         post.update(update).await()
 

@@ -89,7 +89,6 @@ class CloudDrawingActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val title = mutableStateOf("")
-        val locations = mutableStateOf("")
         val friends = mutableStateOf("")
         val mainContent = mutableStateOf("")
         val loading: MutableState<Boolean> = mutableStateOf(false)
@@ -98,6 +97,7 @@ class CloudDrawingActivity : ComponentActivity() {
         val lng = intent.getDoubleExtra("lng", 0.0)
         val address : String = intent.getStringExtra("address") ?: ""
         val road_address : String = intent.getStringExtra("road_address") ?: ""
+        val locations = if(road_address == "") address else road_address
 
         setContent {
             val scrollState = rememberScrollState()
@@ -106,7 +106,7 @@ class CloudDrawingActivity : ComponentActivity() {
             CDBackground(
                 title = title,
                 date = date,
-                locations = if(road_address == "") address else road_address,
+                locations = locations,
                 friends = friends,
                 mainContent = mainContent,
                 loading = loading,
@@ -125,7 +125,7 @@ class CloudDrawingActivity : ComponentActivity() {
                                 title = title.value,
                                 lat = lat,
                                 lng = lng,
-                                addressAlias = locations.value,
+                                addressAlias = locations,
                                 friends = friends.value,
                                 comment = mainContent.value,
                                 postTime = Timestamp(Date(date.selectedDateMillis!!))
@@ -243,7 +243,7 @@ fun CDBackground(
                         .background(Color.White, RoundedCornerShape(10.dp))
                 ) {
                     if(mainContent.value.isEmpty()) {
-                        Text(text = "어떤 추억이 있었냐요?\n나중에 떠올리고 싶은 추억을 그려보세요 :)")
+                        Text(text = "어떤 추억이 있었나요?\n나중에 떠올리고 싶은 추억을 그려보세요 :)")
                     }
                     innerTextField.invoke()
                 }

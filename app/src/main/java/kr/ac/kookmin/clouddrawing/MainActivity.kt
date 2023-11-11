@@ -66,6 +66,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
 import kr.ac.kookmin.clouddrawing.components.CloudMindModal
+import kr.ac.kookmin.clouddrawing.components.CurrentLocBtn
 import kr.ac.kookmin.clouddrawing.components.HomeLeftModal
 import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
 import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
@@ -253,7 +254,7 @@ class MainActivity : AppCompatActivity() {
                                     this@MainActivity.lng = result.documents[0].x.toDouble()
                                     this@MainActivity.lat = result.documents[0].y.toDouble()
                                     this@MainActivity.address = result.documents[0].address_name
-                                    this@MainActivity.address = result.documents[0].road_address_name
+                                    this@MainActivity.road_address = result.documents[0].road_address_name
 
                                     moveMapCurrentLocation()
                                 } else {
@@ -278,7 +279,6 @@ class MainActivity : AppCompatActivity() {
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    /* FriendCloudBtn(friendCloud = { }) */
                     AddCloudBtn(addCloud = {
                         val intent = Intent(context, CloudDrawingActivity::class.java)
                         Log.d(TAG, "lat : $lat / lng : $lng")
@@ -289,18 +289,19 @@ class MainActivity : AppCompatActivity() {
                                 var result = response.body()
                                 var a = response.raw()
                                 if(result?.documents?.isNotEmpty() == true) {
-                                    address = result.documents[0].address.address_name
-                                    road_address = result.documents[0].road_address.address_name
+                                    this@MainActivity.address = result.documents[0].address.address_name
+                                    this@MainActivity.road_address = result.documents[0].road_address.address_name
                                     Log.d(TAG, "body : $result")
                                     Log.d(TAG, "raw : $a")
-                                    Log.d(TAG, "address: $address")
                                 } else {
                                     Log.d(TAG, "None")
                                 }
-                                intent.putExtra("address", address)
-                                intent.putExtra("road_address", road_address)
-                                intent.putExtra("lat", lat)
-                                intent.putExtra("lng", lng)
+
+                                Log.d(TAG, "address: ${this@MainActivity.address}")
+                                intent.putExtra("address", this@MainActivity.address)
+                                intent.putExtra("road_address", this@MainActivity.road_address)
+                                intent.putExtra("lat", this@MainActivity.lat)
+                                intent.putExtra("lng", this@MainActivity.lng)
                                 startActivity(intent)
 
                             }
@@ -310,6 +311,17 @@ class MainActivity : AppCompatActivity() {
                             }
                         })
                     })
+                    CurrentLocBtn {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val location = loadCurrentLocation()
+                            if(location != null) {
+                                this@MainActivity.lat = location.latitude
+                                this@MainActivity.lng = location.longitude
+                            }
+
+                            moveMapCurrentLocation()
+                        }
+                    }
                 }
 
                 AnimatedVisibility(

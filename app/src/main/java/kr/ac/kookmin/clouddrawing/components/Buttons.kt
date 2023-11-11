@@ -113,6 +113,29 @@ fun AddCloudBtn(@PreviewParameter(UnitPreviw::class) addCloud: () -> Unit) {
     }
 }
 
+@Preview(name = "CurrentLocBtn", showBackground = true)
+@Composable
+fun CurrentLocBtn(@PreviewParameter(UnitPreviw::class) currentLoc: () -> Unit) {
+    IconButton(
+        onClick = currentLoc,
+        modifier = Modifier
+            .padding(0.dp)
+            .width(40.dp)
+            .height(40.dp)
+            .background(
+                Color(0xFFFFFFFF),
+                RoundedCornerShape(10.dp)
+            )
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.v_cd_location_search),
+            contentDescription = "add cloud btn",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.padding(7.dp)
+        )
+    }
+}
+
 @Preview(name = "GoogleSignupBtn", showBackground = true)
 @Composable
 fun GoogleSignupBtn(@PreviewParameter(UnitPreviw::class) onClickGoogle: () -> Unit,
