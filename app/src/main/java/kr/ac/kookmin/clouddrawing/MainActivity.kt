@@ -72,6 +72,13 @@ import kr.ac.kookmin.clouddrawing.components.SearchBar
 import kr.ac.kookmin.clouddrawing.components.SearchBarModel
 import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
+import kr.ac.kookmin.clouddrawing.interfaces.AddressService
+import kr.ac.kookmin.clouddrawing.models.coord2address
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : AppCompatActivity() {
@@ -91,6 +98,9 @@ class MainActivity : AppCompatActivity() {
 
     private var lat: Double = 0.0
     private var lng: Double = 0.0
+    private var address : String? = ""
+    private var road_address : String? = ""
+    private val API_KEY = "KakaoAK 2d0991b1dcfec57879b691ce70c13b54"
 
     private var user: User? = null
     private val profileUri = mutableStateOf<Uri?>(null)
@@ -113,6 +123,11 @@ class MainActivity : AppCompatActivity() {
         val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
         val context = this
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
         setContent {
             isLeftOpen = remember { mutableStateOf(false) }
@@ -148,10 +163,34 @@ class MainActivity : AppCompatActivity() {
                     /* FriendCloudBtn(friendCloud = { }) */
                     AddCloudBtn(addCloud = {
                         val intent = Intent(context, CloudDrawingActivity::class.java)
-                        intent.putExtra("lat", lat)
-                        intent.putExtra("lng", lng)
+                        var latLng = getCurrentLatLng()
+                        lat = latLng.getLatitude()
+                        lng = latLng.getLongitude()
+                        var strLat : String = lat.toBigDecimal().toPlainString()
+                        var strLng : String = lng.toBigDecimal().toPlainString()
+                        Log.e("Testing", "lat : ${lat} / lng : ${lng}")
 
-                        startActivity(intent)
+                        val addressService = retrofit.create(AddressService::class.java)
+                        addressService.getAddress(API_KEY, strLng, strLat).enqueue(object : Callback<coord2address> {
+                            override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
+                                var result = response.body()
+                                var a = response.raw()
+                                address = result?.documents?.get(0)?.address?.address_name
+                                road_address = result?.documents?.get(0)?.road_address?.address_name
+                                Log.e("Testing", "body : " + result)
+                                Log.e("Testing", "raw : " + a)
+                                Log.e("Testing", "address: " + address)
+                                intent.putExtra("address", address)
+                                intent.putExtra("road_address", road_address)
+                                intent.putExtra("lat", lat)
+                                intent.putExtra("lng", lng)
+                                startActivity(intent)
+                            }
+
+                            override fun onFailure(call: Call<coord2address>, t: Throwable) {
+                                startActivity(intent)
+                            }
+                        })
                     })
                 }
 

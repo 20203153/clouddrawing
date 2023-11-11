@@ -1,6 +1,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.annotation.SuppressLint
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -8,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -94,6 +96,8 @@ class CloudDrawingActivity : ComponentActivity() {
 
         val lat = intent.getDoubleExtra("lat", 0.0)
         val lng = intent.getDoubleExtra("lng", 0.0)
+        val address : String = intent.getStringExtra("address") ?: ""
+        val road_address : String = intent.getStringExtra("road_address") ?: ""
 
         setContent {
             val scrollState = rememberScrollState()
@@ -102,7 +106,7 @@ class CloudDrawingActivity : ComponentActivity() {
             CDBackground(
                 title = title,
                 date = date,
-                locations = locations,
+                locations = if(road_address == "") address else road_address,
                 friends = friends,
                 mainContent = mainContent,
                 loading = loading,
@@ -160,7 +164,7 @@ class CloudDrawingActivity : ComponentActivity() {
 fun CDBackground(
     title: MutableState<String> = mutableStateOf(""),
     date: DatePickerState = rememberDatePickerState(Date().time),
-    locations: MutableState<String> = mutableStateOf(""),
+    locations: String = "",
     friends: MutableState<String> = mutableStateOf(""),
     mainContent: MutableState<String> = mutableStateOf(""),
     loading: MutableState<Boolean> = mutableStateOf(false),
@@ -185,6 +189,9 @@ fun CDBackground(
     var calendarVisible by remember {
         mutableStateOf(false)
     }
+
+    val locationManager = context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
+    var isGpsOn = locationManager.isLocationEnabled
 
     Column(
         modifier = Modifier
@@ -384,7 +391,7 @@ fun CDBackground(
 //            )
             // 주소 자동기입칸 (상학 수정)
             Text(
-                text = locations.value,
+                text = if(!isGpsOn) "" else locations,
                 modifier = Modifier.size(height=18.dp, width=200.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis //텍스트가 지정된 너비를 넘어갈 경우 말줄임표(...)를 표시, 필요하면 쓰고 없으면 지워 상학오빠 !
