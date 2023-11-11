@@ -193,51 +193,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MainActivity", profileUri.value.toString())
             }
 
-            val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
-            if (clouds.isNotEmpty()) {
-                val lists = mutableListOf<Clouds>()
-                clouds.forEach {
-                    val any = lists.find { it1 ->
-                        it1.lat == (it.lat ?: 0.0) && it1.lng == (it.lng ?: 0.0)
-                    }
-                    if(any != null)
-                       any.isDuplicate = true
-                    else
-                        lists.add(Clouds(it.id!!, it.lat!!, it.lng!!, it.addressAlias!!))
-                }
 
-                lists.forEach {
-                    val labelManager = kakaoMap.value?.labelManager
-                    labelManager?.remove(labelManager.getLayer(it.id))
-
-                    labelManager?.addLayer(
-                        LabelLayerOptions.from(it.id)
-                            .setClickable(true).setZOrder(10001)
-                    )?.addLabel(
-                        LabelOptions.from(
-                            LatLng.from(
-                                it.lat,
-                                it.lng
-                            )
-                        ).setStyles(LabelStyles.from(
-                            LabelStyle.from(viewConvertToBitmap(
-                                this@MainActivity,
-                                if(it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
-                                40, 40
-                            )).setZoomLevel(0),
-                            LabelStyle.from(viewConvertToBitmap(
-                                this@MainActivity,
-                                if(it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
-                                60, 60
-                            )).setZoomLevel(10),
-                            LabelStyle.from(viewConvertToBitmap(
-                                this@MainActivity,
-                                if(it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
-                                80, 80
-                            )).setZoomLevel(12)))
-                    )
-                }
-            }
 
             moveMapCurrentLocation()
         }
@@ -399,6 +355,63 @@ class MainActivity : AppCompatActivity() {
                 profileUri.value = Uri.parse(user!!.photoURL)
                 Log.d("MainActivity", profileUri.value.toString())
             }
+
+            val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
+            if (clouds.isNotEmpty()) {
+                val lists = mutableListOf<Clouds>()
+                clouds.forEach {
+                    val any = lists.find { it1 ->
+                        it1.lat == (it.lat ?: 0.0) && it1.lng == (it.lng ?: 0.0)
+                    }
+                    if (any != null)
+                        any.isDuplicate = true
+                    else
+                        lists.add(Clouds(it.id!!, it.lat!!, it.lng!!, it.addressAlias!!))
+                }
+
+                lists.forEach {
+                    val labelManager = kakaoMap.value?.labelManager
+                    labelManager?.getLayer(it.id).let { p ->
+                        if (p != null) labelManager?.remove(p)
+                    }
+
+                    labelManager?.addLayer(
+                        LabelLayerOptions.from(it.id)
+                            .setClickable(true).setZOrder(10001)
+                    )?.addLabel(
+                        LabelOptions.from(
+                            LatLng.from(
+                                it.lat,
+                                it.lng
+                            )
+                        ).setStyles(
+                            LabelStyles.from(
+                                LabelStyle.from(
+                                    viewConvertToBitmap(
+                                        this@MainActivity,
+                                        if (it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
+                                        40, 40
+                                    )
+                                ).setZoomLevel(0),
+                                LabelStyle.from(
+                                    viewConvertToBitmap(
+                                        this@MainActivity,
+                                        if (it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
+                                        60, 60
+                                    )
+                                ).setZoomLevel(10),
+                                LabelStyle.from(
+                                    viewConvertToBitmap(
+                                        this@MainActivity,
+                                        if (it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
+                                        80, 80
+                                    )
+                                ).setZoomLevel(12)
+                            )
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -452,7 +465,9 @@ class MainActivity : AppCompatActivity() {
 
 
         val labelManager = kakaoMap.value?.labelManager
-        labelManager?.remove(labelManager.getLayer(CURRENT_LOC_MARKER))
+        labelManager?.getLayer(CURRENT_LOC_MARKER).let {
+            if(it != null) labelManager?.remove(it)
+        }
 
         val styles: LabelStyles? = labelManager?.addLabelStyles(
             LabelStyles.from(
