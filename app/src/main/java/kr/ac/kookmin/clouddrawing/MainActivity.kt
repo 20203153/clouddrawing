@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
+import kr.ac.kookmin.clouddrawing.components.CloudListSelectPlaceListModal
 import kr.ac.kookmin.clouddrawing.components.CloudMindModal
 import kr.ac.kookmin.clouddrawing.components.CurrentLocBtn
 import kr.ac.kookmin.clouddrawing.components.HomeLeftModal
@@ -82,7 +83,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.math.roundToInt
+import round
 
 
 class MainActivity : AppCompatActivity() {
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var isLeftOpen: MutableState<Boolean>
     private lateinit var isCloudMindOpen: MutableState<Boolean>
+    private lateinit var isCloudListModalOpen: MutableState<Boolean>
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -108,6 +110,8 @@ class MainActivity : AppCompatActivity() {
 
     private var user: User? = null
     private val profileUri = mutableStateOf<Uri?>(null)
+    private val mutatePost = mutableStateOf<Post?>(null)
+    private var mutatePostList = mutableListOf<Post>()
 
     companion object {
         private val LOCATION_PERMISSIONS = arrayOf(
@@ -152,10 +156,23 @@ class MainActivity : AppCompatActivity() {
                         val postId = label.layer.layerId
 
                         if(postId != CURRENT_LOC_MARKER) {
-                            val intent = Intent(context, CloudContentActivity::class.java)
-                            intent.putExtra("postId", postId)
+                            CoroutineScope(Dispatchers.Main).launch {
+                                val post = Post.getPostById(postId)
+                                mutatePostList = Post.getPostByLatLng(post?.uid!!,
+                                    round(post.lat ?: 0.0), round(post.lng ?: 0.0)
+                                ).toMutableList()
 
-                            startActivity(intent)
+                                Log.d(TAG,"POI Size: ${mutatePostList.size}")
+
+                                if(mutatePostList.isNotEmpty())
+                                    if(mutatePostList.size == 1) {
+                                        mutatePost.value = mutatePostList[0]
+                                        isCloudMindOpen.value = true
+                                    } else {
+                                        Log.d(TAG,"POI[0]: ${mutatePostList[0].title}")
+                                        isCloudListModalOpen.value = true
+                                    }
+                            }
                         }
                     }
                 }
@@ -180,16 +197,20 @@ class MainActivity : AppCompatActivity() {
             if (clouds.isNotEmpty()) {
                 val lists = mutableListOf<Clouds>()
                 clouds.forEach {
-                    val any = lists.find { it1 -> ((it1.lat * 10000).roundToInt() / 10000.0) == ((it.lat!! * 10000).roundToInt() / 10000.0) &&
-                            ((it1.lng * 10000).roundToInt() / 10000.0) == ((it.lng!! * 10000).roundToInt() / 10000.0) }
+                    val any = lists.find { it1 ->
+                        it1.lat == (it.lat ?: 0.0) && it1.lng == (it.lng ?: 0.0)
+                    }
                     if(any != null)
                        any.isDuplicate = true
                     else
-                        lists.add(Clouds(it.id!!, it.lat!!, it.lng!!))
+                        lists.add(Clouds(it.id!!, it.lat!!, it.lng!!, it.addressAlias!!))
                 }
 
                 lists.forEach {
-                    kakaoMap.value?.labelManager?.addLayer(
+                    val labelManager = kakaoMap.value?.labelManager
+                    labelManager?.remove(labelManager.getLayer(it.id))
+
+                    labelManager?.addLayer(
                         LabelLayerOptions.from(it.id)
                             .setClickable(true).setZOrder(10001)
                     )?.addLabel(
@@ -224,6 +245,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             isLeftOpen = remember { mutableStateOf(false) }
             isCloudMindOpen = remember { mutableStateOf(false) }
+            isCloudListModalOpen = remember { mutableStateOf(false) }
 
             Box(Modifier.fillMaxSize()) {
                 KakaoMapComponent(
@@ -325,7 +347,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 AnimatedVisibility(
-                    visible = ( isLeftOpen.value || isCloudMindOpen.value ),
+                    visible = ( isLeftOpen.value || isCloudMindOpen.value || isCloudListModalOpen.value ),
                     modifier = Modifier.fillMaxSize(1f),
                     enter = fadeIn(),
                     exit = fadeOut()
@@ -335,7 +357,7 @@ class MainActivity : AppCompatActivity() {
                             .fillMaxSize(1f)
                             .background(Color.Black.copy(alpha = 0.5f))
                             .clickable {
-                                listOf(isLeftOpen, isCloudMindOpen).forEach { it.value = false }
+                                listOf(isLeftOpen, isCloudMindOpen, isCloudListModalOpen).forEach { it.value = false }
                             }
                     )
                 }
@@ -344,7 +366,19 @@ class MainActivity : AppCompatActivity() {
                     isDrawerOpen = isLeftOpen,
                     profileUri = profileUri
                 )
-                CloudMindModal(isDrawerOpen = isCloudMindOpen)
+                CloudMindModal(
+                    content = mutatePost,
+                    isDrawerOpen = isCloudMindOpen
+                )
+                CloudListSelectPlaceListModal(
+                    handler = { post ->
+                        mutatePost.value = post
+                        isCloudMindOpen.value = true
+                        isCloudListModalOpen.value = false
+                    },
+                    isDrawerOpen = isCloudListModalOpen,
+                    contentLists = mutatePostList
+                )
             }
         }
 
@@ -508,4 +542,10 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-data class Clouds(val id: String, val lat: Double, val lng: Double, var isDuplicate: Boolean = false)
+data class Clouds(
+    val id: String,
+    val lat: Double,
+    val lng: Double,
+    val address: String,
+    var isDuplicate: Boolean = false
+)

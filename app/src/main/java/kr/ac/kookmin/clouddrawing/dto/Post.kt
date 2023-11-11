@@ -38,6 +38,18 @@ data class Post(
             return result.filterNotNull()
         }
 
+        suspend fun getPostByLatLng(uid: String, lat: Double, lng: Double): List<Post> {
+            val result = mutableListOf<Post?>()
+            val posts = post.whereEqualTo("uid", uid)
+                .whereEqualTo("lat", lat)
+                .whereEqualTo("lng", lng)
+                .orderBy("writeTime", Query.Direction.DESCENDING)
+                .get().await()
+            posts.forEach { result.add(it.toObject()) }
+            return result.filterNotNull()
+
+        }
+
         suspend fun addPost(newPost: Post): String {
             newPost.id.let { if(it == null) post.document().id }
 

@@ -1,7 +1,6 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -9,7 +8,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,18 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.common.collect.Table
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 
 class CloudListActivity : ComponentActivity() {
@@ -127,34 +122,35 @@ fun CloudList(
                 )
                 Spacer(Modifier.height(10.dp))
             }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .padding(start = 40.dp),
-                horizontalArrangement = Arrangement.Start
-            ){
-                Text(text = "구름 모아보기",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.inter)),
-                        fontWeight = FontWeight(700),
-                        color = Color(0xFF474747),
-                        ))
-                Spacer(Modifier.height(10.dp))
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .padding(start = 40.dp),
-                horizontalArrangement = Arrangement.Start
-            ){
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(start = 40.dp),
 
-                CLContentCard()
+            horizontalArrangement = Arrangement.Start
+        ){
+            Text(text = "구름 모아보기",
+                style = TextStyle(
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.inter)),
+                    fontWeight = FontWeight(700),
+                    color = Color(0xFF474747),
+                    ))
+            Spacer(Modifier.height(10.dp))
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(start = 40.dp),
+            horizontalArrangement = Arrangement.Start
+        ){
 
-            }
+            CLContentCard()
+
         }
     }
+}
 
 @Preview
 @Composable

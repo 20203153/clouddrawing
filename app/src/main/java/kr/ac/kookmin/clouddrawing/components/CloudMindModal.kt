@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,7 +31,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import kr.ac.kookmin.clouddrawing.R
+import kr.ac.kookmin.clouddrawing.dto.Post
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
 @Preview(widthDp = 390, heightDp = 844)
@@ -60,12 +65,15 @@ fun CMBackground(content: @Composable () -> Unit) {
     }
 }
 
+@SuppressLint("SimpleDateFormat")
 @Composable
 fun CloudMindModal(
     function: () -> Unit = {},
+    content: MutableState<Post?> = mutableStateOf(null),
     isDrawerOpen: MutableState<Boolean> = mutableStateOf(true),
     scrollState: ScrollState = rememberScrollState()
 ) {
+    val timeFormat = SimpleDateFormat("yyyy-MM-dd")
     fun onDismissRequest() {
         val it = isDrawerOpen.value
         isDrawerOpen.value = !it
@@ -84,19 +92,21 @@ fun CloudMindModal(
                 .fillMaxWidth(1f)
                 .fillMaxHeight(1f)
                 .verticalScroll(scrollState)
-                .background(Color.White, RoundedCornerShape(
-                    topStart = 40.dp,
-                    topEnd = 40.dp,
-                    bottomStart = 0.dp,
-                    bottomEnd = 0.dp
-                )),
+                .background(
+                    Color.White, RoundedCornerShape(
+                        topStart = 40.dp,
+                        topEnd = 40.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp
+                    )
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(21.dp))
             TLine()
             Spacer(Modifier.height(32.dp))
             Text(
-                text = "TB_date",
+                text = timeFormat.format(content.value?.postTime?.toDate() ?: Date()),
                 style = TextStyle(
                     fontSize = 10.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
@@ -111,7 +121,7 @@ fun CloudMindModal(
             Spacer(modifier = Modifier.height(3.dp))
 
             Text(
-                text = "TB_title",
+                text = content.value?.title ?: "",
                 style = TextStyle(
                     fontSize = 25.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
@@ -131,7 +141,7 @@ fun CloudMindModal(
                 )
                 Spacer(Modifier.width(2.dp))
                 Text(
-                    text = "TB_location",
+                    text = content.value?.addressAlias ?: "",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -153,7 +163,7 @@ fun CloudMindModal(
                 )
                 Spacer(Modifier.width(3.dp))
                 Text(
-                    text = "TB_Who",
+                    text = content.value?.friends ?: "",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -171,7 +181,7 @@ fun CloudMindModal(
                     .padding(top = 9.dp, start = 36.dp, end = 36.dp)
             ) {
                 Text(
-                    text = "TB_text",
+                    text = content.value?.comment ?: "",
                     style = TextStyle(
                         fontSize = 10.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -188,28 +198,25 @@ fun CloudMindModal(
                     .height(140.dp)
                     .background(color = Color(0xFFFFFFFF))
             ) {
-                // 글자의 배경 박스를 노란색으로 설정
-                Box(
+                Row(
                     modifier = Modifier
-                        .width(140.dp)
-                        .height(140.dp)
-                        .background(color = Color(0xFFD9D9D9))
-                        .align(Alignment.Center) // 중앙 정렬
-                        .padding(4.dp) // 텍스트와 박스와의 간격
+                        .height(120.dp)
+                        .fillMaxWidth(1f)
+                        .padding(start = 14.dp, end = 14.dp, bottom = 13.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "PB_image",
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            fontFamily = FontFamily(Font(R.font.inter)),
-                            fontWeight = FontWeight(500),
-                            color = Color(0xFF454545),
-                        ), modifier = Modifier
-                            .align(Alignment.Center) // 중앙 정렬
-                    )
+                    content.value?.image?.forEach { uri ->
+                        AsyncImage(
+                            model = uri,
+                            contentDescription = "",
+                            modifier = Modifier.size(120.dp)
+                                .padding(start = 5.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
-            Spacer(Modifier.height(36.dp))
         }
     }
 }

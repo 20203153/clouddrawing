@@ -107,6 +107,9 @@ dependencies {
     implementation ("androidx.core:core-ktx:1.7.0")
     implementation ("io.coil-kt:coil-compose:2.4.0")
 
+    // grid layout
+    implementation("io.woong.compose.grid:grid:0.2.0")
+
 
     // get current location by play-service
     implementation("com.google.android.gms:play-services-location:21.0.1")

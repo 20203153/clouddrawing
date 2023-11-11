@@ -50,10 +50,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -75,6 +77,7 @@ import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 import kr.ac.kookmin.clouddrawing.components.SaveButton
 import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
+import round
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -123,8 +126,8 @@ class CloudDrawingActivity : ComponentActivity() {
                                 id = id,
                                 uid = User.getCurrentUser()!!.uid,
                                 title = title.value,
-                                lat = lat,
-                                lng = lng,
+                                lat = round(lat),
+                                lng = round(lng),
                                 addressAlias = locations,
                                 friends = friends.value,
                                 comment = mainContent.value,
@@ -158,7 +161,7 @@ class CloudDrawingActivity : ComponentActivity() {
 }
 
 @SuppressLint("MutableCollectionMutableState")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Preview
 @Composable
 fun CDBackground(
@@ -192,6 +195,7 @@ fun CDBackground(
 
     val locationManager = context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
     var isGpsOn = locationManager.isLocationEnabled
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Column(
         modifier = Modifier
@@ -349,7 +353,10 @@ fun CDBackground(
                 Image(
                     painter = painterResource(id = R.drawable.calendar), // 'calendar_image'는 XML 이미지 파일의 리소스 이름입니다.
                     contentDescription = "달력",
-                    modifier = Modifier.clickable { calendarVisible = true }
+                    modifier = Modifier.clickable {
+                        keyboardController?.hide()
+                        calendarVisible = true
+                    }
                 )
 
             }
