@@ -100,7 +100,8 @@ class CloudDrawingActivity : ComponentActivity() {
         val lng = intent.getDoubleExtra("lng", 0.0)
         val address : String = intent.getStringExtra("address") ?: ""
         val road_address : String = intent.getStringExtra("road_address") ?: ""
-        val locations = if(road_address == "") address else road_address
+        val locations = mutableStateOf(if(road_address == "") address else road_address)
+        val locationAlias = mutableStateOf("")
 
         setContent {
             val scrollState = rememberScrollState()
@@ -110,6 +111,7 @@ class CloudDrawingActivity : ComponentActivity() {
                 title = title,
                 date = date,
                 locations = locations,
+                locationAlias = locationAlias,
                 friends = friends,
                 mainContent = mainContent,
                 loading = loading,
@@ -122,14 +124,14 @@ class CloudDrawingActivity : ComponentActivity() {
                         CoroutineScope(Dispatchers.Main).launch {
                             val id = Post.getNewPostId()
 
-                            var post = Post(
+                            val post = Post(
                                 id = id,
                                 uid = User.getCurrentUser()!!.uid,
                                 title = title.value,
                                 lat = round(lat),
                                 lng = round(lng),
-                                addressAlias = locations,
-                                friends = friends.value,
+                                address = locations.value,
+                                addressAlias = locationAlias.value,
                                 comment = mainContent.value,
                                 postTime = Timestamp(Date(date.selectedDateMillis!!))
                             )
@@ -167,7 +169,8 @@ class CloudDrawingActivity : ComponentActivity() {
 fun CDBackground(
     title: MutableState<String> = mutableStateOf(""),
     date: DatePickerState = rememberDatePickerState(Date().time),
-    locations: String = "",
+    locations: MutableState<String> = mutableStateOf(""),
+    locationAlias: MutableState<String> = mutableStateOf(""),
     friends: MutableState<String> = mutableStateOf(""),
     mainContent: MutableState<String> = mutableStateOf(""),
     loading: MutableState<Boolean> = mutableStateOf(false),
@@ -328,7 +331,11 @@ fun CDBackground(
                     )
                 )
             }
-            Row() {
+            Row(Modifier.width(200.dp)
+                .clickable {
+                keyboardController?.hide()
+                calendarVisible = true
+            }) {
                 Text(
                     text = timeFormat.format(Date(date.selectedDateMillis ?: 0)),
                     style = TextStyle(
@@ -339,26 +346,10 @@ fun CDBackground(
                     ),
                 )
                 Spacer(Modifier.width(22.dp))
-//                Text(
-//                    text = "달력 띄우기!",
-//                    style = TextStyle(
-//                        fontSize = 15.sp,
-//                        fontFamily = FontFamily.SansSerif,
-//                        fontWeight = FontWeight.W600,
-//                        color = Color.Blue,
-//                    ),
-//                    modifier = Modifier.clickable { calendarVisible = true }
-//                )
-                Spacer(Modifier.width(22.dp))
                 Image(
                     painter = painterResource(id = R.drawable.calendar), // 'calendar_image'는 XML 이미지 파일의 리소스 이름입니다.
-                    contentDescription = "달력",
-                    modifier = Modifier.clickable {
-                        keyboardController?.hide()
-                        calendarVisible = true
-                    }
+                    contentDescription = "달력"
                 )
-
             }
         }
         Row(
@@ -398,7 +389,7 @@ fun CDBackground(
 //            )
             // 주소 자동기입칸 (상학 수정)
             Text(
-                text = if(!isGpsOn) "" else locations,
+                text = locations.value,
                 modifier = Modifier.size(height=18.dp, width=200.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis //텍스트가 지정된 너비를 넘어갈 경우 말줄임표(...)를 표시, 필요하면 쓰고 없으면 지워 상학오빠 !
@@ -436,8 +427,8 @@ fun CDBackground(
             }
             BasicTextField(
                 modifier = Modifier.size(height=18.dp, width=200.dp),
-                value = friends.value,
-                onValueChange = { textValue -> friends.value = textValue},
+                value = locationAlias.value,
+                onValueChange = { textValue -> locationAlias.value = textValue},
                 singleLine = true
             )
         }

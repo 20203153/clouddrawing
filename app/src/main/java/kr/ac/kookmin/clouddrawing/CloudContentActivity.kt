@@ -195,7 +195,7 @@ fun CCContentBox(
                 )
                 Spacer(Modifier.width(7.dp))
                 Text(
-                    text = post.value?.addressAlias ?: "",
+                    text = post.value?.address ?: "",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -237,15 +237,15 @@ fun CCContentBox(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.v_cm_who),
-                    contentDescription = "friend icon",
+                    painter = painterResource(id = R.drawable.location_tag),
+                    contentDescription = "LocationTag",
                     modifier = Modifier
                         .width(15.dp)
-                        .height(11.dp)
+                        .height(15.dp)
                 )
                 Spacer(Modifier.width(7.dp))
                 Text(
-                    text = post.value?.friends ?: "",
+                    text = post.value?.addressAlias ?: "",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),

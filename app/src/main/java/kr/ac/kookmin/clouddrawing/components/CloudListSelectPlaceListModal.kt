@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -31,13 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -95,7 +96,7 @@ fun CloudListSelectPlaceListModal(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 150.dp)
+                .padding(top = 300.dp)
                 .fillMaxWidth(1f)
                 .fillMaxHeight(1f)
                 .background(
@@ -114,7 +115,8 @@ fun CloudListSelectPlaceListModal(
             VerticalGrid(
                 columns = SimpleGridCells.Fixed(3),
                 modifier = Modifier
-                    .fillMaxSize(1f),
+                    .fillMaxSize(1f)
+                    .padding(start=28.dp, end=28.dp),
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
@@ -147,7 +149,7 @@ fun CloudItem(
                 color = Color(0xFFF4F4F4),
                 shape = RoundedCornerShape(size = 20.dp)
             )
-            .size(100.dp, 140.dp)
+            .size(100.dp, 100.dp)
             .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 20.dp))
             .clickable { onClick(post.value) },
         verticalArrangement = Arrangement.Top,
@@ -156,14 +158,16 @@ fun CloudItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth(1f)
-                .padding(top = 22.dp, start = 17.dp, end = 6.dp),
+                .padding(top = 22.dp, start = 17.dp, end = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Image(
                 painter = painterResource(id = R.drawable.f_cm_location),
-                contentDescription = "image description",
-                contentScale = ContentScale.None
+                contentDescription = "LocationTag",
+                modifier = Modifier
+                    .width(13.dp)
+                    .height(13.dp)
             )
             Text(
                 text = post.value?.addressAlias ?: "",
@@ -172,7 +176,8 @@ fun CloudItem(
                     fontFamily = FontFamily(Font(R.font.inter)),
                     fontWeight = FontWeight(600),
                     color = Color(0xFF727272),
-                )
+                ),
+                overflow = TextOverflow.Ellipsis
             )
         }
         Spacer(Modifier.height(7.dp))

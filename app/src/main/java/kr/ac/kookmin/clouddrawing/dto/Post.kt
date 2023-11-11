@@ -13,8 +13,8 @@ data class Post(
     var title: String? = "",
     var lat: Double? = 0.0,
     var lng: Double? = 0.0,
+    var address: String? = "",
     var addressAlias: String? = "",
-    var friends: String? = "",
     var comment: String? = "",
     var image: MutableList<String> = mutableListOf(),
     var writeTime: Timestamp? = Timestamp.now(),
@@ -89,8 +89,8 @@ data class Post(
             "title" to updatePost.title,
             "lat" to updatePost.lat,
             "lng" to updatePost.lng,
+            "address" to updatePost.address,
             "addressAlias" to updatePost.addressAlias,
-            "friends" to updatePost.friends,
             "comment" to updatePost.comment,
             "image" to updatePost.image
         )

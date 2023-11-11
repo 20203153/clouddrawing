@@ -88,7 +88,7 @@ fun CloudMindModal(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 150.dp)
+                .padding(top = 300.dp)
                 .fillMaxWidth(1f)
                 .fillMaxHeight(1f)
                 .verticalScroll(scrollState)
@@ -134,14 +134,18 @@ fun CloudMindModal(
                 Modifier
                     .align(Alignment.Start)
                     .fillMaxWidth(1f)
-                    .padding(start = 108.dp, top = 7.dp)
+                    .padding(start = 108.dp, top = 7.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                CMLocation(
+                Image(
+                    painter = painterResource(id = R.drawable.f_cm_location),
+                    contentDescription = "CMLocation",
                     modifier = Modifier
+                        .size(20.dp, 20.dp)
                 )
-                Spacer(Modifier.width(2.dp))
+                Spacer(Modifier.width(5.dp))
                 Text(
-                    text = content.value?.addressAlias ?: "",
+                    text = content.value?.address ?: "",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -151,19 +155,23 @@ fun CloudMindModal(
                     )
                 )
             }
-            // TB_Who 텍스트
             Row(
                 Modifier
                     .align(Alignment.Start)
                     .fillMaxWidth(1f)
-                    .padding(start = 108.dp, top = 13.dp)
+                    .padding(start = 108.dp, top = 13.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                CMWho(
+                Image(
+                    painter = painterResource(id = R.drawable.location_tag),
+                    contentDescription = "LocationTag",
                     modifier = Modifier
+                        .width(20.dp)
+                        .height(20.dp)
                 )
-                Spacer(Modifier.width(3.dp))
+                Spacer(Modifier.width(5.dp))
                 Text(
-                    text = content.value?.friends ?: "",
+                    text = content.value?.addressAlias ?: "",
                     style = TextStyle(
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -183,7 +191,7 @@ fun CloudMindModal(
                 Text(
                     text = content.value?.comment ?: "",
                     style = TextStyle(
-                        fontSize = 10.sp,
+                        fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
                         fontWeight = FontWeight(500),
                         color = Color(0xFF000000),
@@ -221,25 +229,6 @@ fun CloudMindModal(
     }
 }
 
-@Composable
-fun CMWho(modifier: Modifier = Modifier) {
-    Image(
-        painter = painterResource(id = R.drawable.v_cm_who),
-        contentDescription = "CMWho",
-        modifier = modifier
-            .size(22.dp, 16.dp)
-    )
-}
-
-@Composable
-fun CMLocation(modifier: Modifier = Modifier) {
-    Image(
-        painter = painterResource(id = R.drawable.f_cm_location),
-        contentDescription = "CMLocation",
-        modifier = modifier
-            .size(20.dp, 20.dp)
-    )
-}
 
 @Composable
 fun TLine(modifier: Modifier = Modifier) {
