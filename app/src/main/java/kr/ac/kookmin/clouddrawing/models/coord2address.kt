@@ -1,5 +1,5 @@
 package kr.ac.kookmin.clouddrawing.models
 
 data class coord2address(
-    var documents: List<documents>
+    var documents: List<documentsByCoord>
 )

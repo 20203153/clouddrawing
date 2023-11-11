@@ -53,6 +53,7 @@ import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
 import com.kakao.vectormap.label.LabelOptions
@@ -74,6 +75,7 @@ import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
 import kr.ac.kookmin.clouddrawing.interfaces.AddressService
 import kr.ac.kookmin.clouddrawing.models.coord2address
+import kr.ac.kookmin.clouddrawing.models.keyward2address
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -150,7 +152,28 @@ class MainActivity : AppCompatActivity() {
                         isLeftOpen.value = true
                     }
                     Spacer(Modifier.width(5.dp))
-                    SearchBar(searchBar, onSearch = { isCloudMindOpen.value = true }, Modifier.fillMaxWidth(1f))
+                    SearchBar(searchBar, onSearch = {
+                        if(searchBar.search == "") return@SearchBar
+
+                        val addressService = retrofit.create(AddressService::class.java)
+                        addressService.getLocation(API_KEY, searchBar.search, this@MainActivity.lat.toString(), this@MainActivity.lng.toString()).enqueue(object : Callback<keyward2address> {
+                            override fun onResponse(call: Call<keyward2address>, response: Response<keyward2address>) {
+                                val result = response.body()
+                                val a = response.raw()
+                                this@MainActivity.lng = result?.documents?.get(0)?.x?.toDouble() ?: 0.0
+                                this@MainActivity.lat = result?.documents?.get(0)?.y?.toDouble() ?: 0.0
+                                Log.e(TAG, "body : $result")
+                                Log.e(TAG, "raw : $a")
+                                Log.e(TAG, "lat: ${this@MainActivity.lat} / lng: ${this@MainActivity.lng}")
+
+                                moveMapCurrentLocation()
+                            }
+
+                            override fun onFailure(call: Call<keyward2address>, t: Throwable) {
+                                TODO("Not yet implemented")
+                            }
+                        })
+                    }, Modifier.fillMaxWidth(1f))
                 }
 
                 Row(
@@ -168,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                         lng = latLng.getLongitude()
                         var strLat : String = lat.toBigDecimal().toPlainString()
                         var strLng : String = lng.toBigDecimal().toPlainString()
-                        Log.e("Testing", "lat : ${lat} / lng : ${lng}")
+                        Log.e("Testing", "lat : $lat / lng : $lng")
 
                         val addressService = retrofit.create(AddressService::class.java)
                         addressService.getAddress(API_KEY, strLng, strLat).enqueue(object : Callback<coord2address> {
@@ -177,9 +200,9 @@ class MainActivity : AppCompatActivity() {
                                 var a = response.raw()
                                 address = result?.documents?.get(0)?.address?.address_name
                                 road_address = result?.documents?.get(0)?.road_address?.address_name
-                                Log.e("Testing", "body : " + result)
-                                Log.e("Testing", "raw : " + a)
-                                Log.e("Testing", "address: " + address)
+                                Log.e("Testing", "body : $result")
+                                Log.e("Testing", "raw : $a")
+                                Log.e("Testing", "address: $address")
                                 intent.putExtra("address", address)
                                 intent.putExtra("road_address", road_address)
                                 intent.putExtra("lat", lat)
@@ -217,6 +240,12 @@ class MainActivity : AppCompatActivity() {
                 CloudMindModal(isDrawerOpen = isCloudMindOpen)
             }
         }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val location = loadCurrentLocation()
+            this@MainActivity.lat = location?.latitude ?: 0.0
+            this@MainActivity.lng = location?.longitude ?: 0.0
+        }
     }
 
     override fun onResume() {
@@ -245,84 +274,77 @@ class MainActivity : AppCompatActivity() {
                 TODO("Not yet implemented")
             }
         },
-        object : KakaoMapReadyCallback() {
-            override fun onMapReady(kakaoMap: KakaoMap) {
-                this@MainActivity.kakaoMap.value = kakaoMap
-                val locationManager = applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
-                var isGpsOn = locationManager.isLocationEnabled
+            object : KakaoMapReadyCallback() {
+                override fun onMapReady(kakaoMap: KakaoMap) {
+                    this@MainActivity.kakaoMap.value = kakaoMap
+                    val locationManager =
+                        applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
+                    var isGpsOn = locationManager.isLocationEnabled
 
-                val styles : LabelStyles? = kakaoMap.labelManager?.addLabelStyles(
-                    LabelStyles.from(
-                        LabelStyle.from(R.drawable.vector)))
-                val options : LabelOptions = LabelOptions.from(getCurrentLatLng()).setStyles(styles)
-                val layer = kakaoMap.labelManager?.layer
+                    val styles: LabelStyles? = kakaoMap.labelManager?.addLabelStyles(
+                        LabelStyles.from(
+                            LabelStyle.from(R.drawable.vector)
+                        )
+                    )
+                    val options: LabelOptions =
+                        LabelOptions.from(getCurrentLatLng()).setStyles(styles)
+                    val layer = kakaoMap.labelManager?.layer
 
-                if (isGpsOn) {
-                    val label = layer?.addLabel(options)
-                    label?.show(true)
+                    if (isGpsOn) {
+                        val label = layer?.addLabel(options)
+                        label?.show(true)
+                    }
+
+                    kakaoMap.setOnLabelClickListener { _, _, label ->
+                        val postId = label.layer.layerId
+
+                        val intent = Intent(context, CloudContentActivity::class.java)
+                        intent.putExtra("postId", postId)
+
+                        startActivity(intent)
+                    }
                 }
 
-                kakaoMap.setOnLabelClickListener { _, _, label ->
-                    val postId = label.layer.layerId
-
-                    val intent = Intent(context, CloudContentActivity::class.java)
-                    intent.putExtra("postId", postId)
-
-                    startActivity(intent)
+                override fun getPosition(): LatLng {
+                    return getCurrentLatLng()
                 }
-            }
 
-            override fun getPosition(): LatLng {
-                return getCurrentLatLng()
-            }
-
-            override fun getZoomLevel(): Int {
-                return 18
-            }
-        })
+                override fun getZoomLevel(): Int {
+                    return 6
+                }
+            })
 
         CoroutineScope(Dispatchers.Main).launch {
             user = User.getCurrentUser()
-            if(user != null) {
+            if (user != null) {
                 profileUri.value = Uri.parse(user!!.photoURL)
                 Log.d("MainActivity", profileUri.value.toString())
             }
 
-            val location = loadCurrentLocation(500L, 1000L)
-
-            if (location != null) {
-                lat = location.latitude
-                lng = location.longitude
-                val camera = CameraUpdateFactory.newCenterPosition(
-                    LatLng.from(
-                        lat,
-                        lng
-                    )
-                )
-                Log.d(TAG, "lat: ${lat}, lng: ${lng}")
-                kakaoMap.value?.moveCamera(camera)
-
-                val labelManager = kakaoMap.value?.labelManager
-                val labelLayer = labelManager?.layer
-
-                val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
-                if (clouds.isNotEmpty()) {
-                    clouds.forEach {
-                        labelManager?.addLayer(
-                            LabelLayerOptions.from(it.id!!)
+            val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
+            if (clouds.isNotEmpty()) {
+                clouds.forEach {
+                    kakaoMap.value?.labelManager?.addLayer(
+                        LabelLayerOptions.from(it.id!!)
                             .setClickable(true)
-                        )?.addLabel(
-                            LabelOptions.from(LatLng.from(
-                            it.lat!!,
-                            it.lng!!
-                        )).setStyles(viewConvertToBitmap(
-                            this@MainActivity,
-                            R.drawable.v_cloud_icon,
-                            80, 80))
+                    )?.addLabel(
+                        LabelOptions.from(
+                            LatLng.from(
+                                it.lat!!,
+                                it.lng!!
+                            )
+                        ).setStyles(
+                            viewConvertToBitmap(
+                                this@MainActivity,
+                                R.drawable.v_cloud_icon,
+                                80, 80
+                            )
                         )
-                    }
+                    )
                 }
             }
+
+            moveMapCurrentLocation()
         }
     }
 
@@ -357,6 +379,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun moveMapCurrentLocation() {
+        val camera = CameraUpdateFactory.newCenterPosition(
+            LatLng.from(
+                this@MainActivity.lat,
+                this@MainActivity.lng
+            ), 14
+        )
+        val labelManager = kakaoMap.value?.labelManager
+        val styles: LabelStyles? = labelManager?.addLabelStyles(
+            LabelStyles.from(
+                LabelStyle.from(R.drawable.vector)
+            )
+        )
+        val options: LabelOptions =
+            LabelOptions.from(LatLng.from(
+                this@MainActivity.lat,
+                this@MainActivity.lng
+            )).setStyles(styles)
+        val layer = kakaoMap.value?.labelManager?.addLayer(
+            LabelLayerOptions.from("current")
+        )
+
+        val label = layer?.addLabel(options)
+        kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
+    }
+
     private fun getCurrentLatLng() : LatLng {
         var uLat = 37.402005
         var uLng = 127.108621
@@ -366,10 +414,10 @@ class MainActivity : AppCompatActivity() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (isGpsOn) {
-                val userCurrentLocation = locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                val userCurrentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
                 uLat = userCurrentLocation!!.latitude
-                uLng = userCurrentLocation!!.longitude
+                uLng = userCurrentLocation.longitude
             }
         } else {
             ActivityCompat.requestPermissions(
@@ -382,7 +430,7 @@ class MainActivity : AppCompatActivity() {
         return LatLng.from(uLat, uLng)
     }
 
-    private suspend fun loadCurrentLocation(limitTime: Long, cachingExpiresIn: Long): Location? {
+    private suspend fun loadCurrentLocation(): Location? {
         return if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(

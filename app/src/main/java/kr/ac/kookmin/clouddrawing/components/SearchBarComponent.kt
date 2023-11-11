@@ -5,26 +5,28 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -35,7 +37,7 @@ class SearchBarModel : ViewModel(){
 }
 
 @Preview(name="SearchBar", showBackground = true)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchBar(
     viewModel: SearchBarModel = SearchBarModel(),
@@ -45,6 +47,7 @@ fun SearchBar(
     var searchValue by remember {
         mutableStateOf(viewModel.search)
     }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
         modifier = modifier
@@ -70,31 +73,43 @@ fun SearchBar(
             modifier = Modifier
                 .height(38.dp)
                 .padding(horizontal = 8.dp, vertical = 10.dp)
-                .fillMaxWidth(1f),
+                .width(250.dp),
             value = searchValue,
             onValueChange = {
                 searchValue = it
                 viewModel.search = it
             },
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    keyboardController?.hide()
+                    onSearch()
+                },
+                onDone = {
+                    keyboardController?.hide()
+                    onSearch()
+                },
+            ),
             singleLine = true,
         )
-        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            IconButton(
-                onClick = onSearch,
+        IconButton(
+            onClick = {
+                keyboardController?.hide()
+                onSearch()
+            },
+            modifier = Modifier
+                .width(40.dp)
+                .height(38.dp)
+                .background(Color.Transparent)
+        ) {
+            Image(
                 modifier = Modifier
-                    .width(40.dp)
-                    .height(38.dp)
-                    .background(Color.Transparent)
-            ) {
-                Image(
-                    modifier = Modifier
-                        .height(18.dp)
-                        .width(18.dp),
-                    painter = painterResource(id = R.drawable.v_home_search),
-                    contentDescription = "",
-                    contentScale = ContentScale.Fit
-                )
-            }
+                    .height(18.dp)
+                    .width(18.dp),
+                painter = painterResource(id = R.drawable.v_home_search),
+                contentDescription = "",
+                contentScale = ContentScale.Fit
+            )
         }
     }
 }
