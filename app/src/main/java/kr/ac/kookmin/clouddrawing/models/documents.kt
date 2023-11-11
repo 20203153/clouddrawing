@@ -8,5 +8,7 @@ data class documentsByCoord(
 data class documentsByKeyward(
     val id: String,
     val x: String,
-    val y: String
+    val y: String,
+    val address_name: String,
+    val road_address_name: String
 )

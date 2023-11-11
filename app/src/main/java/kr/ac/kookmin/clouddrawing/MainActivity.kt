@@ -81,6 +81,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
@@ -102,7 +103,7 @@ class MainActivity : AppCompatActivity() {
     private var lng: Double = 0.0
     private var address : String? = ""
     private var road_address : String? = ""
-    private val API_KEY = "KakaoAK 2d0991b1dcfec57879b691ce70c13b54"
+    private lateinit var API_KEY: String
 
     private var user: User? = null
     private val profileUri = mutableStateOf<Uri?>(null)
@@ -114,11 +115,13 @@ class MainActivity : AppCompatActivity() {
         )
         private const val REQUEST_CODE_LOCATION_PERMISSIONS = 10005
         private const val TAG = "MainActivity"
+        private const val CURRENT_LOC_MARKER = "currentmarker"
     }
 
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        API_KEY = getString(R.string.kakao_restapi_key)
 
         mapView.value = MapView(applicationContext)
 
@@ -130,6 +133,92 @@ class MainActivity : AppCompatActivity() {
             .baseUrl("https://dapi.kakao.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+        mapView.value?.start(object : MapLifeCycleCallback() {
+            override fun onMapDestroy() {
+                TODO("Not yet implemented")
+            }
+
+            override fun onMapError(error: Exception?) {
+                TODO("Not yet implemented")
+            }
+        },
+            object : KakaoMapReadyCallback() {
+                override fun onMapReady(kakaoMap: KakaoMap) {
+                    this@MainActivity.kakaoMap.value = kakaoMap
+
+                    kakaoMap.setOnLabelClickListener { _, _, label ->
+                        val postId = label.layer.layerId
+
+                        if(postId != CURRENT_LOC_MARKER) {
+                            val intent = Intent(context, CloudContentActivity::class.java)
+                            intent.putExtra("postId", postId)
+
+                            startActivity(intent)
+                        }
+                    }
+                }
+
+                override fun getPosition(): LatLng {
+                    return getCurrentLatLng()
+                }
+
+                override fun getZoomLevel(): Int {
+                    return 6
+                }
+            })
+
+        CoroutineScope(Dispatchers.Main).launch {
+            user = User.getCurrentUser()
+            if (user != null) {
+                profileUri.value = Uri.parse(user!!.photoURL)
+                Log.d("MainActivity", profileUri.value.toString())
+            }
+
+            val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
+            if (clouds.isNotEmpty()) {
+                val lists = mutableListOf<Clouds>()
+                clouds.forEach {
+                    val any = lists.find { it1 -> ((it1.lat * 10000).roundToInt() / 10000.0) == ((it.lat!! * 10000).roundToInt() / 10000.0) &&
+                            ((it1.lng * 10000).roundToInt() / 10000.0) == ((it.lng!! * 10000).roundToInt() / 10000.0) }
+                    if(any != null)
+                       any.isDuplicate = true
+                    else
+                        lists.add(Clouds(it.id!!, it.lat!!, it.lng!!))
+                }
+
+                lists.forEach {
+                    kakaoMap.value?.labelManager?.addLayer(
+                        LabelLayerOptions.from(it.id)
+                            .setClickable(true).setZOrder(10001)
+                    )?.addLabel(
+                        LabelOptions.from(
+                            LatLng.from(
+                                it.lat,
+                                it.lng
+                            )
+                        ).setStyles(LabelStyles.from(
+                            LabelStyle.from(viewConvertToBitmap(
+                                this@MainActivity,
+                                if(it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
+                                40, 40
+                            )).setZoomLevel(0),
+                            LabelStyle.from(viewConvertToBitmap(
+                                this@MainActivity,
+                                if(it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
+                                60, 60
+                            )).setZoomLevel(10),
+                            LabelStyle.from(viewConvertToBitmap(
+                                this@MainActivity,
+                                if(it.isDuplicate) R.drawable.v_cloud_icon_plus else R.drawable.v_cloud_icon,
+                                80, 80
+                            )).setZoomLevel(12)))
+                    )
+                }
+            }
+
+            moveMapCurrentLocation()
+        }
 
         setContent {
             isLeftOpen = remember { mutableStateOf(false) }
@@ -160,13 +249,19 @@ class MainActivity : AppCompatActivity() {
                             override fun onResponse(call: Call<keyward2address>, response: Response<keyward2address>) {
                                 val result = response.body()
                                 val a = response.raw()
-                                this@MainActivity.lng = result?.documents?.get(0)?.x?.toDouble() ?: 0.0
-                                this@MainActivity.lat = result?.documents?.get(0)?.y?.toDouble() ?: 0.0
+                                if(result?.documents?.isNotEmpty() == true) {
+                                    this@MainActivity.lng = result.documents[0].x.toDouble()
+                                    this@MainActivity.lat = result.documents[0].y.toDouble()
+                                    this@MainActivity.address = result.documents[0].address_name
+                                    this@MainActivity.address = result.documents[0].road_address_name
+
+                                    moveMapCurrentLocation()
+                                } else {
+                                    Toast.makeText(context, "검색된 장소가 없습니다!", Toast.LENGTH_LONG).show()
+                                }
                                 Log.e(TAG, "body : $result")
                                 Log.e(TAG, "raw : $a")
                                 Log.e(TAG, "lat: ${this@MainActivity.lat} / lng: ${this@MainActivity.lng}")
-
-                                moveMapCurrentLocation()
                             }
 
                             override fun onFailure(call: Call<keyward2address>, t: Throwable) {
@@ -186,28 +281,28 @@ class MainActivity : AppCompatActivity() {
                     /* FriendCloudBtn(friendCloud = { }) */
                     AddCloudBtn(addCloud = {
                         val intent = Intent(context, CloudDrawingActivity::class.java)
-                        var latLng = getCurrentLatLng()
-                        lat = latLng.getLatitude()
-                        lng = latLng.getLongitude()
-                        var strLat : String = lat.toBigDecimal().toPlainString()
-                        var strLng : String = lng.toBigDecimal().toPlainString()
-                        Log.e("Testing", "lat : $lat / lng : $lng")
+                        Log.d(TAG, "lat : $lat / lng : $lng")
 
                         val addressService = retrofit.create(AddressService::class.java)
-                        addressService.getAddress(API_KEY, strLng, strLat).enqueue(object : Callback<coord2address> {
-                            override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
+                        addressService.getAddress(API_KEY, lat.toBigDecimal().toPlainString(), lng.toBigDecimal().toPlainString())
+                            .enqueue(object : Callback<coord2address> {override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
                                 var result = response.body()
                                 var a = response.raw()
-                                address = result?.documents?.get(0)?.address?.address_name
-                                road_address = result?.documents?.get(0)?.road_address?.address_name
-                                Log.e("Testing", "body : $result")
-                                Log.e("Testing", "raw : $a")
-                                Log.e("Testing", "address: $address")
+                                if(result?.documents?.isNotEmpty() == true) {
+                                    address = result.documents[0].address.address_name
+                                    road_address = result.documents[0].road_address.address_name
+                                    Log.d(TAG, "body : $result")
+                                    Log.d(TAG, "raw : $a")
+                                    Log.d(TAG, "address: $address")
+                                } else {
+                                    Log.d(TAG, "None")
+                                }
                                 intent.putExtra("address", address)
                                 intent.putExtra("road_address", road_address)
                                 intent.putExtra("lat", lat)
                                 intent.putExtra("lng", lng)
                                 startActivity(intent)
+
                             }
 
                             override fun onFailure(call: Call<coord2address>, t: Throwable) {
@@ -261,93 +356,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val context = this
-
-        mapView.value?.start(object : MapLifeCycleCallback() {
-            override fun onMapDestroy() {
-                TODO("Not yet implemented")
-            }
-
-            override fun onMapError(error: Exception?) {
-                TODO("Not yet implemented")
-            }
-        },
-            object : KakaoMapReadyCallback() {
-                override fun onMapReady(kakaoMap: KakaoMap) {
-                    this@MainActivity.kakaoMap.value = kakaoMap
-                    val locationManager =
-                        applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
-                    var isGpsOn = locationManager.isLocationEnabled
-
-                    val styles: LabelStyles? = kakaoMap.labelManager?.addLabelStyles(
-                        LabelStyles.from(
-                            LabelStyle.from(R.drawable.vector)
-                        )
-                    )
-                    val options: LabelOptions =
-                        LabelOptions.from(getCurrentLatLng()).setStyles(styles)
-                    val layer = kakaoMap.labelManager?.layer
-
-                    if (isGpsOn) {
-                        val label = layer?.addLabel(options)
-                        label?.show(true)
-                    }
-
-                    kakaoMap.setOnLabelClickListener { _, _, label ->
-                        val postId = label.layer.layerId
-
-                        val intent = Intent(context, CloudContentActivity::class.java)
-                        intent.putExtra("postId", postId)
-
-                        startActivity(intent)
-                    }
-                }
-
-                override fun getPosition(): LatLng {
-                    return getCurrentLatLng()
-                }
-
-                override fun getZoomLevel(): Int {
-                    return 6
-                }
-            })
-
-        CoroutineScope(Dispatchers.Main).launch {
-            user = User.getCurrentUser()
-            if (user != null) {
-                profileUri.value = Uri.parse(user!!.photoURL)
-                Log.d("MainActivity", profileUri.value.toString())
-            }
-
-            val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
-            if (clouds.isNotEmpty()) {
-                clouds.forEach {
-                    kakaoMap.value?.labelManager?.addLayer(
-                        LabelLayerOptions.from(it.id!!)
-                            .setClickable(true)
-                    )?.addLabel(
-                        LabelOptions.from(
-                            LatLng.from(
-                                it.lat!!,
-                                it.lng!!
-                            )
-                        ).setStyles(
-                            viewConvertToBitmap(
-                                this@MainActivity,
-                                R.drawable.v_cloud_icon,
-                                80, 80
-                            )
-                        )
-                    )
-                }
-            }
-
-            moveMapCurrentLocation()
-        }
-    }
-
     override fun onPause() {
         super.onPause()
         mapView.value?.pause()
@@ -380,16 +388,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun moveMapCurrentLocation() {
-        val camera = CameraUpdateFactory.newCenterPosition(
+        var camera = CameraUpdateFactory.newCenterPosition(
             LatLng.from(
                 this@MainActivity.lat,
                 this@MainActivity.lng
             ), 14
         )
+
+        val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
+        val isGpsOn = locationManager.isLocationEnabled
+        if(!isGpsOn) camera = CameraUpdateFactory.newCenterPosition(
+            LatLng.from(
+                this@MainActivity.lat,
+                this@MainActivity.lng
+            ), 6
+        )
+
+
         val labelManager = kakaoMap.value?.labelManager
+        labelManager?.remove(labelManager.getLayer(CURRENT_LOC_MARKER))
+
         val styles: LabelStyles? = labelManager?.addLabelStyles(
             LabelStyles.from(
-                LabelStyle.from(R.drawable.vector)
+                LabelStyle.from(viewConvertToBitmap(
+                    this@MainActivity,
+                    R.drawable.vector,
+                    50, 60
+                )).setZoomLevel(0),
+                LabelStyle.from(viewConvertToBitmap(
+                    this@MainActivity,
+                    R.drawable.vector,
+                    60, 80
+                )).setZoomLevel(12),
             )
         )
         val options: LabelOptions =
@@ -397,11 +427,9 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity.lat,
                 this@MainActivity.lng
             )).setStyles(styles)
-        val layer = kakaoMap.value?.labelManager?.addLayer(
-            LabelLayerOptions.from("current")
-        )
-
-        val label = layer?.addLabel(options)
+        labelManager?.addLayer(
+            LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
+        )?.addLabel(options)
         kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
     }
 
@@ -409,7 +437,7 @@ class MainActivity : AppCompatActivity() {
         var uLat = 37.402005
         var uLng = 127.108621
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
-        var isGpsOn = locationManager.isLocationEnabled
+        val isGpsOn = locationManager.isLocationEnabled
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -467,3 +495,5 @@ class MainActivity : AppCompatActivity() {
         return bitmap
     }
 }
+
+data class Clouds(val id: String, val lat: Double, val lng: Double, var isDuplicate: Boolean = false)
