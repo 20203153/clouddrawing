@@ -3,6 +3,8 @@ package kr.ac.kookmin.clouddrawing
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,8 +12,10 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -87,6 +91,7 @@ import round
 
 
 class MainActivity : AppCompatActivity() {
+
     private val appBarConfiguration: AppBarConfiguration? = null
 
     private lateinit var isLeftOpen: MutableState<Boolean>
@@ -104,8 +109,8 @@ class MainActivity : AppCompatActivity() {
 
     private var lat: Double = 0.0
     private var lng: Double = 0.0
-    private var address : String? = ""
-    private var road_address : String? = ""
+    private var address: String? = ""
+    private var road_address: String? = ""
     private lateinit var API_KEY: String
 
     private var user: User? = null
@@ -121,11 +126,17 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_LOCATION_PERMISSIONS = 10005
         private const val TAG = "MainActivity"
         private const val CURRENT_LOC_MARKER = "currentmarker"
+        private const val CHANNEL_ID = "cloudgreenImagine" //알림 채널 아이디
     }
 
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        createNotificationChannel() // 알림 채널 생성 함수 호출
+        startService(Intent(this, NotificagtionService::class.java))
+
+
         API_KEY = getString(R.string.kakao_restapi_key)
 
         mapView.value = MapView(applicationContext)
@@ -155,21 +166,22 @@ class MainActivity : AppCompatActivity() {
                     kakaoMap.setOnLabelClickListener { _, _, label ->
                         val postId = label.layer.layerId
 
-                        if(postId != CURRENT_LOC_MARKER) {
+                        if (postId != CURRENT_LOC_MARKER) {
                             CoroutineScope(Dispatchers.Main).launch {
                                 val post = Post.getPostById(postId)
-                                mutatePostList = Post.getPostByLatLng(post?.uid!!,
+                                mutatePostList = Post.getPostByLatLng(
+                                    post?.uid!!,
                                     round(post.lat ?: 0.0), round(post.lng ?: 0.0)
                                 ).toMutableList()
 
-                                Log.d(TAG,"POI Size: ${mutatePostList.size}")
+                                Log.d(TAG, "POI Size: ${mutatePostList.size}")
 
-                                if(mutatePostList.isNotEmpty())
-                                    if(mutatePostList.size == 1) {
+                                if (mutatePostList.isNotEmpty())
+                                    if (mutatePostList.size == 1) {
                                         mutatePost.value = mutatePostList[0]
                                         isCloudMindOpen.value = true
                                     } else {
-                                        Log.d(TAG,"POI[0]: ${mutatePostList[0].title}")
+                                        Log.d(TAG, "POI[0]: ${mutatePostList[0].title}")
                                         isCloudListModalOpen.value = true
                                     }
                             }
@@ -184,6 +196,7 @@ class MainActivity : AppCompatActivity() {
                 override fun getZoomLevel(): Int {
                     return 6
                 }
+
             })
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -192,9 +205,6 @@ class MainActivity : AppCompatActivity() {
                 profileUri.value = Uri.parse(user!!.photoURL)
                 Log.d("MainActivity", profileUri.value.toString())
             }
-
-
-
             moveMapCurrentLocation()
         }
 
@@ -221,26 +231,39 @@ class MainActivity : AppCompatActivity() {
                     }
                     Spacer(Modifier.width(5.dp))
                     SearchBar(searchBar, onSearch = {
-                        if(searchBar.search == "") return@SearchBar
+                        if (searchBar.search == "") return@SearchBar
 
                         val addressService = retrofit.create(AddressService::class.java)
-                        addressService.getLocation(API_KEY, searchBar.search, this@MainActivity.lat.toString(), this@MainActivity.lng.toString()).enqueue(object : Callback<keyward2address> {
-                            override fun onResponse(call: Call<keyward2address>, response: Response<keyward2address>) {
+                        addressService.getLocation(
+                            API_KEY,
+                            searchBar.search,
+                            this@MainActivity.lat.toString(),
+                            this@MainActivity.lng.toString()
+                        ).enqueue(object : Callback<keyward2address> {
+                            override fun onResponse(
+                                call: Call<keyward2address>,
+                                response: Response<keyward2address>
+                            ) {
                                 val result = response.body()
                                 val a = response.raw()
-                                if(result?.documents?.isNotEmpty() == true) {
+                                if (result?.documents?.isNotEmpty() == true) {
                                     this@MainActivity.lng = result.documents[0].x.toDouble()
                                     this@MainActivity.lat = result.documents[0].y.toDouble()
                                     this@MainActivity.address = result.documents[0].address_name
-                                    this@MainActivity.road_address = result.documents[0].road_address_name
+                                    this@MainActivity.road_address =
+                                        result.documents[0].road_address_name
 
                                     moveMapCurrentLocation()
                                 } else {
-                                    Toast.makeText(context, "검색된 장소가 없습니다!", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(context, "검색된 장소가 없습니다!", Toast.LENGTH_LONG)
+                                        .show()
                                 }
                                 Log.e(TAG, "body : $result")
                                 Log.e(TAG, "raw : $a")
-                                Log.e(TAG, "lat: ${this@MainActivity.lat} / lng: ${this@MainActivity.lng}")
+                                Log.e(
+                                    TAG,
+                                    "lat: ${this@MainActivity.lat} / lng: ${this@MainActivity.lng}"
+                                )
                             }
 
                             override fun onFailure(call: Call<keyward2address>, t: Throwable) {
@@ -262,37 +285,47 @@ class MainActivity : AppCompatActivity() {
                         Log.d(TAG, "lat : $lat / lng : $lng")
 
                         val addressService = retrofit.create(AddressService::class.java)
-                        addressService.getAddress(API_KEY, lat.toBigDecimal().toPlainString(), lng.toBigDecimal().toPlainString())
-                            .enqueue(object : Callback<coord2address> {override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
-                                var result = response.body()
-                                var a = response.raw()
-                                if(result?.documents?.isNotEmpty() == true) {
-                                    this@MainActivity.address = result.documents[0].address.address_name
-                                    this@MainActivity.road_address = result.documents[0].road_address.address_name
-                                    Log.d(TAG, "body : $result")
-                                    Log.d(TAG, "raw : $a")
-                                } else {
-                                    Log.d(TAG, "None")
+                        addressService.getAddress(
+                            API_KEY,
+                            lat.toBigDecimal().toPlainString(),
+                            lng.toBigDecimal().toPlainString()
+                        )
+                            .enqueue(object : Callback<coord2address> {
+                                override fun onResponse(
+                                    call: Call<coord2address>,
+                                    response: Response<coord2address>
+                                ) {
+                                    var result = response.body()
+                                    var a = response.raw()
+                                    if (result?.documents?.isNotEmpty() == true) {
+                                        this@MainActivity.address =
+                                            result.documents[0].address.address_name
+                                        this@MainActivity.road_address =
+                                            result.documents[0].road_address.address_name
+                                        Log.d(TAG, "body : $result")
+                                        Log.d(TAG, "raw : $a")
+                                    } else {
+                                        Log.d(TAG, "None")
+                                    }
+
+                                    Log.d(TAG, "address: ${this@MainActivity.address}")
+                                    intent.putExtra("address", this@MainActivity.address)
+                                    intent.putExtra("road_address", this@MainActivity.road_address)
+                                    intent.putExtra("lat", this@MainActivity.lat)
+                                    intent.putExtra("lng", this@MainActivity.lng)
+                                    startActivity(intent)
+
                                 }
 
-                                Log.d(TAG, "address: ${this@MainActivity.address}")
-                                intent.putExtra("address", this@MainActivity.address)
-                                intent.putExtra("road_address", this@MainActivity.road_address)
-                                intent.putExtra("lat", this@MainActivity.lat)
-                                intent.putExtra("lng", this@MainActivity.lng)
-                                startActivity(intent)
-
-                            }
-
-                            override fun onFailure(call: Call<coord2address>, t: Throwable) {
-                                startActivity(intent)
-                            }
-                        })
+                                override fun onFailure(call: Call<coord2address>, t: Throwable) {
+                                    startActivity(intent)
+                                }
+                            })
                     })
                     CurrentLocBtn {
                         CoroutineScope(Dispatchers.Main).launch {
                             val location = loadCurrentLocation()
-                            if(location != null) {
+                            if (location != null) {
                                 this@MainActivity.lat = location.latitude
                                 this@MainActivity.lng = location.longitude
                             }
@@ -303,17 +336,21 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 AnimatedVisibility(
-                    visible = ( isLeftOpen.value || isCloudMindOpen.value || isCloudListModalOpen.value ),
+                    visible = (isLeftOpen.value || isCloudMindOpen.value || isCloudListModalOpen.value),
                     modifier = Modifier.fillMaxSize(1f),
                     enter = fadeIn(),
                     exit = fadeOut()
-                ){
+                ) {
                     Box(
                         Modifier
                             .fillMaxSize(1f)
                             .background(Color.Black.copy(alpha = 0.5f))
                             .clickable {
-                                listOf(isLeftOpen, isCloudMindOpen, isCloudListModalOpen).forEach { it.value = false }
+                                listOf(
+                                    isLeftOpen,
+                                    isCloudMindOpen,
+                                    isCloudListModalOpen
+                                ).forEach { it.value = false }
                             }
                     )
                 }
@@ -430,13 +467,14 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode) {
+        when (requestCode) {
             REQUEST_CODE_LOCATION_PERMISSIONS -> {
-                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     Log.d("MainActivity", "LocationPermission granted.")
                 } else {
                     val settingsIntent = Intent()
-                    settingsIntent.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    settingsIntent.action =
+                        android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                     settingsIntent.data = Uri.fromParts("package", packageName, null)
                     startActivity(settingsIntent)
 
@@ -456,7 +494,7 @@ class MainActivity : AppCompatActivity() {
 
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
         val isGpsOn = locationManager.isLocationEnabled
-        if(!isGpsOn) camera = CameraUpdateFactory.newCenterPosition(
+        if (!isGpsOn) camera = CameraUpdateFactory.newCenterPosition(
             LatLng.from(
                 this@MainActivity.lat,
                 this@MainActivity.lng
@@ -466,44 +504,58 @@ class MainActivity : AppCompatActivity() {
 
         val labelManager = kakaoMap.value?.labelManager
         labelManager?.getLayer(CURRENT_LOC_MARKER).let {
-            if(it != null) labelManager?.remove(it)
+            if (it != null) labelManager?.remove(it)
         }
 
         val styles: LabelStyles? = labelManager?.addLabelStyles(
             LabelStyles.from(
-                LabelStyle.from(viewConvertToBitmap(
-                    this@MainActivity,
-                    R.drawable.vector,
-                    50, 60
-                )).setZoomLevel(0),
-                LabelStyle.from(viewConvertToBitmap(
-                    this@MainActivity,
-                    R.drawable.vector,
-                    60, 80
-                )).setZoomLevel(12),
+                LabelStyle.from(
+                    viewConvertToBitmap(
+                        this@MainActivity,
+                        R.drawable.vector,
+                        50, 60
+                    )
+                ).setZoomLevel(0),
+                LabelStyle.from(
+                    viewConvertToBitmap(
+                        this@MainActivity,
+                        R.drawable.vector,
+                        60, 80
+                    )
+                ).setZoomLevel(12),
             )
         )
         val options: LabelOptions =
-            LabelOptions.from(LatLng.from(
-                this@MainActivity.lat,
-                this@MainActivity.lng
-            )).setStyles(styles)
+            LabelOptions.from(
+                LatLng.from(
+                    this@MainActivity.lat,
+                    this@MainActivity.lng
+                )
+            ).setStyles(styles)
         labelManager?.addLayer(
             LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
         )?.addLabel(options)
         kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
     }
 
-    private fun getCurrentLatLng() : LatLng {
+    private fun getCurrentLatLng(): LatLng {
         var uLat = 37.402005
         var uLng = 127.108621
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
         val isGpsOn = locationManager.isLocationEnabled
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             if (isGpsOn) {
-                val userCurrentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                val userCurrentLocation =
+                    locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
                 uLat = userCurrentLocation!!.latitude
                 uLng = userCurrentLocation.longitude
@@ -520,8 +572,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private suspend fun loadCurrentLocation(): Location? {
-        return if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        return if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(
                 this,
                 LOCATION_PERMISSIONS,
@@ -532,16 +591,25 @@ class MainActivity : AppCompatActivity() {
         } else {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-            fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, object: CancellationToken() {
-                override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken = CancellationTokenSource().token
-                override fun isCancellationRequested(): Boolean = false
-            }).await()
+            fusedLocationClient.getCurrentLocation(
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
+                object : CancellationToken() {
+                    override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken =
+                        CancellationTokenSource().token
+
+                    override fun isCancellationRequested(): Boolean = false
+                }).await()
         }
     }
 
-    private fun viewConvertToBitmap(context: Context, drawableId: Int, resX: Int? = null, resY: Int? = null): Bitmap? {
+    private fun viewConvertToBitmap(
+        context: Context,
+        drawableId: Int,
+        resX: Int? = null,
+        resY: Int? = null
+    ): Bitmap? {
         val drawable = ContextCompat.getDrawable(context, drawableId)
-        val bitmap = if(resX != null || resY != null) Bitmap.createScaledBitmap(
+        val bitmap = if (resX != null || resY != null) Bitmap.createScaledBitmap(
             Bitmap.createBitmap(
                 drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
             ), resX ?: drawable.intrinsicHeight, resY ?: drawable.intrinsicWidth,
@@ -555,12 +623,29 @@ class MainActivity : AppCompatActivity() {
         drawable.draw(canvas)
         return bitmap
     }
-}
 
-data class Clouds(
-    val id: String,
-    val lat: Double,
-    val lng: Double,
-    val address: String,
-    var isDuplicate: Boolean = false
-)
+
+    private fun createNotificationChannel() {
+        // API 26 이상에서만 알림 채널을 생성합니다.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name) // 채널 이름
+            val descriptionText = getString(R.string.channel_description) // 채널 설명
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            // 알림 관리자를 통해 채널을 시스템에 등록합니다.
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    data class Clouds(
+        val id: String,
+        val lat: Double,
+        val lng: Double,
+        val address: String,
+        var isDuplicate: Boolean = false
+    )
+}

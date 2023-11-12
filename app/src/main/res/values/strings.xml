@@ -46,4 +46,8 @@
     <string name="kakao_map_api_key">cd83bfe1b110bf47b190ade8001e195b</string>
     <string name="kakao_restapi_key">KakaoAK 2d0991b1dcfec57879b691ce70c13b54</string>
     <string name="google_oauth_api_id">616811973032-l6qrmj19a53rnfdcm3aksugep450skjd.apps.googleusercontent.com</string>
+    <string name="channel_name">CloudGreen Notification</string>
+    <string name="channel_description">When you arrive at a location where you previously drew a cloud, send a notification to remind the user of the cloud they drew.</string>
 </resources>
+
+

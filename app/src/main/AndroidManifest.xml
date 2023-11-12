@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <!-- 인터넷, 위치 권한 설정 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
 
     <application
@@ -19,6 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Clouddrawing"
         tools:targetApi="31">
+
+        <service
+            android:name=".NotificagtionService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".MyInformationActivity"
             android:exported="false" />
@@ -31,30 +38,23 @@
         <activity
             android:name=".SignupActivity"
             android:exported="false" />
-
         <activity
             android:name=".CloudDrawingActivity"
-            android:exported="false"/>
-
-
-        <!-- Main Activity (without LAUNCHER category now) -->
+            android:exported="false" /> <!-- Main Activity (without LAUNCHER category now) -->
         <activity
             android:name=".MainActivity"
-            android:exported="true"
             android:configChanges="screenSize|orientation"
-        />
-
-        <!-- Loading Activity (This is the new splash screen) -->
+            android:exported="true" /> <!-- Loading Activity (This is the new splash screen) -->
         <activity
             android:name=".LoadingActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"> <!-- Optional: Use a theme without ActionBar for splash -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
