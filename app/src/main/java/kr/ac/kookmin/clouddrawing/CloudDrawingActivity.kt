@@ -387,7 +387,6 @@ fun CDBackground(
 //                onValueChange = { textValue -> locations.value = textValue},
 //                singleLine = true
 //            )
-            // 주소 자동기입칸 (상학 수정)
             Text(
                 text = locations.value,
                 modifier = Modifier.size(height=18.dp, width=200.dp),
