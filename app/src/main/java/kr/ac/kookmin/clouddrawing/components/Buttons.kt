@@ -128,7 +128,7 @@ fun CurrentLocBtn(@PreviewParameter(UnitPreviw::class) currentLoc: () -> Unit) {
             )
     ) {
         Image(
-            painter = painterResource(id = R.drawable.v_cd_location_search),
+            painter = painterResource(id = R.drawable.find_location),
             contentDescription = "add cloud btn",
             contentScale = ContentScale.Fit,
             modifier = Modifier.padding(7.dp)
