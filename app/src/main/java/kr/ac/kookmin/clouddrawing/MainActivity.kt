@@ -486,6 +486,8 @@ class MainActivity : AppCompatActivity() {
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
         var isGpsOn = locationManager.isLocationEnabled
         var camera : CameraUpdate
+        this@MainActivity.lat = 37.402005
+        this@MainActivity.lng = 127.108621
 
         if (isGpsOn) {
             var loc = getCurrentLatLng()
@@ -498,8 +500,8 @@ class MainActivity : AppCompatActivity() {
             )
         } else {
             camera = CameraUpdateFactory.newCenterPosition(
-                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
-                6
+                LatLng.from(lat, lng),
+                12
             )
         }
 
