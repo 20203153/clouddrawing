@@ -37,9 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import kr.ac.kookmin.clouddrawing.CloudContentActivity
 import kr.ac.kookmin.clouddrawing.CloudListActivity
 import kr.ac.kookmin.clouddrawing.MyInformationActivity
 import kr.ac.kookmin.clouddrawing.R
+import kr.ac.kookmin.clouddrawing.dto.Post
 
 @SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
 @Preview(widthDp = 390, heightDp = 844)
@@ -65,6 +67,7 @@ fun PreviewHomeLeftModal() {
 fun HomeLeftModal(
     logoutButton: () -> Unit = {},
     isDrawerOpen: MutableState<Boolean> = mutableStateOf(true),
+    previousPost: MutableState<List<Post>> = mutableStateOf(listOf()),
     profileUri: MutableState<Uri?> = mutableStateOf(null)
 ) {
     val context = LocalContext.current
@@ -131,7 +134,7 @@ fun HomeLeftModal(
                     }
                 )
                 Spacer(Modifier.height(48.dp))
-                MyCloudText()
+                MyCloudText(previousPost)
             }
 
             Box(
@@ -154,18 +157,42 @@ fun HomeLeftModal(
 
 
 @Composable
-fun MyCloudText() {
+fun MyCloudText(
+    previousPost: MutableState<List<Post>> = mutableStateOf(listOf())
+) {
     val context = LocalContext.current
-    Text(
-        text = "나의 구름",
-        style = TextStyle(
-            fontSize = 20.sp,
-            fontFamily = FontFamily.SansSerif,
-            fontWeight = FontWeight.W600,
-            color = Color(0xFF454545)
-        ),
-        modifier = Modifier.clickable {
-            val intent = Intent(context, CloudListActivity::class.java)
-            context.startActivity(intent) }
-    )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "나의 구름",
+            style = TextStyle(
+                fontSize = 20.sp,
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.W600,
+                color = Color(0xFF454545)
+            ),
+            modifier = Modifier.clickable {
+                val intent = Intent(context, CloudListActivity::class.java)
+                context.startActivity(intent) }
+        )
+        Spacer(Modifier.height(10.dp))
+        previousPost.value.take(3).forEach {
+            Text(
+                text = it.title?: "",
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.W600,
+                    color = Color(0xFF454545)
+                ),
+                modifier = Modifier.clickable {
+                    val intent = Intent(context, CloudContentActivity::class.java)
+                    intent.putExtra("postId", it.id)
+                    context.startActivity(intent)
+                }
+            )
+            Spacer(Modifier.height(10.dp))
+        }
+    }
 }

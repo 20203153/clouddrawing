@@ -12,7 +12,6 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
@@ -117,6 +116,8 @@ class MainActivity : AppCompatActivity() {
     private val profileUri = mutableStateOf<Uri?>(null)
     private val mutatePost = mutableStateOf<Post?>(null)
     private var mutatePostList = mutableListOf<Post>()
+    private var postListOfRecents = mutableStateOf(listOf<Post>())
+
 
     companion object {
         private val LOCATION_PERMISSIONS = arrayOf(
@@ -204,6 +205,7 @@ class MainActivity : AppCompatActivity() {
             if (user != null) {
                 profileUri.value = Uri.parse(user!!.photoURL)
                 Log.d("MainActivity", profileUri.value.toString())
+
             }
             moveMapCurrentLocation()
         }
@@ -357,7 +359,8 @@ class MainActivity : AppCompatActivity() {
                 HomeLeftModal(
                     logoutButton = { User.logoutCurrentUser(); finish() },
                     isDrawerOpen = isLeftOpen,
-                    profileUri = profileUri
+                    profileUri = profileUri,
+                    previousPost = postListOfRecents
                 )
                 CloudMindModal(
                     content = mutatePost,
@@ -395,6 +398,7 @@ class MainActivity : AppCompatActivity() {
 
             val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
             if (clouds.isNotEmpty()) {
+                postListOfRecents.value = clouds.take(3)
                 val lists = mutableListOf<Clouds>()
                 clouds.forEach {
                     val any = lists.find { it1 ->
