@@ -487,6 +487,22 @@ class MainActivity : AppCompatActivity() {
         var isGpsOn = locationManager.isLocationEnabled
         var camera : CameraUpdate
 
+        if (isGpsOn) {
+            var loc = getCurrentLatLng()
+            this@MainActivity.lat = loc.getLatitude()
+            this@MainActivity.lng = loc.getLongitude()
+
+            camera = CameraUpdateFactory.newCenterPosition(
+                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
+                18
+            )
+        } else {
+            camera = CameraUpdateFactory.newCenterPosition(
+                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
+                6
+            )
+        }
+
         val labelManager = kakaoMap.value?.labelManager
         labelManager?.getLayer(CURRENT_LOC_MARKER).let {
             if (it != null) labelManager?.remove(it)
@@ -519,23 +535,9 @@ class MainActivity : AppCompatActivity() {
             ).setStyles(styles)
 
         if (isGpsOn) {
-            var loc = getCurrentLatLng()
-            this@MainActivity.lat = loc.getLatitude()
-            this@MainActivity.lng = loc.getLongitude()
-
-            camera = CameraUpdateFactory.newCenterPosition(
-                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
-                18
-            )
-
             labelManager?.addLayer(
                 LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
             )?.addLabel(options)
-        } else {
-            camera = CameraUpdateFactory.newCenterPosition(
-                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
-                6
-            )
         }
 
         kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
