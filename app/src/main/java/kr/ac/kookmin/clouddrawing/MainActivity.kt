@@ -208,7 +208,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MainActivity", profileUri.value.toString())
 
             }
-            moveMapCurrentLocation()
         }
 
         setContent {
@@ -293,7 +292,7 @@ class MainActivity : AppCompatActivity() {
                                 override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
                                     var result = response.body()
                                     var a = response.raw()
-                                    if (result?.documents?.get(0) != null) {
+                                    if (result?.documents?.isNotEmpty() == true) {
                                         this@MainActivity.address =
                                             result?.documents?.get(0)?.address?.address_name
                                         this@MainActivity.road_address =
@@ -447,6 +446,8 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+
+            moveMapInit()
         }
     }
 
@@ -482,7 +483,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun moveMapCurrentLocation() {
+    private fun moveMapInit() {
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
         var isGpsOn = locationManager.isLocationEnabled
         var camera : CameraUpdate
@@ -504,6 +505,8 @@ class MainActivity : AppCompatActivity() {
                 12
             )
         }
+
+        Log.d(TAG, "loc: lat:${lat}/lng:${lng}")
 
         val labelManager = kakaoMap.value?.labelManager
         labelManager?.getLayer(CURRENT_LOC_MARKER).let {
@@ -541,6 +544,50 @@ class MainActivity : AppCompatActivity() {
                 LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
             )?.addLabel(options)
         }
+
+        kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
+    }
+    private fun moveMapCurrentLocation() {
+        val camera = CameraUpdateFactory.newCenterPosition(
+            LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
+            18
+        )
+
+        Log.d(TAG, "loc: lat:${lat}/lng:${lng}")
+
+        val labelManager = kakaoMap.value?.labelManager
+        labelManager?.getLayer(CURRENT_LOC_MARKER).let {
+            if (it != null) labelManager?.remove(it)
+        }
+
+        val styles: LabelStyles? = labelManager?.addLabelStyles(
+            LabelStyles.from(
+                LabelStyle.from(
+                    viewConvertToBitmap(
+                        this@MainActivity,
+                        R.drawable.vector,
+                        50, 60
+                    )
+                ).setZoomLevel(0),
+                LabelStyle.from(
+                    viewConvertToBitmap(
+                        this@MainActivity,
+                        R.drawable.vector,
+                        60, 80
+                    )
+                ).setZoomLevel(12),
+            )
+        )
+        val options: LabelOptions =
+            LabelOptions.from(
+                LatLng.from(
+                    this@MainActivity.lat,
+                    this@MainActivity.lng
+                )
+            ).setStyles(styles)
+        labelManager?.addLayer(
+            LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
+        )?.addLabel(options)
 
         kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
     }
