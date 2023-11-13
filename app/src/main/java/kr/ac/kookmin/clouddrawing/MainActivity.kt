@@ -251,9 +251,6 @@ class MainActivity : AppCompatActivity() {
                                 if (result?.documents?.isNotEmpty() == true) {
                                     this@MainActivity.lng = result.documents[0].x.toDouble()
                                     this@MainActivity.lat = result.documents[0].y.toDouble()
-                                    this@MainActivity.address = result.documents[0].address_name
-                                    this@MainActivity.road_address =
-                                        result.documents[0].road_address_name
 
                                     moveMapCurrentLocation()
                                 } else {
@@ -289,26 +286,22 @@ class MainActivity : AppCompatActivity() {
                         val addressService = retrofit.create(AddressService::class.java)
                         addressService.getAddress(
                             API_KEY,
-                            lat.toBigDecimal().toPlainString(),
-                            lng.toBigDecimal().toPlainString()
-                        )
-                            .enqueue(object : Callback<coord2address> {
-                                override fun onResponse(
-                                    call: Call<coord2address>,
-                                    response: Response<coord2address>
-                                ) {
+                            lng.toBigDecimal().toPlainString(),
+                            lat.toBigDecimal().toPlainString()
+                        ).enqueue(object : Callback<coord2address> {
+                                override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
                                     var result = response.body()
                                     var a = response.raw()
-                                    if (result?.documents?.isNotEmpty() == true) {
+                                    if (result?.documents?.get(0) != null) {
                                         this@MainActivity.address =
-                                            result.documents[0].address.address_name
+                                            result?.documents?.get(0)?.address?.address_name
                                         this@MainActivity.road_address =
-                                            result.documents[0].road_address.address_name
+                                            result?.documents?.get(0)?.road_address?.address_name
                                         Log.d(TAG, "body : $result")
-                                        Log.d(TAG, "raw : $a")
                                     } else {
                                         Log.d(TAG, "None")
                                     }
+                                    Log.d(TAG, "raw : $a")
 
                                     Log.d(TAG, "address: ${this@MainActivity.address}")
                                     intent.putExtra("address", this@MainActivity.address)
