@@ -57,6 +57,7 @@ import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
 import com.kakao.vectormap.camera.CameraAnimation
+import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
 import com.kakao.vectormap.label.LabelOptions
@@ -106,8 +107,8 @@ class MainActivity : AppCompatActivity() {
         MutableLiveData(null)
     }
 
-    private var lat: Double = 0.0
-    private var lng: Double = 0.0
+    private var lat: Double = 37.402005
+    private var lng: Double = 127.108621
     private var address: String? = ""
     private var road_address: String? = ""
     private lateinit var API_KEY: String
@@ -482,22 +483,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun moveMapCurrentLocation() {
-        var camera = CameraUpdateFactory.newCenterPosition(
-            LatLng.from(
-                this@MainActivity.lat,
-                this@MainActivity.lng
-            ), 14
-        )
-
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
-        val isGpsOn = locationManager.isLocationEnabled
-        if (!isGpsOn) camera = CameraUpdateFactory.newCenterPosition(
-            LatLng.from(
-                this@MainActivity.lat,
-                this@MainActivity.lng
-            ), 6
-        )
-
+        var isGpsOn = locationManager.isLocationEnabled
+        var camera : CameraUpdate
 
         val labelManager = kakaoMap.value?.labelManager
         labelManager?.getLayer(CURRENT_LOC_MARKER).let {
@@ -529,9 +517,27 @@ class MainActivity : AppCompatActivity() {
                     this@MainActivity.lng
                 )
             ).setStyles(styles)
-        labelManager?.addLayer(
-            LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
-        )?.addLabel(options)
+
+        if (isGpsOn) {
+            var loc = getCurrentLatLng()
+            this@MainActivity.lat = loc.getLatitude()
+            this@MainActivity.lng = loc.getLongitude()
+
+            camera = CameraUpdateFactory.newCenterPosition(
+                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
+                18
+            )
+
+            labelManager?.addLayer(
+                LabelLayerOptions.from(CURRENT_LOC_MARKER).setClickable(false).setZOrder(1000)
+            )?.addLabel(options)
+        } else {
+            camera = CameraUpdateFactory.newCenterPosition(
+                LatLng.from(this@MainActivity.lat, this@MainActivity.lng),
+                6
+            )
+        }
+
         kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
     }
 
