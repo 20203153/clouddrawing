@@ -3,6 +3,7 @@ package kr.ac.kookmin.clouddrawing
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -24,13 +25,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -40,8 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.woong.compose.grid.SimpleGridCells
-import io.woong.compose.grid.VerticalGrid
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 
 class CloudListActivity : ComponentActivity() {
@@ -50,14 +49,10 @@ class CloudListActivity : ComponentActivity() {
 
         setContent {
             val verticalScroll = rememberScrollState()
-            val today by remember { mutableStateOf(0) }
-            val month by remember { mutableStateOf(0) }
-            val allOf by remember { mutableStateOf(0) }
 
             CloudList(
                 verticalScroll = verticalScroll,
-                leftCloseBtn = { finish() },
-                today = today, month = month, allOf = allOf
+                leftCloseBtn = { finish() }
             )
         }
     }
@@ -67,8 +62,7 @@ class CloudListActivity : ComponentActivity() {
 @Composable
 fun CloudList(
     leftCloseBtn: () -> Unit = {},
-    verticalScroll: ScrollState = rememberScrollState(),
-    today: Int = 0, month: Int = 0, allOf: Int = 0
+    verticalScroll: ScrollState = rememberScrollState()
 ) {
     Column(
         modifier = Modifier
@@ -121,7 +115,7 @@ fun CloudList(
                 verticalArrangement = Arrangement.Center // 수직 중앙 정렬
             ) {
                 Text(
-                    text = "오늘은 구름 $today 개를 그렸어요. \n이번 달 구름 $month 개를 그렸어요. \n지금까지 구름 $allOf 개를 그렸어요. ",
+                    text = "오늘은 구름 1 개를 그렸어요. \n이번 달 구름 1 개를 그렸어요. \n지금까지 구름 1 개를 그렸어요. ",
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -152,6 +146,7 @@ fun CloudList(
         }
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
         ClContentBox()
+
     }
 }
 @Preview
@@ -169,7 +164,8 @@ fun ClContentBox() {
                 width = 1.dp, color = Color(0xFFF4F4F4),
                 shape = RoundedCornerShape(size = 20.dp)
             )
-            .fillMaxSize(1f)
+            .width(328.dp)
+            .height(570.dp)
             .background(color = Color(0xFFFFFFFF))
     ) {
         val locations = listOf(
@@ -193,7 +189,7 @@ fun ClContentBox() {
                     Text(
                         text = location,
                         modifier = Modifier
-                            .padding(top = 10.dp),
+                            .padding(top=10.dp),
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
@@ -208,7 +204,7 @@ fun ClContentBox() {
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(top = 5.dp, bottom = 15.dp)
+                    .padding(top=5.dp, bottom = 15.dp)
                     .width(1.dp),
                 color = Color(0xFFC9C9C9),
                 thickness = 1.dp
@@ -216,22 +212,39 @@ fun ClContentBox() {
 
             //card 자리
 
-            //
-            // 첫 번째 카드
-            VerticalGrid(
-                columns = SimpleGridCells.Fixed(2),
+            // 2열로 나열된 카드
+            Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
+                    .padding(start = 20.dp)
             ) {
-                CLContentCard()
-                CLContentCard()
-                CLContentCard()
-                CLContentCard()
-            }
-        }
+                // 첫 번째 카드
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    CLContentCard()
+                    Spacer(
+                        modifier = Modifier
+                            .width(15.dp)
+                    )
+                    CLContentCard()
+                }
+
+                // 두 번째 카드
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp)
+                ) {
+                    CLContentCard()
+                    Spacer(
+                        modifier = Modifier
+                            .width(15.dp)
+                    )
+                    CLContentCard()
+                }
+            }            }
 
     }
 }
@@ -336,5 +349,5 @@ fun CLContentCard(){
 
 
 
-    }
-}
+    }}
+
