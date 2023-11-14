@@ -345,7 +345,7 @@ fun CDBackground(
                         color = Color(0xFF686868),
                     ),
                 )
-                Spacer(Modifier.width(22.dp))
+                Spacer(Modifier.width(70.dp))
                 Image(
                     painter = painterResource(id = R.drawable.calendar), // 'calendar_image'는 XML 이미지 파일의 리소스 이름입니다.
                     contentDescription = "달력"
