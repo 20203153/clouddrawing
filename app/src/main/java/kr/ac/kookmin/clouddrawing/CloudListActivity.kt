@@ -1,9 +1,9 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -25,13 +25,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -41,19 +40,58 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
+import kr.ac.kookmin.clouddrawing.dto.Post
+import kr.ac.kookmin.clouddrawing.dto.User
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
 
 class CloudListActivity : ComponentActivity() {
+    companion object {
+        private val TAG: String = "CloudListActiity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val today = mutableStateOf(0)
+        val month = mutableStateOf(0)
+        val recent = mutableStateOf(0)
 
         setContent {
             val verticalScroll = rememberScrollState()
 
             CloudList(
                 verticalScroll = verticalScroll,
-                leftCloseBtn = { finish() }
+                leftCloseBtn = { finish() },
+                today = today, month = month, recent = recent
             )
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                today.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())
+                )
+                Log.d(TAG, "today: ${today.value} / ${Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())}")
+            }
+            launch {
+                month.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusMonths(1).toInstant()))
+                )
+                Log.d(TAG, "month: ${month.value} / ${Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusMonths(1).toInstant()))}")
+            }
+            launch {
+                recent.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(50).toInstant()))
+                )
+                Log.d(TAG, "recent: ${recent.value} / ${Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(50).toInstant()))}")
+            }
         }
     }
 }
@@ -62,7 +100,10 @@ class CloudListActivity : ComponentActivity() {
 @Composable
 fun CloudList(
     leftCloseBtn: () -> Unit = {},
-    verticalScroll: ScrollState = rememberScrollState()
+    verticalScroll: ScrollState = rememberScrollState(),
+    today: MutableState<Int> = mutableStateOf(0),
+    month: MutableState<Int> = mutableStateOf(0),
+    recent: MutableState<Int> = mutableStateOf(0)
 ) {
     Column(
         modifier = Modifier
@@ -115,7 +156,9 @@ fun CloudList(
                 verticalArrangement = Arrangement.Center // 수직 중앙 정렬
             ) {
                 Text(
-                    text = "오늘은 구름 1 개를 그렸어요. \n이번 달 구름 1 개를 그렸어요. \n지금까지 구름 1 개를 그렸어요. ",
+                    text = "오늘은 구름 ${today.value} 개를 그렸어요. \n" +
+                            "이번 달 구름 ${month.value} 개를 그렸어요. \n" + "" +
+                            "지금까지 구름 ${recent.value} 개를 그렸어요.",
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),

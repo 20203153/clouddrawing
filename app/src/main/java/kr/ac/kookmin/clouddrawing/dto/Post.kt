@@ -1,11 +1,13 @@
 package kr.ac.kookmin.clouddrawing.dto
 
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 
 data class Post(
     var id: String? = "",
@@ -48,6 +50,13 @@ data class Post(
             posts.forEach { result.add(it.toObject()) }
             return result.filterNotNull()
 
+        }
+
+        suspend fun getPostCountByDate(uid: String, date: Date = Date()): Int {
+            val result = post.whereEqualTo("uid", uid)
+                .whereGreaterThanOrEqualTo("writeTime", Timestamp(date))
+                .count().get(AggregateSource.SERVER).await()
+            return result.count.toInt()
         }
 
         suspend fun addPost(newPost: Post): String {
