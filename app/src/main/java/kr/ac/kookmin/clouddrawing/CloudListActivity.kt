@@ -222,11 +222,11 @@ fun ClContentBox() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 17.dp, top = 17.dp)
+                .padding(top = 17.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .weight(0.15f)
+                    .width(54.dp)
                     .padding(end = 10.dp)
 
             ) {
@@ -234,7 +234,7 @@ fun ClContentBox() {
                     Text(
                         text = location,
                         modifier = Modifier
-                            .padding(top = 10.dp),
+                            .padding(top = 10.dp, start=14.dp),
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
