@@ -45,6 +45,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import io.woong.compose.grid.SimpleGridCells
+import io.woong.compose.grid.VerticalGrid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -148,7 +150,7 @@ fun CloudContent(
 fun CCContentBox(
     verticalScroll: ScrollState = rememberScrollState(),
     post:MutableState<Post?> = mutableStateOf(null)
-){
+) {
     Column(
         modifier = Modifier
             .padding(top = 46.dp, start = 31.dp, end = 31.dp, bottom = 30.dp)
@@ -205,7 +207,7 @@ fun CCContentBox(
                 )
             }
 
-            if(post.value == null)
+            if (post.value == null)
                 Text(
                     text = timeFormat.format(Date()),
                     style = TextStyle(
@@ -274,34 +276,23 @@ fun CCContentBox(
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier.fillMaxSize(1f)
         ) {
-            CCContentImage(post = post)
-        }
-    }
-
-}
-
-
-@Composable
-fun CCContentImage(
-    modifier: Modifier = Modifier,
-    post: MutableState<Post?> = mutableStateOf(null)
-) {
-    Row(
-        modifier = Modifier
-            .height(120.dp)
-            .fillMaxWidth(1f)
-            .padding(start=14.dp, end=14.dp, bottom=13.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        post.value?.image?.forEach { uri ->
-            AsyncImage(
-                model = uri,
-                contentDescription = "",
-                modifier = Modifier.size(120.dp)
-                    .padding(start=5.dp),
-                contentScale = ContentScale.Crop
-            )
+            VerticalGrid(
+                columns = SimpleGridCells.Fixed(3),
+                modifier = Modifier
+                    .fillMaxSize(1f)
+                    .padding(start = 14.dp, end = 14.dp, bottom=20.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                post.value?.image?.forEach { uri ->
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = "",
+                        modifier = Modifier.size(120.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
         }
     }
 }

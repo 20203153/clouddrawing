@@ -32,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import io.woong.compose.grid.SimpleGridCells
+import io.woong.compose.grid.VerticalGrid
 import kr.ac.kookmin.clouddrawing.R
 import kr.ac.kookmin.clouddrawing.dto.Post
 import java.text.SimpleDateFormat
@@ -200,29 +202,21 @@ fun CloudMindModal(
                 )
             }
             Spacer(Modifier.height(36.dp))
-            Box(
+            VerticalGrid(
+                columns = SimpleGridCells.Fixed(3),
                 modifier = Modifier
-                    .width(140.dp)
-                    .height(140.dp)
-                    .background(color = Color(0xFFFFFFFF))
+                    .fillMaxSize(1f)
+                    .padding(start=28.dp, end=28.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .height(120.dp)
-                        .fillMaxWidth(1f)
-                        .padding(start = 14.dp, end = 14.dp, bottom = 13.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    content.value?.image?.forEach { uri ->
-                        AsyncImage(
-                            model = uri,
-                            contentDescription = "",
-                            modifier = Modifier.size(120.dp)
-                                .padding(start = 5.dp),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+                content.value?.image?.forEach { uri ->
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = "",
+                        modifier = Modifier.size(120.dp),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
         }
