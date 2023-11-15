@@ -40,6 +40,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.woong.compose.grid.SimpleGridCells
+import io.woong.compose.grid.VerticalGrid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -232,7 +234,7 @@ fun ClContentBox() {
                     Text(
                         text = location,
                         modifier = Modifier
-                            .padding(top=10.dp),
+                            .padding(top = 10.dp),
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
@@ -247,7 +249,7 @@ fun ClContentBox() {
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(top=5.dp, bottom = 15.dp)
+                    .padding(top = 5.dp, bottom = 15.dp)
                     .width(1.dp),
                 color = Color(0xFFC9C9C9),
                 thickness = 1.dp
@@ -255,40 +257,19 @@ fun ClContentBox() {
 
             //card 자리
 
-            // 2열로 나열된 카드
-            Column(
+            VerticalGrid(
+                columns = SimpleGridCells.Fixed(2),
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 20.dp)
+                    .padding(start = 14.dp, end = 14.dp, bottom = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                // 첫 번째 카드
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    CLContentCard()
-                    Spacer(
-                        modifier = Modifier
-                            .width(15.dp)
-                    )
-                    CLContentCard()
-                }
-
-                // 두 번째 카드
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 15.dp)
-                ) {
-                    CLContentCard()
-                    Spacer(
-                        modifier = Modifier
-                            .width(15.dp)
-                    )
-                    CLContentCard()
-                }
-            }            }
-
+                CLContentCard()
+                CLContentCard()
+                CLContentCard()
+                CLContentCard()
+            }
+        }
     }
 }
 
