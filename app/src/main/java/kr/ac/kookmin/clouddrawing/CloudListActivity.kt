@@ -258,6 +258,7 @@ fun ClContentBox(
                             .padding(top = 10.dp)
                             .clickable {
                                 selectedLocation = location // 위치를 클릭하면 선택된 위치 업데이트
+                                locNum = location
                             },
                         style = TextStyle(
                             fontSize = 13.sp,
@@ -335,7 +336,10 @@ fun CLContentCard(
                 .padding(top = 12.dp, start = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(Modifier.height(16.dp)) {
+            Row(
+                modifier = Modifier.height(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.f_cm_location),
                     contentDescription = "place icon",
