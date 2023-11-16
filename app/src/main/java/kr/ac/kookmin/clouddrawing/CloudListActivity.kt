@@ -257,8 +257,8 @@ fun ClContentBox(
                         modifier = Modifier
                             .padding(top = 10.dp)
                             .clickable {
-                                selectedLocation = location // 위치를 클릭하면 선택된 위치 업데이트
-                            },
+                                selectedLocation = location, // 위치를 클릭하면 선택된 위치 업데이트
+                                locNum = location },
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
