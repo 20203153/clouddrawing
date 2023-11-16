@@ -136,7 +136,6 @@ class CloudDrawingActivity : ComponentActivity() {
                                 lng = round(lng),
                                 address = locations.value,
                                 addressAlias = locationAlias.value,
-                                region = region.value,
                                 comment = mainContent.value,
                                 postTime = Timestamp(Date(date.selectedDateMillis!!))
                             )
