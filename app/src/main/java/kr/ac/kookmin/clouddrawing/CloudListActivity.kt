@@ -236,6 +236,7 @@ fun ClContentBox(
             "충남", "대전", "세종", "경북", "경남", "대구",
             "울산", "부산", "전북", "전남", "광주", "제주"
         )
+        var selectedLocation by remember { mutableStateOf("전체") }
 
         Row(
             modifier = Modifier
@@ -249,18 +250,20 @@ fun ClContentBox(
 
             ) {
                 locations.forEach { location ->
+                    val isSelected = selectedLocation == location // 현재 선택된 위치인지 확인
+
                     Text(
                         text = location,
                         modifier = Modifier
                             .padding(top = 10.dp)
                             .clickable {
-                                locNum = location
+                                selectedLocation = location // 위치를 클릭하면 선택된 위치 업데이트
                             },
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
                             fontWeight = FontWeight(600),
-                            color = Color(0xFF848484),
+                            color = if (isSelected) Color(0xFF326AFF) else Color(0xFF848484), // 선택된 위치일 때 색상 변경
                             textAlign = TextAlign.Center,
                         )
                     )
