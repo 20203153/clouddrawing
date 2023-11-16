@@ -24,18 +24,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -53,21 +48,16 @@ import io.woong.compose.grid.SimpleGridCells
 import io.woong.compose.grid.VerticalGrid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
 import java.text.SimpleDateFormat
-import java.util.Date
-import kotlinx.coroutines.launch
-import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Date
 
 class CloudListActivity : ComponentActivity() {
 
@@ -203,7 +193,6 @@ fun CloudList(
             modifier = Modifier
                 .fillMaxWidth(1f)
                 .padding(start = 40.dp),
-
             horizontalArrangement = Arrangement.Start
         ){
             Text(text = "구름 모아보기",
@@ -277,17 +266,7 @@ fun ClContentBox(
                     )
                 }
             }
-            Crossfade(targetState = locNum) { location ->
-
-                Divider(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(top = 5.dp, bottom = 15.dp)
-                        .width(1.dp),
-                    color = Color(0xFFC9C9C9),
-                    thickness = 1.dp
-                )
-
+            Crossfade(targetState = locNum, label = "") { location ->
                 VerticalGrid(
                     columns = SimpleGridCells.Fixed(2),
                     modifier = Modifier
@@ -304,12 +283,10 @@ fun ClContentBox(
                             return@breaker
                         }
 
-                        locations.forEach {
+                        locations.forEach { it ->
                             if (location == it) {
-                                postList.forEach {
-                                    if (location == it.region) {
+                                postList.filter { post -> post.address?.startsWith(it) ?: false }.forEach {
                                         CLContentCard(it)
-                                    }
                                 }
                                 return@breaker
                             }

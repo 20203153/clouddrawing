@@ -17,7 +17,6 @@ data class Post(
     var lng: Double? = 0.0,
     var address: String? = "",
     var addressAlias: String? = "",
-    var region: String? = "",
     var comment: String? = "",
     var image: MutableList<String> = mutableListOf(),
     var writeTime: Timestamp? = Timestamp.now(),
@@ -27,7 +26,7 @@ data class Post(
         private val post = FirebaseFirestore.getInstance().collection("post")
 
         suspend fun getAllPost(): List<Post> {
-            var result = mutableListOf<Post?>()
+            val result = mutableListOf<Post?>()
             val allPost = post.get().await()
 
             allPost.forEach {
