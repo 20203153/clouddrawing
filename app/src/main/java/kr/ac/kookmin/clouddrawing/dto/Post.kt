@@ -15,6 +15,7 @@ data class Post(
     var lng: Double? = 0.0,
     var address: String? = "",
     var addressAlias: String? = "",
+    var region: String? = "",
     var comment: String? = "",
     var image: MutableList<String> = mutableListOf(),
     var writeTime: Timestamp? = Timestamp.now(),
@@ -22,11 +23,23 @@ data class Post(
 ) {
     companion object {
         private val post = FirebaseFirestore.getInstance().collection("post")
+
+        suspend fun getAllPost(): List<Post> {
+            var result = mutableListOf<Post?>()
+            val allPost = post.get().await()
+
+            allPost.forEach {
+                result.add(it.toObject())
+            }
+
+            return result.filterNotNull()
+        }
+
         suspend fun getPostById(id: String): Post? {
             return post.document(id).get().await().toObject()
         }
 
-        suspend fun getPostByUID(uid: String, limit: Long = 10L): List<Post> {
+        suspend fun getPostByUID(uid: String?, limit: Long = 10L): List<Post> {
             val result = mutableListOf<Post?>()
 
             val posts = post.whereEqualTo("uid", uid)

@@ -111,6 +111,7 @@ class MainActivity : AppCompatActivity() {
     private var lng: Double = 127.108621
     private var address: String? = ""
     private var road_address: String? = ""
+    private var region_1depth_name: String? = ""
     private lateinit var API_KEY: String
 
     private var user: User? = null
@@ -119,6 +120,7 @@ class MainActivity : AppCompatActivity() {
     private var mutatePostList = mutableListOf<Post>()
     private var postListOfRecents = mutableStateOf(listOf<Post>())
 
+    private var testing = mutableListOf<Post>()
 
     companion object {
         private val LOCATION_PERMISSIONS = arrayOf(
@@ -189,6 +191,7 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
+
                 }
 
                 override fun getPosition(): LatLng {
@@ -297,6 +300,12 @@ class MainActivity : AppCompatActivity() {
                                             result?.documents?.get(0)?.address?.address_name
                                         this@MainActivity.road_address =
                                             result?.documents?.get(0)?.road_address?.address_name
+                                        this@MainActivity.region_1depth_name =
+                                            if (result?.documents?.get(0)?.road_address == null) {
+                                                result?.documents?.get(0)?.address?.region_1depth_name
+                                            } else {
+                                                result?.documents?.get(0)?.road_address?.region_1depth_name
+                                            }
                                         Log.d(TAG, "body : $result")
                                     } else {
                                         Log.d(TAG, "None")
@@ -306,6 +315,7 @@ class MainActivity : AppCompatActivity() {
                                     Log.d(TAG, "address: ${this@MainActivity.address}")
                                     intent.putExtra("address", this@MainActivity.address)
                                     intent.putExtra("road_address", this@MainActivity.road_address)
+                                    intent.putExtra("region", this@MainActivity.region_1depth_name)
                                     intent.putExtra("lat", this@MainActivity.lat)
                                     intent.putExtra("lng", this@MainActivity.lng)
                                     startActivity(intent)

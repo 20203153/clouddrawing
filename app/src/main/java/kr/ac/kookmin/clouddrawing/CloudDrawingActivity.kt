@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -100,6 +101,9 @@ class CloudDrawingActivity : ComponentActivity() {
         val lng = intent.getDoubleExtra("lng", 0.0)
         val address : String = intent.getStringExtra("address") ?: ""
         val road_address : String = intent.getStringExtra("road_address") ?: ""
+        val a : String = intent.getStringExtra("region") ?: ""
+        Log.e("Testing", "region : " + a)
+        val region = mutableStateOf(intent.getStringExtra("region") ?: "")
         val locations = mutableStateOf(if(road_address == "") address else road_address)
         val locationAlias = mutableStateOf("")
 
@@ -132,6 +136,7 @@ class CloudDrawingActivity : ComponentActivity() {
                                 lng = round(lng),
                                 address = locations.value,
                                 addressAlias = locationAlias.value,
+                                region = region.value,
                                 comment = mainContent.value,
                                 postTime = Timestamp(Date(date.selectedDateMillis!!))
                             )

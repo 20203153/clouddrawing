@@ -1,12 +1,15 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,9 +27,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -42,11 +50,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.woong.compose.grid.SimpleGridCells
 import io.woong.compose.grid.VerticalGrid
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
+import kr.ac.kookmin.clouddrawing.dto.Post
+import kr.ac.kookmin.clouddrawing.dto.User
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class CloudListActivity : ComponentActivity() {
+
+    private var allPost : List<Post> = listOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        runBlocking {
+            allPost = Post.getPostByUID(User.getCurrentUser()?.uid).toMutableList()
+            Log.e("Testing", "vandvandjv : ${allPost}")
+        }
 
         setContent {
             val verticalScroll = rememberScrollState()
@@ -57,7 +84,8 @@ class CloudListActivity : ComponentActivity() {
             CloudList(
                 verticalScroll = verticalScroll,
                 leftCloseBtn = { finish() },
-                today = today, month = month, allOf = allOf
+                today = today, month = month, allOf = allOf,
+                postList = allPost
             )
         }
     }
@@ -68,7 +96,8 @@ class CloudListActivity : ComponentActivity() {
 fun CloudList(
     leftCloseBtn: () -> Unit = {},
     verticalScroll: ScrollState = rememberScrollState(),
-    today: Int = 0, month: Int = 0, allOf: Int = 0
+    today: Int = 0, month: Int = 0, allOf: Int = 0,
+    postList : List<Post> = listOf()
 ) {
     Column(
         modifier = Modifier
@@ -151,12 +180,16 @@ fun CloudList(
             Spacer(Modifier.height(10.dp))
         }
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
-        ClContentBox()
+        ClContentBox(postList)
     }
 }
 @Preview
 @Composable
-fun ClContentBox() {
+fun ClContentBox(
+    postList : List<Post> = listOf()
+) {
+    var locNum by remember { mutableStateOf("전체") }
+
     Column(
         modifier = Modifier
             .padding(start = 31.dp, end = 31.dp, bottom = 10.dp)
@@ -193,7 +226,10 @@ fun ClContentBox() {
                     Text(
                         text = location,
                         modifier = Modifier
-                            .padding(top = 10.dp),
+                            .padding(top = 10.dp)
+                            .clickable {
+                                locNum = location
+                            },
                         style = TextStyle(
                             fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.inter)),
@@ -204,48 +240,123 @@ fun ClContentBox() {
                     )
                 }
             }
-            // 세로선 추가
-            Divider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(top = 5.dp, bottom = 15.dp)
-                    .width(1.dp),
-                color = Color(0xFFC9C9C9),
-                thickness = 1.dp
-            )
+            Crossfade(targetState = locNum) { location ->
 
-            //card 자리
+                Divider(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(top = 5.dp, bottom = 15.dp)
+                        .width(1.dp),
+                    color = Color(0xFFC9C9C9),
+                    thickness = 1.dp
+                )
 
-            //
-            // 첫 번째 카드
-            VerticalGrid(
-                columns = SimpleGridCells.Fixed(2),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                CLContentCard()
-                CLContentCard()
-                CLContentCard()
-                CLContentCard()
+                VerticalGrid(
+                    columns = SimpleGridCells.Fixed(2),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    run breaker@{
+                        if (location == locations[0]) {
+                            postList.forEach {
+                                CLContentCard(it)
+                            }
+                            return@breaker
+                        }
+
+                        locations.forEach {
+                            if (location == it) {
+                                postList.forEach {
+                                    if (location == it.region) {
+                                        CLContentCard(it)
+                                    }
+                                }
+                                return@breaker
+                            }
+                        }
+                    }
+                }
             }
         }
-
     }
 }
 
-
-
-
-
-
-
-
+            //card 자리
+            //
+            // 첫 번째 카드
+// VerticalGrid(
+// columns = SimpleGridCells.Fixed(2),
+// modifier = Modifier
+// .weight(1f)
+// .padding(start = 20.dp),
+// horizontalArrangement = Arrangement.spacedBy(20.dp),
+// verticalArrangement = Arrangement.spacedBy(20.dp)
+// ) {
+//
+// }
+// /*
+// Crossfade(targetState = locNum) { location ->
+// run breaker@{
+// if (location == locations[0]) {
+// postList.forEach {
+// CLContentCard(it)
+// }
+// return@breaker
+// }
+//
+// locations.forEach {
+// if (location == it) {
+// postList.forEach {
+// if (location == it.region) {
+// CLContentCard(it)
+// }
+// }
+// return@breaker
+// }
+// }
+// }
+// }
+// Crossfade(targetState = locNum) { location ->
+// VerticalGrid(
+// columns = SimpleGridCells.Fixed(2),
+// modifier = Modifier
+// .weight(1f)
+// .padding(start = 20.dp),
+// horizontalArrangement = Arrangement.spacedBy(20.dp),
+// verticalArrangement = Arrangement.spacedBy(20.dp)
+// ) {
+// run breaker@ {
+// if (location == locations[0]) {
+// postList.forEach {
+// CLContentCard(it)
+// }
+// return@breaker
+// }
+//
+// locations.forEach {
+// if (location == it) {
+// postList.forEach {
+// if (location == it.region) {
+// CLContentCard(it)
+// }
+// }
+// return@breaker
+// }
+// }
+// }
+// }
+// */
+// }
+//
+//
 @Preview
 @Composable
-fun CLContentCard(){
+fun CLContentCard(
+    post: Post? = null
+) {
     Column(
         modifier = Modifier
             .width(100.dp)
@@ -284,7 +395,7 @@ fun CLContentCard(){
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = "TB_Location",
+                    text = post?.address ?: "TB_Location",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -304,7 +415,7 @@ fun CLContentCard(){
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "TB_Title",
+                text = post?.title ?: "TB_Title",
                 style = TextStyle(
                     fontSize = 10.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
@@ -319,11 +430,13 @@ fun CLContentCard(){
         Row(
             modifier = Modifier
                 .fillMaxWidth(1f)
-                .padding(end = 9.dp, bottom =5.dp),
+                .padding(end = 9.dp, bottom = 5.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "2023.11.09",
+                text = SimpleDateFormat("yyyy-MM-dd").format(
+                    post?.postTime?.toDate() ?: Date()
+                ),
                 style = TextStyle(
                     fontSize = 7.sp,
                     fontFamily = FontFamily(Font(R.font.inter)),
@@ -333,8 +446,5 @@ fun CLContentCard(){
                 )
             )
         }
-
-
-
     }
 }
