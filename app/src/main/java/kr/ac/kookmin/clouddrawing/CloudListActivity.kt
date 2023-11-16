@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -227,7 +228,7 @@ fun ClContentBox(
                 width = 1.dp, color = Color(0xFFF4F4F4),
                 shape = RoundedCornerShape(size = 20.dp)
             )
-            .width(328.dp)
+            .fillMaxWidth(1f)
             .height(570.dp)
             .background(color = Color(0xFFFFFFFF))
     ) {
@@ -241,7 +242,7 @@ fun ClContentBox(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 17.dp)
+                .padding(top = 17.dp, end= 27.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -255,7 +256,7 @@ fun ClContentBox(
                     Text(
                         text = location,
                         modifier = Modifier
-                            .padding(top = 10.dp)
+                            .padding(top = 10.dp, start=16.dp)
                             .clickable {
                                 selectedLocation = location // 위치를 클릭하면 선택된 위치 업데이트
                                 locNum = location
@@ -270,6 +271,14 @@ fun ClContentBox(
                     )
                 }
             }
+            Divider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(top = 5.dp, bottom = 15.dp)
+                    .width(1.dp),
+                color = Color(0xFFC9C9C9),
+                thickness = 1.dp
+            )
             Crossfade(targetState = locNum, label = "") { location ->
                 VerticalGrid(
                     columns = SimpleGridCells.Fixed(2),
