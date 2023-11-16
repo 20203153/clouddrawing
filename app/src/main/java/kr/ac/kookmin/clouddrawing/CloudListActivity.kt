@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -62,10 +63,19 @@ import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlinx.coroutines.launch
+import kr.ac.kookmin.clouddrawing.components.LeftCloseBtn
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 class CloudListActivity : ComponentActivity() {
 
     private var allPost : List<Post> = listOf()
+
+    companion object {
+        private val TAG: String = "CloudListActiity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,18 +85,40 @@ class CloudListActivity : ComponentActivity() {
             Log.e("Testing", "vandvandjv : ${allPost}")
         }
 
+        val today = mutableStateOf(0)
+        val month = mutableStateOf(0)
+        val recent = mutableStateOf(0)
+
         setContent {
             val verticalScroll = rememberScrollState()
-            val today by remember { mutableStateOf(0) }
-            val month by remember { mutableStateOf(0) }
-            val allOf by remember { mutableStateOf(0) }
 
             CloudList(
                 verticalScroll = verticalScroll,
                 leftCloseBtn = { finish() },
-                today = today, month = month, allOf = allOf,
-                postList = allPost
+                today = today, month = month, recent = recent,
+                postList = allPost,
             )
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                today.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())
+                )
+                Log.d(TAG, "today: ${today.value} / ${Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())}")
+            }
+            launch {
+                month.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusMonths(1).toInstant()))
+                )
+                Log.d(TAG, "month: ${month.value} / ${Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusMonths(1).toInstant()))}")
+            }
+            launch {
+                recent.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(50).toInstant()))
+                )
+                Log.d(TAG, "recent: ${recent.value} / ${Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(50).toInstant()))}")
+            }
         }
     }
 }
@@ -96,8 +128,10 @@ class CloudListActivity : ComponentActivity() {
 fun CloudList(
     leftCloseBtn: () -> Unit = {},
     verticalScroll: ScrollState = rememberScrollState(),
-    today: Int = 0, month: Int = 0, allOf: Int = 0,
-    postList : List<Post> = listOf()
+    postList : List<Post> = listOf(),
+    today: MutableState<Int> = mutableStateOf(0),
+    month: MutableState<Int> = mutableStateOf(0),
+    recent: MutableState<Int> = mutableStateOf(0)
 ) {
     Column(
         modifier = Modifier
@@ -150,7 +184,9 @@ fun CloudList(
                 verticalArrangement = Arrangement.Center // 수직 중앙 정렬
             ) {
                 Text(
-                    text = "오늘은 구름 $today 개를 그렸어요. \n이번 달 구름 $month 개를 그렸어요. \n지금까지 구름 $allOf 개를 그렸어요. ",
+                    text = "오늘은 구름 ${today.value} 개를 그렸어요. \n" +
+                            "이번 달 구름 ${month.value} 개를 그렸어요. \n" + "" +
+                            "지금까지 구름 ${recent.value} 개를 그렸어요.",
                     style = TextStyle(
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
@@ -202,7 +238,8 @@ fun ClContentBox(
                 width = 1.dp, color = Color(0xFFF4F4F4),
                 shape = RoundedCornerShape(size = 20.dp)
             )
-            .fillMaxSize(1f)
+            .width(328.dp)
+            .height(570.dp)
             .background(color = Color(0xFFFFFFFF))
     ) {
         val locations = listOf(
@@ -214,11 +251,11 @@ fun ClContentBox(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 17.dp, top = 17.dp)
+                .padding(top = 17.dp)
         ) {
             Column(
                 modifier = Modifier
-                    .weight(0.15f)
+                    .width(54.dp)
                     .padding(end = 10.dp)
 
             ) {
@@ -284,74 +321,7 @@ fun ClContentBox(
     }
 }
 
-            //card 자리
-            //
-            // 첫 번째 카드
-// VerticalGrid(
-// columns = SimpleGridCells.Fixed(2),
-// modifier = Modifier
-// .weight(1f)
-// .padding(start = 20.dp),
-// horizontalArrangement = Arrangement.spacedBy(20.dp),
-// verticalArrangement = Arrangement.spacedBy(20.dp)
-// ) {
-//
-// }
-// /*
-// Crossfade(targetState = locNum) { location ->
-// run breaker@{
-// if (location == locations[0]) {
-// postList.forEach {
-// CLContentCard(it)
-// }
-// return@breaker
-// }
-//
-// locations.forEach {
-// if (location == it) {
-// postList.forEach {
-// if (location == it.region) {
-// CLContentCard(it)
-// }
-// }
-// return@breaker
-// }
-// }
-// }
-// }
-// Crossfade(targetState = locNum) { location ->
-// VerticalGrid(
-// columns = SimpleGridCells.Fixed(2),
-// modifier = Modifier
-// .weight(1f)
-// .padding(start = 20.dp),
-// horizontalArrangement = Arrangement.spacedBy(20.dp),
-// verticalArrangement = Arrangement.spacedBy(20.dp)
-// ) {
-// run breaker@ {
-// if (location == locations[0]) {
-// postList.forEach {
-// CLContentCard(it)
-// }
-// return@breaker
-// }
-//
-// locations.forEach {
-// if (location == it) {
-// postList.forEach {
-// if (location == it.region) {
-// CLContentCard(it)
-// }
-// }
-// return@breaker
-// }
-// }
-// }
-// }
-// */
-// }
-//
-//
+
 @Preview
 @Composable
 fun CLContentCard(
