@@ -3,9 +3,11 @@ package kr.ac.kookmin.clouddrawing.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -13,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,11 +40,12 @@ class SearchBarModel : ViewModel(){
     var search: String = ""
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Preview(name="SearchBar", showBackground = true)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchBar(
     viewModel: SearchBarModel = SearchBarModel(),
+    keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
     onSearch: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -63,19 +66,22 @@ fun SearchBar(
                 color = Color(0xFFF6F6F6),
                 shape = RoundedCornerShape(size = 10.dp)
             )
-            .width(340.dp)
+            .fillMaxWidth(1f)
             .height(38.dp)
             .background(
                 color = Color(0xFFFFFFFF),
                 shape = RoundedCornerShape(size = 10.dp)
-            ),
+            )
+            .clickable {
+               keyboardController?.show()
+            },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         BasicTextField(
             modifier = Modifier
                 .height(38.dp)
                 .padding(horizontal = 8.dp, vertical = 10.dp)
-                .width(250.dp),
+                .fillMaxWidth(0.9f),
             value = searchValue,
             onValueChange = {
                 searchValue = it
@@ -95,8 +101,8 @@ fun SearchBar(
             singleLine = true,
             decorationBox = { innerTextField ->
                 if (searchValue.isEmpty()) {
-                    Box(Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
-                        Text("그리고 싶은 장소를 검색하세요. (Ex.정릉 서브웨이, 지역명 + 상호명)", color = Color.Gray)
+                    Box {
+                        Text("그리고 싶은 장소를 검색하세요. (Ex. 지역명 + 상호명)", color = Color.Gray)
                     }
                 }
                 innerTextField.invoke()

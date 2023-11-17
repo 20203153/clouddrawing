@@ -37,8 +37,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -123,6 +126,9 @@ class MainActivity : AppCompatActivity() {
 
     private var testing = mutableListOf<Post>()
 
+    @OptIn(ExperimentalComposeUiApi::class)
+    private var localKeyboardController: SoftwareKeyboardController? = null
+
     companion object {
         private val LOCATION_PERMISSIONS = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -134,6 +140,7 @@ class MainActivity : AppCompatActivity() {
         private const val CHANNEL_ID = "cloudgreenImagine" //알림 채널 아이디
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -170,6 +177,7 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity.kakaoMap.value = kakaoMap
 
                 kakaoMap.setOnLabelClickListener { _, _, label ->
+                    localKeyboardController?.hide()
                     val postId = label.layer.layerId
 
                     if (postId != CURRENT_LOC_MARKER) {
@@ -192,6 +200,10 @@ class MainActivity : AppCompatActivity() {
                                 }
                         }
                     }
+                }
+
+                kakaoMap.setOnMapClickListener { kakaoMap, position, screenPoint, poi ->
+                    localKeyboardController?.hide()
                 }
 
                 moveMapCurrentLocation()
@@ -228,6 +240,7 @@ class MainActivity : AppCompatActivity() {
             isLeftOpen = remember { mutableStateOf(false) }
             isCloudMindOpen = remember { mutableStateOf(false) }
             isCloudListModalOpen = remember { mutableStateOf(false) }
+            localKeyboardController = LocalSoftwareKeyboardController.current
 
             Box(Modifier.fillMaxSize()) {
                 KakaoMapComponent(
@@ -246,44 +259,48 @@ class MainActivity : AppCompatActivity() {
                         isLeftOpen.value = true
                     }
                     Spacer(Modifier.width(5.dp))
-                    SearchBar(searchBar, onSearch = {
-                        if (searchBar.search == "") return@SearchBar
+                    SearchBar(
+                        searchBar,
+                        onSearch = {
+                            if (searchBar.search == "") return@SearchBar
+                            val addressService = retrofit.create(AddressService::class.java)
+                            addressService.getLocation(
+                                API_KEY,
+                                searchBar.search,
+                                this@MainActivity.lat.toString(),
+                                this@MainActivity.lng.toString()
+                                ).enqueue(object : Callback<keyward2address> {
+                                    override fun onResponse(
+                                        call: Call<keyward2address>,
+                                        response: Response<keyward2address>
+                                    ) {
+                                        val result = response.body()
+                                        val a = response.raw()
+                                        if (result?.documents?.isNotEmpty() == true) {
+                                            this@MainActivity.lng = result.documents?.get(0)?.x?.toDouble() ?: 126.584063
+                                            this@MainActivity.lat = result.documents?.get(0)?.y?.toDouble() ?: 37.335887
 
-                        val addressService = retrofit.create(AddressService::class.java)
-                        addressService.getLocation(
-                            API_KEY,
-                            searchBar.search,
-                            this@MainActivity.lat.toString(),
-                            this@MainActivity.lng.toString()
-                        ).enqueue(object : Callback<keyward2address> {
-                            override fun onResponse(
-                                call: Call<keyward2address>,
-                                response: Response<keyward2address>
-                            ) {
-                                val result = response.body()
-                                val a = response.raw()
-                                if (result?.documents?.isNotEmpty() == true) {
-                                    this@MainActivity.lng = result.documents?.get(0)?.x?.toDouble() ?: 126.584063
-                                    this@MainActivity.lat = result.documents?.get(0)?.y?.toDouble() ?: 37.335887
+                                            moveMapCurrentLocation()
+                                        } else {
+                                            Toast.makeText(context, "검색된 장소가 없습니다!", Toast.LENGTH_LONG)
+                                                .show()
+                                        }
+                                        Log.e(TAG, "body : $result")
+                                        Log.e(TAG, "raw : $a")
+                                        Log.e(
+                                            TAG,
+                                            "lat: ${this@MainActivity.lat} / lng: ${this@MainActivity.lng}"
+                                        )
+                                    }
 
-                                    moveMapCurrentLocation()
-                                } else {
-                                    Toast.makeText(context, "검색된 장소가 없습니다!", Toast.LENGTH_LONG)
-                                        .show()
-                                }
-                                Log.e(TAG, "body : $result")
-                                Log.e(TAG, "raw : $a")
-                                Log.e(
-                                    TAG,
-                                    "lat: ${this@MainActivity.lat} / lng: ${this@MainActivity.lng}"
-                                )
-                            }
-
-                            override fun onFailure(call: Call<keyward2address>, t: Throwable) {
-                                TODO("Not yet implemented")
-                            }
-                        })
-                    }, Modifier.fillMaxWidth(1f))
+                                    override fun onFailure(call: Call<keyward2address>, t: Throwable) {
+                                        TODO("Not yet implemented")
+                                    }
+                                })
+                           },
+                        modifier = Modifier.fillMaxWidth(1f),
+                        keyboardController = localKeyboardController
+                    )
                 }
 
                 Row(
@@ -294,6 +311,7 @@ class MainActivity : AppCompatActivity() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     AddCloudBtn(addCloud = {
+                        localKeyboardController?.hide()
                         val intent = Intent(context, CloudDrawingActivity::class.java)
                         Log.d(TAG, "lat : $lat / lng : $lng")
 
@@ -357,6 +375,7 @@ class MainActivity : AppCompatActivity() {
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
+                    localKeyboardController?.hide()
                     Box(
                         Modifier
                             .fillMaxSize(1f)
