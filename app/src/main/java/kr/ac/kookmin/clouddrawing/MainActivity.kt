@@ -51,6 +51,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -65,7 +67,7 @@ import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
@@ -91,7 +93,6 @@ import round
 
 
 class MainActivity : AppCompatActivity() {
-
     private val appBarConfiguration: AppBarConfiguration? = null
 
     private lateinit var isLeftOpen: MutableState<Boolean>
@@ -100,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private val kakaoMap: MutableLiveData<KakaoMap> by lazy {
+    private val kakaoMap: MutableLiveData<KakaoMap?> by lazy {
         MutableLiveData(null)
     }
     private val mapView: MutableLiveData<MapView> by lazy {
@@ -140,77 +141,88 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel() // 알림 채널 생성 함수 호출
         startService(Intent(this, NotificagtionService::class.java))
 
+        val intent = Intent(this, LoadingActivity::class.java)
+        startActivity(intent)
+
+        if(Firebase.auth.currentUser == null) {
+            val intent1 = Intent(this, SignupActivity::class.java)
+            startActivity(intent1)
+        }
 
         API_KEY = getString(R.string.kakao_restapi_key)
 
         mapView.value = MapView(applicationContext)
 
-        val mapViewFlow = MutableStateFlow(value = mapView)
         val searchBar = ViewModelProvider(this)[SearchBarModel::class.java]
         val context = this
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://dapi.kakao.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
         mapView.value?.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
-                TODO("Not yet implemented")
+                finish()
             }
 
             override fun onMapError(error: Exception?) {
                 TODO("Not yet implemented")
             }
         },
-            object : KakaoMapReadyCallback() {
-                override fun onMapReady(kakaoMap: KakaoMap) {
-                    this@MainActivity.kakaoMap.value = kakaoMap
+        object : KakaoMapReadyCallback() {
+            override fun onMapReady(kakaoMap: KakaoMap) {
+                this@MainActivity.kakaoMap.value = kakaoMap
 
-                    kakaoMap.setOnLabelClickListener { _, _, label ->
-                        val postId = label.layer.layerId
+                kakaoMap.setOnLabelClickListener { _, _, label ->
+                    val postId = label.layer.layerId
 
-                        if (postId != CURRENT_LOC_MARKER) {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                val post = Post.getPostById(postId)
-                                mutatePostList = Post.getPostByLatLng(
-                                    post?.uid!!,
-                                    round(post.lat ?: 0.0), round(post.lng ?: 0.0)
-                                ).toMutableList()
+                    if (postId != CURRENT_LOC_MARKER) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            val post = Post.getPostById(postId)
+                            mutatePostList = Post.getPostByLatLng(
+                                post?.uid!!,
+                                round(post.lat ?: 37.335887), round(post.lng ?: 126.584063)
+                            ).toMutableList()
 
-                                Log.d(TAG, "POI Size: ${mutatePostList.size}")
+                            Log.d(TAG, "POI Size: ${mutatePostList.size}")
 
-                                if (mutatePostList.isNotEmpty())
-                                    if (mutatePostList.size == 1) {
-                                        mutatePost.value = mutatePostList[0]
-                                        isCloudMindOpen.value = true
-                                    } else {
-                                        Log.d(TAG, "POI[0]: ${mutatePostList[0].title}")
-                                        isCloudListModalOpen.value = true
-                                    }
-                            }
+                            if (mutatePostList.isNotEmpty())
+                                if (mutatePostList.size == 1) {
+                                    mutatePost.value = mutatePostList[0]
+                                    isCloudMindOpen.value = true
+                                } else {
+                                    Log.d(TAG, "POI[0]: ${mutatePostList[0].title}")
+                                    isCloudListModalOpen.value = true
+                                }
                         }
                     }
-
                 }
-
-                override fun getPosition(): LatLng {
-                    return getCurrentLatLng()
-                }
-
-                override fun getZoomLevel(): Int {
-                    return 6
-                }
-
-            })
-
-        CoroutineScope(Dispatchers.Main).launch {
-            user = User.getCurrentUser()
-            if (user != null) {
-                profileUri.value = Uri.parse(user!!.photoURL)
-                Log.d("MainActivity", profileUri.value.toString())
 
             }
+
+            override fun getPosition(): LatLng {
+                return getCurrentLatLng()
+            }
+        })
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://dapi.kakao.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            launch {
+                user = User.getCurrentUser()
+                if (user != null) {
+                    profileUri.value = Uri.parse(user!!.photoURL)
+                    Log.d("MainActivity", profileUri.value.toString())
+                }
+            }
+            launch {
+                val location = loadCurrentLocation()
+                if(location != null) {
+                    this@MainActivity.lat = location.latitude
+                    this@MainActivity.lng = location.longitude
+                }
+            }
+            delay(1000L)
+            moveMapCurrentLocation()
         }
 
         setContent {
@@ -252,8 +264,8 @@ class MainActivity : AppCompatActivity() {
                                 val result = response.body()
                                 val a = response.raw()
                                 if (result?.documents?.isNotEmpty() == true) {
-                                    this@MainActivity.lng = result.documents[0].x.toDouble()
-                                    this@MainActivity.lat = result.documents[0].y.toDouble()
+                                    this@MainActivity.lng = result.documents?.get(0)?.x?.toDouble() ?: 126.584063
+                                    this@MainActivity.lat = result.documents?.get(0)?.y?.toDouble() ?: 37.335887
 
                                     moveMapCurrentLocation()
                                 } else {
@@ -292,19 +304,19 @@ class MainActivity : AppCompatActivity() {
                             lng.toBigDecimal().toPlainString(),
                             lat.toBigDecimal().toPlainString()
                         ).enqueue(object : Callback<coord2address> {
-                                override fun onResponse(call: Call<coord2address>, response: Response<coord2address>) {
+                                override fun onResponse(call: Call<coord2address?>, response: Response<coord2address?>) {
                                     var result = response.body()
                                     var a = response.raw()
                                     if (result?.documents?.isNotEmpty() == true) {
                                         this@MainActivity.address =
-                                            result?.documents?.get(0)?.address?.address_name
+                                            result.documents?.get(0)?.address?.address_name
                                         this@MainActivity.road_address =
-                                            result?.documents?.get(0)?.road_address?.address_name
+                                            result.documents?.get(0)?.road_address?.address_name
                                         this@MainActivity.region_1depth_name =
-                                            if (result?.documents?.get(0)?.road_address == null) {
-                                                result?.documents?.get(0)?.address?.region_1depth_name
+                                            if (result.documents?.get(0)?.road_address == null) {
+                                                result.documents?.get(0)?.address?.region_1depth_name
                                             } else {
-                                                result?.documents?.get(0)?.road_address?.region_1depth_name
+                                                result.documents?.get(0)?.road_address?.region_1depth_name
                                             }
                                         Log.d(TAG, "body : $result")
                                     } else {
@@ -360,7 +372,11 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 HomeLeftModal(
-                    logoutButton = { User.logoutCurrentUser(); finish() },
+                    logoutButton = {
+                        User.logoutCurrentUser()
+                        startActivity(Intent(this@MainActivity, SignupActivity::class.java))
+                        isLeftOpen.value = false
+                    },
                     isDrawerOpen = isLeftOpen,
                     profileUri = profileUri,
                     previousPost = postListOfRecents
@@ -380,12 +396,6 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-
-        CoroutineScope(Dispatchers.Main).launch {
-            val location = loadCurrentLocation()
-            this@MainActivity.lat = location?.latitude ?: 0.0
-            this@MainActivity.lng = location?.longitude ?: 0.0
-        }
     }
 
     override fun onResume() {
@@ -393,11 +403,17 @@ class MainActivity : AppCompatActivity() {
         mapView.value?.resume()
 
         CoroutineScope(Dispatchers.Main).launch {
-            user = User.getCurrentUser()
-            if (user != null) {
-                profileUri.value = Uri.parse(user!!.photoURL)
-                Log.d("MainActivity", profileUri.value.toString())
+            launch {
+                user = User.getCurrentUser()
+                if (user != null) {
+                    profileUri.value = Uri.parse(user!!.photoURL)
+                    Log.d("MainActivity", profileUri.value.toString())
+                }
             }
+            launch {
+                getCurrentLatLng()
+            }
+            delay(400L)
 
             val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
             if (clouds.isNotEmpty()) {
@@ -455,9 +471,9 @@ class MainActivity : AppCompatActivity() {
                         )
                     )
                 }
-            }
 
-            moveMapInit()
+                moveMapCurrentLocation()
+            }
         }
     }
 
@@ -660,9 +676,9 @@ class MainActivity : AppCompatActivity() {
                 object : CancellationToken() {
                     override fun onCanceledRequested(p0: OnTokenCanceledListener): CancellationToken =
                         CancellationTokenSource().token
-
                     override fun isCancellationRequested(): Boolean = false
                 }).await()
+            fusedLocationClient.lastLocation.await()
         }
     }
 

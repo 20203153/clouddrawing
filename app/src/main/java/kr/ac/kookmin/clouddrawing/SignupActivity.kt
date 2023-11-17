@@ -1,7 +1,6 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.app.Activity
-import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
@@ -147,7 +146,7 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun returnMain() {
-        startActivity(Intent(instance, MainActivity::class.java))
+        finish()
     }
 
     private fun initSignIn() {

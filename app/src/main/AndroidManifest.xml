@@ -24,7 +24,7 @@
         <service
             android:name=".NotificagtionService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".MyInformationActivity"
@@ -40,25 +40,23 @@
             android:exported="false" />
         <activity
             android:name=".CloudDrawingActivity"
-            android:exported="false" /> <!-- Main Activity (without LAUNCHER category now) -->
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:configChanges="screenSize|orientation"
-            android:exported="true" /> <!-- Loading Activity (This is the new splash screen) -->
-        <activity
-            android:name=".LoadingActivity"
+            android:label="@string/app_name"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"> <!-- Optional: Use a theme without ActionBar for splash -->
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:configChanges="screenSize|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".LoadingActivity"
+            android:exported="false" />
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
             android:value="cd83bfe1b110bf47b190ade8001e195b" />
     </application>
-
 </manifest>
