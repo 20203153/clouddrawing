@@ -10,7 +10,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -115,6 +117,7 @@ fun CloudContent(
                 )
             )
             Spacer(Modifier.width(1.dp))
+
         } // Header done.
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
         CCContentBox(
@@ -172,6 +175,20 @@ fun CCContentBox(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(23.dp))
+        // 메뉴 아이콘을 오른쪽으로 정렬하기 위한 Box
+        Box(
+            modifier = Modifier
+                .padding(start = 290.dp, end = 10.dp), // 오른쪽 여백 설정
+            contentAlignment = Alignment.TopEnd // 오른쪽 상단 정렬
+        ) {
+            Image(
+            painter = painterResource(id = R.drawable.content_menu), // Replace 'menu_icon' with your actual icon's resource ID
+            contentDescription = "Menu Icon",
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { /* TODO: Define action on menu icon click */ }
+        )
+        }
         Text(
             text = post.value?.title ?: "",
             style = TextStyle(
