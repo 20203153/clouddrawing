@@ -1,0 +1,80 @@
+{
+  "project_info": {
+    "project_number": "616811973032",
+    "firebase_url": "https://clouddrawing-27622-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "clouddrawing-27622",
+    "storage_bucket": "clouddrawing-27622.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616811973032:android:7d8a503fc34d986c3e359d",
+        "android_client_info": {
+          "package_name": "kr.ac.kookmin.clouddrawing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "616811973032-0p8ddifpalbd05mo723b1tmuqeo6gl0u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.kookmin.clouddrawing",
+            "certificate_hash": "c72e55d2168f1a3917fa21068ca7404f4916958f"
+          }
+        },
+        {
+          "client_id": "616811973032-7iuut9t9lopj428r48toduu12lhrdrl4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.kookmin.clouddrawing",
+            "certificate_hash": "d2100de0a29d3651587b1470b0f220fe3771a726"
+          }
+        },
+        {
+          "client_id": "616811973032-eamgsqs6ct4vbqig8rkcf4j5vm565iqr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.kookmin.clouddrawing",
+            "certificate_hash": "863a99ed7132a0d3c7eb07f5e750d38e41e9e4a3"
+          }
+        },
+        {
+          "client_id": "616811973032-kjno27deltpkprucup51m4lad58h57jg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.kookmin.clouddrawing",
+            "certificate_hash": "4c8b0b6526e07b255055a77e79d329d2f1a5f439"
+          }
+        },
+        {
+          "client_id": "616811973032-obk863cujp01f40il4hoc88e0810gb7e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.ac.kookmin.clouddrawing",
+            "certificate_hash": "ad1a9690a5620be197b3a9ff6be7b90a3932b1a0"
+          }
+        },
+        {
+          "client_id": "616811973032-l6qrmj19a53rnfdcm3aksugep450skjd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO_eiZdwg7uE5OSLvLti4QBVyw-oeP-gY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "616811973032-l6qrmj19a53rnfdcm3aksugep450skjd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
