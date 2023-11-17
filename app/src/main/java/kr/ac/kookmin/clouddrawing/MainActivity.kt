@@ -194,6 +194,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+                moveMapCurrentLocation()
             }
 
             override fun getPosition(): LatLng {
@@ -221,8 +222,6 @@ class MainActivity : AppCompatActivity() {
                     this@MainActivity.lng = location.longitude
                 }
             }
-            delay(1000L)
-            moveMapCurrentLocation()
         }
 
         setContent {
