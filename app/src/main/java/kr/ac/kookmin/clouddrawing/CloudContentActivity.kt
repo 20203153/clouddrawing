@@ -1,6 +1,7 @@
 package kr.ac.kookmin.clouddrawing
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -23,20 +24,31 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -148,11 +160,12 @@ fun CloudContent(
     }
 }
 
+
 @Preview
 @Composable
 fun CCContentBox(
     verticalScroll: ScrollState = rememberScrollState(),
-    post:MutableState<Post?> = mutableStateOf(null)
+    post: MutableState<Post?> = mutableStateOf(null)
 ) {
     Column(
         modifier = Modifier
@@ -174,20 +187,11 @@ fun CCContentBox(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(23.dp))
         // 메뉴 아이콘을 오른쪽으로 정렬하기 위한 Box
         Box(
             modifier = Modifier
-                .padding(start = 290.dp, end = 10.dp), // 오른쪽 여백 설정
-            contentAlignment = Alignment.TopEnd // 오른쪽 상단 정렬
         ) {
-            Image(
-            painter = painterResource(id = R.drawable.content_menu), // Replace 'menu_icon' with your actual icon's resource ID
-            contentDescription = "Menu Icon",
-            modifier = Modifier
-                .size(24.dp)
-                .clickable { /* TODO: Define action on menu icon click */ }
-        )
+           Demo_DropDownMenu()
         }
         Text(
             text = post.value?.title ?: "",
@@ -297,7 +301,7 @@ fun CCContentBox(
                 columns = SimpleGridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxSize(1f)
-                    .padding(start = 14.dp, end = 14.dp, bottom=20.dp),
+                    .padding(start = 14.dp, end = 14.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
@@ -313,3 +317,38 @@ fun CCContentBox(
         }
     }
 }
+
+
+@Preview
+@Composable
+fun Demo_DropDownMenu() {
+    val context = LocalContext.current
+    var expanded by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(onClick = { expanded = !expanded }) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More"
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("수정하기") },
+                onClick = { Toast.makeText(context, "수정하기", Toast.LENGTH_SHORT).show() }
+            )
+            DropdownMenuItem(
+                text = { Text("삭제하기") },
+                onClick = { Toast.makeText(context, "삭제하기", Toast.LENGTH_SHORT).show() }
+            )
+        }
+    }
+}
+
+
