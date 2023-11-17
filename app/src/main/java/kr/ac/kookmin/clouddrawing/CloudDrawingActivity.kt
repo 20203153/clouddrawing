@@ -385,12 +385,7 @@ fun CDBackground(
                     )
                 )
             }
-//            BasicTextField(
-//                modifier = Modifier.size(height=18.dp, width=200.dp),
-//                value = locations.value,
-//                onValueChange = { textValue -> locations.value = textValue},
-//                singleLine = true
-//            )
+
             Text(
                 text = locations.value,
                 modifier = Modifier.size(height=18.dp, width=200.dp),

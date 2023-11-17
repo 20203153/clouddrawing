@@ -337,18 +337,21 @@ fun Demo_DropDownMenu() {
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color(0xFFECF2FF))
         ) {
             DropdownMenuItem(
-                text = { Text("수정하기") },
+                text = { Text("삭제하기",  fontFamily = FontFamily(Font(R.font.inter))) },
                 onClick = { Toast.makeText(context, "수정하기", Toast.LENGTH_SHORT).show() }
             )
             DropdownMenuItem(
-                text = { Text("삭제하기") },
+                text = { Text("삭제하기",  fontFamily = FontFamily(Font(R.font.inter))) },
                 onClick = { Toast.makeText(context, "삭제하기", Toast.LENGTH_SHORT).show() }
             )
         }
     }
 }
+
+
 
 
