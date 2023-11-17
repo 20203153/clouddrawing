@@ -636,8 +636,8 @@ class MainActivity : AppCompatActivity() {
                 val userCurrentLocation =
                     locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-                uLat = userCurrentLocation!!.latitude
-                uLng = userCurrentLocation.longitude
+                uLat = userCurrentLocation?.latitude ?: uLat
+                uLng = userCurrentLocation?.longitude ?: uLng
             }
         } else {
             ActivityCompat.requestPermissions(
