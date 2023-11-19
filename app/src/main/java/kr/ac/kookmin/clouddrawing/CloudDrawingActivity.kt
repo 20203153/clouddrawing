@@ -40,6 +40,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -80,6 +81,8 @@ import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
 import round
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 
 
@@ -95,21 +98,32 @@ class CloudDrawingActivity : ComponentActivity() {
         val title = mutableStateOf("")
         val friends = mutableStateOf("")
         val mainContent = mutableStateOf("")
-        val loading: MutableState<Boolean> = mutableStateOf(false)
+        val loading: MutableState<Boolean> = mutableStateOf(true)
 
-        val lat = intent.getDoubleExtra("lat", 0.0)
-        val lng = intent.getDoubleExtra("lng", 0.0)
-        val address : String = intent.getStringExtra("address") ?: ""
-        val road_address : String = intent.getStringExtra("road_address") ?: ""
-        val a : String = intent.getStringExtra("region") ?: ""
+        val postId = intent.getStringExtra("postId")
+
+        var lat = intent.getDoubleExtra("lat", 0.0)
+        var lng = intent.getDoubleExtra("lng", 0.0)
+        var address : String = intent.getStringExtra("address") ?: ""
+        var road_address : String = intent.getStringExtra("road_address") ?: ""
+        var a : String = intent.getStringExtra("region") ?: ""
         Log.e("Testing", "region : " + a)
-        val region = mutableStateOf(intent.getStringExtra("region") ?: "")
-        val locations = mutableStateOf(if(road_address == "") address else road_address)
+        var region = mutableStateOf(intent.getStringExtra("region") ?: "")
+        var locations = mutableStateOf(if(road_address == "") address else road_address)
         val locationAlias = mutableStateOf("")
+
+        val date = DatePickerState(
+            Date().time,
+            Date().time,
+            IntRange(
+                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(5).year,
+                LocalDate.now().atStartOfDay(ZoneId.systemDefault()).plusYears(5).year
+            ),
+            DisplayMode.Picker
+        )
 
         setContent {
             val scrollState = rememberScrollState()
-            val date = rememberDatePickerState(Date().time)
 
             CDBackground(
                 title = title,
@@ -126,42 +140,84 @@ class CloudDrawingActivity : ComponentActivity() {
                         loading.value = true
 
                         CoroutineScope(Dispatchers.Main).launch {
-                            val id = Post.getNewPostId()
+                            val posts = Post.getPostById(postId ?: "")
+                            if(posts == null) {
+                                val id = Post.getNewPostId()
+                                val post = Post(
+                                    id = id,
+                                    uid = User.getCurrentUser()!!.uid,
+                                    title = title.value,
+                                    lat = round(lat),
+                                    lng = round(lng),
+                                    address = locations.value,
+                                    addressAlias = locationAlias.value,
+                                    comment = mainContent.value,
+                                    postTime = Timestamp(Date(date.selectedDateMillis!!))
+                                )
 
-                            val post = Post(
-                                id = id,
-                                uid = User.getCurrentUser()!!.uid,
-                                title = title.value,
-                                lat = round(lat),
-                                lng = round(lng),
-                                address = locations.value,
-                                addressAlias = locationAlias.value,
-                                comment = mainContent.value,
-                                postTime = Timestamp(Date(date.selectedDateMillis!!))
-                            )
+                                val user = User.getCurrentUser()
+                                val storageRef = Firebase.storage.reference
 
-                            val user = User.getCurrentUser()
-                            val storageRef = Firebase.storage.reference
+                                it.forEachIndexed { index, uri ->
+                                    val photoRef =
+                                        storageRef.child("post/${user!!.uid}/${id}/${index}")
 
-                            it.forEachIndexed { index, uri ->
-                                val photoRef = storageRef.child("post/${user!!.uid}/${id}/${index}")
+                                    photoRef.putFile(uri).await()
+                                    post.image.add(photoRef.downloadUrl.await().toString())
+                                }
 
-                                photoRef.putFile(uri).await()
-                                post.image.add(photoRef.downloadUrl.await().toString())
+                                Post.addPost(post)
+
+                                Toast.makeText(
+                                    this@CloudDrawingActivity,
+                                    "구름이 그려졌습니다! :D",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                val user = User.getCurrentUser()
+                                val storageRef = Firebase.storage.reference
+
+                                it.forEachIndexed { index, uri ->
+                                    val photoRef =
+                                        storageRef.child("post/${user!!.uid}/${posts.id ?: ""}/${index}")
+
+                                    photoRef.putFile(uri).await()
+                                    posts.image.add(photoRef.downloadUrl.await().toString())
+                                }
+
+                                posts.update(Post(
+                                    title = title.value,
+                                    address = locations.value,
+                                    addressAlias = locationAlias.value,
+                                    comment = mainContent.value,
+                                    postTime = Timestamp(Date(date.selectedDateMillis!!))
+                                ))
                             }
-
-                            Post.addPost(post)
-
-                            Toast.makeText(
-                                this@CloudDrawingActivity,
-                                "구름이 그려졌습니다! :D",
-                                Toast.LENGTH_SHORT
-                            ).show()
                             finish()
                         }
                     }
                 }
             )
+        }
+        CoroutineScope(Dispatchers.Main).launch {
+            if(postId == null) {
+                loading.value = false
+                return@launch
+            }
+
+            val post = Post.getPostById(postId)
+            if(post == null) finish()
+            else {
+                lat = post.lat ?: 0.0
+                lng = post.lng ?: 0.0
+                locations.value = post.address ?: ""
+                locationAlias.value = post.addressAlias ?: ""
+                title.value = post.title ?: ""
+                mainContent.value = post.comment ?: ""
+                date.setSelection(post.postTime?.toDate()?.time ?: Date().time)
+
+                loading.value = false
+            }
         }
     }
 }
@@ -335,11 +391,13 @@ fun CDBackground(
                     )
                 )
             }
-            Row(Modifier.width(200.dp)
-                .clickable {
-                keyboardController?.hide()
-                calendarVisible = true
-            }) {
+            Row(
+                Modifier
+                    .width(200.dp)
+                    .clickable {
+                        keyboardController?.hide()
+                        calendarVisible = true
+                    }) {
                 Text(
                     text = timeFormat.format(Date(date.selectedDateMillis ?: 0)),
                     style = TextStyle(
@@ -515,7 +573,8 @@ fun CDBackground(
             horizontalArrangement = Arrangement.Center
         ) {
             DatePicker(
-                modifier = Modifier.fillMaxWidth(1f)
+                modifier = Modifier
+                    .fillMaxWidth(1f)
                     .background(Color.White, RoundedCornerShape(10.dp)),
                 state = date
             )

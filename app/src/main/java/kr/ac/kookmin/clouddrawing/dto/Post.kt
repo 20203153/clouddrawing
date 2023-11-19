@@ -5,6 +5,7 @@ import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import java.util.Date
@@ -37,7 +38,7 @@ data class Post(
         }
 
         suspend fun getPostById(id: String): Post? {
-            return post.document(id).get().await().toObject()
+            return post.document(id).get(Source.SERVER).await().toObject()
         }
 
         suspend fun getPostByUID(uid: String?, limit: Long = 10L): List<Post> {

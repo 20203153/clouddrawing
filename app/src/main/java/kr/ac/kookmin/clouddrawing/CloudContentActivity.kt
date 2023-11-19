@@ -1,5 +1,6 @@
 package kr.ac.kookmin.clouddrawing
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -11,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -84,7 +83,28 @@ class CloudContentActivity : ComponentActivity() {
             CloudContent(
                 verticalScroll = verticalScroll,
                 leftCloseBtn = { finish() },
-                post = post
+                post = post,
+                onModify = {
+                    Toast.makeText(this, "구름을 수정할게요!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, CloudDrawingActivity::class.java)
+                    intent.putExtra("postId", post.value?.id ?: "")
+                    startActivity(intent)
+
+                    finish()
+                },
+                onDelete = {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        if (postId == null) finish()
+
+                        post.value = Post.getPostById(postId!!)
+                        if (post.value == null) finish()
+                        else {
+                            post.value?.delete()
+                            Toast.makeText(this@CloudContentActivity, "구름을 지웠습니다!", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                    }
+                }
             )
         }
 
@@ -102,7 +122,9 @@ class CloudContentActivity : ComponentActivity() {
 fun CloudContent(
     leftCloseBtn: () -> Unit = {},
     verticalScroll: ScrollState = rememberScrollState(),
-    post:MutableState<Post?> = mutableStateOf(null)
+    post:MutableState<Post?> = mutableStateOf(null),
+    onModify: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -134,7 +156,9 @@ fun CloudContent(
         Spacer(Modifier.defaultMinSize(minHeight = 20.dp))
         CCContentBox(
             verticalScroll,
-            post
+            post,
+            onModify,
+            onDelete
         )
     }
 
@@ -165,8 +189,12 @@ fun CloudContent(
 @Composable
 fun CCContentBox(
     verticalScroll: ScrollState = rememberScrollState(),
-    post: MutableState<Post?> = mutableStateOf(null)
+    post: MutableState<Post?> = mutableStateOf(null),
+    onModify: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .padding(top = 46.dp, start = 31.dp, end = 31.dp, bottom = 30.dp)
@@ -188,11 +216,32 @@ fun CCContentBox(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 메뉴 아이콘을 오른쪽으로 정렬하기 위한 Box
-        Box(
-            modifier = Modifier
-        ) {
-           Demo_DropDownMenu()
-        }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize(Alignment.TopEnd)
+            ) {
+                IconButton(onClick = { expanded = !expanded }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More"
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(Color(0xFFECF2FF))
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("수정하기",  fontFamily = FontFamily(Font(R.font.inter))) },
+                        onClick = onModify
+                    )
+                    DropdownMenuItem(
+                        text = { Text("삭제하기",  fontFamily = FontFamily(Font(R.font.inter))) },
+                        onClick = onDelete
+                    )
+                }
+            }
         Text(
             text = post.value?.title ?: "",
             style = TextStyle(
@@ -317,41 +366,6 @@ fun CCContentBox(
         }
     }
 }
-
-
-@Preview
-@Composable
-fun Demo_DropDownMenu() {
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.TopEnd)
-    ) {
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "More"
-            )
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color(0xFFECF2FF))
-        ) {
-            DropdownMenuItem(
-                text = { Text("삭제하기",  fontFamily = FontFamily(Font(R.font.inter))) },
-                onClick = { Toast.makeText(context, "수정하기", Toast.LENGTH_SHORT).show() }
-            )
-            DropdownMenuItem(
-                text = { Text("삭제하기",  fontFamily = FontFamily(Font(R.font.inter))) },
-                onClick = { Toast.makeText(context, "삭제하기", Toast.LENGTH_SHORT).show() }
-            )
-        }
-    }
-}
-
 
 
 
