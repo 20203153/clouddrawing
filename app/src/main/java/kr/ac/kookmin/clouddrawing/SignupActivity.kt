@@ -37,6 +37,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kr.ac.kookmin.clouddrawing.components.GoogleSignupBtn
 import kr.ac.kookmin.clouddrawing.dto.User
+import kotlin.system.exitProcess
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -136,17 +137,19 @@ class SignupActivity : AppCompatActivity() {
             returnMain()
         }
 
-        /* auth.addAuthStateListener {
-            if(it.currentUser == null) {
-                User.logoutCurrentUser()
-            }
-        } */
-
         initSignIn()
     }
 
     private fun returnMain() {
         finish()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(auth.currentUser == null) {
+            finishAffinity()
+            exitProcess(0)
+        }
     }
 
     private fun initSignIn() {
