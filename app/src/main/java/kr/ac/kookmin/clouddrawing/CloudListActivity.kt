@@ -1,5 +1,7 @@
 package kr.ac.kookmin.clouddrawing
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -45,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import io.woong.compose.grid.SimpleGridCells
 import io.woong.compose.grid.VerticalGrid
 import kotlinx.coroutines.CoroutineScope
@@ -317,6 +321,10 @@ fun ClContentBox(
 fun CLContentCard(
     post: Post? = null
 ) {
+    val context = LocalContext.current
+
+    val intent = Intent(context, CloudContentActivity::class.java)
+
     Column(
         modifier = Modifier
             .width(100.dp)
@@ -334,7 +342,11 @@ fun CLContentCard(
                 color = Color(0xFFFFFFFF),
                 shape = RoundedCornerShape(size = 20.dp)
             )
-            .fillMaxHeight(1f),
+            .fillMaxHeight(1f)
+            .clickable {
+                intent.putExtra("postId", post?.id)
+                context.startActivity(intent)
+            },
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
