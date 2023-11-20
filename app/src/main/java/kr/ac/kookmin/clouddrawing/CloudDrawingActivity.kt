@@ -140,7 +140,12 @@ class CloudDrawingActivity : ComponentActivity() {
                         loading.value = true
 
                         CoroutineScope(Dispatchers.Main).launch {
-                            val posts = Post.getPostById(postId ?: "")
+                            val posts = postId?.let { it1 -> try {
+                                    Post.getPostById(it1)
+                                } catch (e: Exception) {
+                                    return@let null
+                                }
+                            }
                             if(posts == null) {
                                 val id = Post.getNewPostId()
                                 val post = Post(

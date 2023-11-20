@@ -1,6 +1,5 @@
 package kr.ac.kookmin.clouddrawing
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -48,7 +47,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import io.woong.compose.grid.SimpleGridCells
 import io.woong.compose.grid.VerticalGrid
 import kotlinx.coroutines.CoroutineScope
@@ -246,7 +244,7 @@ fun ClContentBox(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 17.dp, end= 27.dp)
+                .padding(top = 17.dp, end = 27.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -260,7 +258,7 @@ fun ClContentBox(
                     Text(
                         text = location,
                         modifier = Modifier
-                            .padding(top = 10.dp, start=16.dp)
+                            .padding(top = 10.dp, start = 16.dp)
                             .clickable {
                                 selectedLocation = location // 위치를 클릭하면 선택된 위치 업데이트
                                 locNum = location
@@ -288,7 +286,8 @@ fun ClContentBox(
                     columns = SimpleGridCells.Fixed(2),
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 20.dp),
+                        .padding(start = 20.dp, bottom=20.dp)
+                        .verticalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(20.dp),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
@@ -303,7 +302,7 @@ fun ClContentBox(
                         locations.forEach { it ->
                             if (location == it) {
                                 postList.filter { post -> post.address?.startsWith(it) ?: false }.forEach {
-                                        CLContentCard(it)
+                                    CLContentCard(it)
                                 }
                                 return@breaker
                             }
