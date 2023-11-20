@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/cloudgreen_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Clouddrawing"
+        android:appCategory="social"
         tools:targetApi="31">
 
         <service
