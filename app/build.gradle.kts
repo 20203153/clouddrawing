@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "kr.ac.kookmin.clouddrawing"
-        minSdk = 33
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
