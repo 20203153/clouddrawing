@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
                     localKeyboardController?.hide()
                 }
 
-                moveMapCurrentLocation()
+                moveMapInit()
             }
 
             @RequiresApi(Build.VERSION_CODES.P)
@@ -479,7 +479,7 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
 
-                moveMapCurrentLocation()
+                // moveMapCurrentLocation()
             }
         }
     }
@@ -536,7 +536,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             camera = CameraUpdateFactory.newCenterPosition(
                 LatLng.from(lat, lng),
-                12
+                14
             )
         }
 
