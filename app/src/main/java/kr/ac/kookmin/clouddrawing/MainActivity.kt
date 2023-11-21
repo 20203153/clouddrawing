@@ -19,6 +19,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -68,20 +69,9 @@ import com.kakao.vectormap.label.LabelLayerOptions
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kr.ac.kookmin.clouddrawing.components.AddCloudBtn
-import kr.ac.kookmin.clouddrawing.components.CloudListSelectPlaceListModal
-import kr.ac.kookmin.clouddrawing.components.CloudMindModal
-import kr.ac.kookmin.clouddrawing.components.CurrentLocBtn
-import kr.ac.kookmin.clouddrawing.components.HomeLeftModal
-import kr.ac.kookmin.clouddrawing.components.KakaoMapComponent
-import kr.ac.kookmin.clouddrawing.components.MyCloudBtn
-import kr.ac.kookmin.clouddrawing.components.SearchBar
-import kr.ac.kookmin.clouddrawing.components.SearchBarModel
+import kr.ac.kookmin.clouddrawing.components.*
 import kr.ac.kookmin.clouddrawing.dto.Post
 import kr.ac.kookmin.clouddrawing.dto.User
 import kr.ac.kookmin.clouddrawing.interfaces.AddressService
@@ -101,6 +91,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var isLeftOpen: MutableState<Boolean>
     private lateinit var isCloudMindOpen: MutableState<Boolean>
     private lateinit var isCloudListModalOpen: MutableState<Boolean>
+    private lateinit var isLoadingModalOpen: MutableState<Boolean>
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -148,8 +139,11 @@ class MainActivity : AppCompatActivity() {
         createNotificationChannel() // 알림 채널 생성 함수 호출
         startService(Intent(this, NotificagtionService::class.java))
 
-        val intent = Intent(this, LoadingActivity::class.java)
-        startActivity(intent)
+        isLoadingModalOpen = mutableStateOf(true)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(2500)
+            isLoadingModalOpen.value = false
+        }
 
         if(Firebase.auth.currentUser == null) {
             val intent1 = Intent(this, SignupActivity::class.java)
@@ -412,10 +406,12 @@ class MainActivity : AppCompatActivity() {
                     isDrawerOpen = isCloudListModalOpen,
                     contentLists = mutatePostList
                 )
+                LoadingModal(isLoadingModalOpen)
             }
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onResume() {
         super.onResume()
         mapView.value?.resume()
@@ -527,6 +523,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun moveMapInit() {
         val locationManager = this.getSystemService(LOCATION_SERVICE) as LocationManager
         var isGpsOn = locationManager.isLocationEnabled
@@ -636,6 +633,7 @@ class MainActivity : AppCompatActivity() {
         kakaoMap.value?.moveCamera(camera, CameraAnimation.from(500, true, true))
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun getCurrentLatLng(): LatLng {
         var uLat = 37.402005
         var uLng = 127.108621
