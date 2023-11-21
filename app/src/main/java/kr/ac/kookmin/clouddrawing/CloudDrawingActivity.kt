@@ -17,6 +17,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,10 +28,12 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -261,7 +264,8 @@ fun CDBackground(
         mutableStateOf(false)
     }
 
-    val locationManager = context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
+    val locationManager =
+        context.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
     var isGpsOn = locationManager.isLocationEnabled
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -314,7 +318,7 @@ fun CDBackground(
                         .padding(10.dp, 0.dp)
                         .background(Color.White, RoundedCornerShape(10.dp))
                 ) {
-                    if(mainContent.value.isEmpty()) {
+                    if (mainContent.value.isEmpty()) {
                         Text(text = "어떤 추억이 있었나요?\n나중에 떠올리고 싶은 추억을 그려보세요 :)")
                     }
                     innerTextField.invoke()
@@ -361,9 +365,9 @@ fun CDBackground(
                 )
             }
             BasicTextField(
-                modifier = Modifier.size(height=18.dp, width=200.dp),
+                modifier = Modifier.size(height = 18.dp, width = 200.dp),
                 value = title.value,
-                onValueChange = { textValue -> title.value = textValue},
+                onValueChange = { textValue -> title.value = textValue },
                 singleLine = true
             )
         }
@@ -451,9 +455,9 @@ fun CDBackground(
 
             Text(
                 text = locations.value,
-                modifier = Modifier.size(height=18.dp, width=200.dp),
+                modifier = Modifier.size(height = 18.dp, width = 200.dp),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis //텍스트가 지정된 너비를 넘어갈 경우 말줄임표(...)를 표시, 필요하면 쓰고 없으면 지워 상학오빠 !
+                overflow = TextOverflow.Ellipsis
             )
 
         }
@@ -487,9 +491,9 @@ fun CDBackground(
                 )
             }
             BasicTextField(
-                modifier = Modifier.size(height=18.dp, width=200.dp),
+                modifier = Modifier.size(height = 18.dp, width = 200.dp),
                 value = locationAlias.value,
-                onValueChange = { textValue -> locationAlias.value = textValue},
+                onValueChange = { textValue -> locationAlias.value = textValue },
                 singleLine = true
             )
         }
@@ -511,91 +515,101 @@ fun CDBackground(
                 fontWeight = FontWeight.W600,
                 color = Color(0xFF454545),
             ),
-            modifier = Modifier.padding(start=13.dp, top=10.dp)
+            modifier = Modifier.padding(start = 13.dp, top = 10.dp)
         )
 
-        LazyVerticalGrid( //사진 상자
+        LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp, top = 32.dp, bottom = 15.dp)
                 .height(200.dp)
                 .fillMaxWidth(1f)
-                .background(color = Color(0xFFF5F5F5))
+                .background(color = Color.White)
+                .border(width = 3.dp, color = Color(0xFFF5F5F5))
                 .clickable {
                     getPhotoFromGallery.launch("image/*")
                 }
         ) {
-            items(selectImages) { uri ->
-                if(selectImages.size > 3) {
-                    Toast.makeText(context, "사진은 4장 이상 고를 수 없습니다", Toast.LENGTH_LONG).show()
-                    selectImages = mutableListOf()
-                } else {
-                    Image(
-                        painter = rememberAsyncImagePainter(uri),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(16.dp, 8.dp)
-                            .size(100.dp)
-                    )
+            if (selectImages.isEmpty()) {
+                item(span = { GridItemSpan(maxLineSpan) }) { // 전체 너비를 사용하여 하나의 아이템으로 만듦
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Text("사진을 추가해 보세요.",  modifier = Modifier.align(Alignment.Center).offset(y = 80.dp))
+                    }
+                }
+            } else {
+                items(selectImages) { uri ->
+                    if (selectImages.size > 3) {
+                        Toast.makeText(context, "사진은 4장 이상 고를 수 없습니다", Toast.LENGTH_LONG).show()
+                        selectImages = mutableListOf()
+                    } else {
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(16.dp, 8.dp)
+                                .size(100.dp)
+                        )
+                    }
                 }
             }
         }
     }
 
-    AnimatedVisibility(
-        visible = loading.value,
-        modifier = Modifier.fillMaxSize(1f),
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize(1f)
-                .background(Color.Black.copy(alpha = 0.5f)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        AnimatedVisibility(
+            visible = loading.value,
+            modifier = Modifier.fillMaxSize(1f),
+            enter = fadeIn(),
+            exit = fadeOut()
         ) {
-            CircularProgressIndicator(
-                modifier = Modifier.width(64.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                trackColor = MaterialTheme.colorScheme.secondary
-            )
-        }
-    }
-    AnimatedVisibility(
-        visible = calendarVisible,
-        modifier = Modifier.fillMaxSize(1f),
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize(1f)
-                .background(Color.Black.copy(alpha = 0.5f))
-                .clickable { calendarVisible = false },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            DatePicker(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth(1f)
-                    .background(Color.White, RoundedCornerShape(10.dp)),
-                state = date
-            )
+                    .fillMaxSize(1f)
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.width(64.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    trackColor = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+        AnimatedVisibility(
+            visible = calendarVisible,
+            modifier = Modifier.fillMaxSize(1f),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize(1f)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .clickable { calendarVisible = false },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                DatePicker(
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .background(Color.White, RoundedCornerShape(10.dp)),
+                    state = date
+                )
+            }
         }
     }
-}
 
 
-@Composable
-fun CDMiddleSearch(){
-    Image(
-        painter = painterResource(id = R.drawable.v_cd_location_search),
-        contentDescription = "CDSearch",
-        modifier = Modifier
-            .width(15.dp)
-            .height(15.dp)
-    )
-}
+    @Composable
+    fun CDMiddleSearch() {
+        Image(
+            painter = painterResource(id = R.drawable.v_cd_location_search),
+            contentDescription = "CDSearch",
+            modifier = Modifier
+                .width(15.dp)
+                .height(15.dp)
+        )
+    }
+
 
