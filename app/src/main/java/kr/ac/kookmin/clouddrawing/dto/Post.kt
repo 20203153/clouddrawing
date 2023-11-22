@@ -1,14 +1,9 @@
 package kr.ac.kookmin.clouddrawing.dto
 
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.AggregateSource
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.Source
-import com.google.firebase.firestore.toObject
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
-import java.util.Date
+import java.util.*
 
 data class Post(
     var id: String? = "",
@@ -38,7 +33,7 @@ data class Post(
         }
 
         suspend fun getPostById(id: String): Post? {
-            return post.document(id).get(Source.SERVER).await().toObject()
+            return post.document(id).get().await().toObject()
         }
 
         suspend fun getPostByUID(uid: String?, limit: Long = 10L): List<Post> {
@@ -109,8 +104,6 @@ data class Post(
 
         val update = hashMapOf(
             "title" to updatePost.title,
-            "lat" to updatePost.lat,
-            "lng" to updatePost.lng,
             "address" to updatePost.address,
             "addressAlias" to updatePost.addressAlias,
             "comment" to updatePost.comment,

@@ -6,33 +6,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -60,11 +39,15 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.Date
+import java.util.*
 
 class CloudListActivity : ComponentActivity() {
 
     private var allPost : List<Post> = listOf()
+
+    private val today = mutableStateOf(0)
+    private val month = mutableStateOf(0)
+    private val recent = mutableStateOf(0)
 
     companion object {
         private val TAG: String = "CloudListActiity"
@@ -77,10 +60,6 @@ class CloudListActivity : ComponentActivity() {
             allPost = Post.getPostByUID(User.getCurrentUser()?.uid).toMutableList()
             Log.e("Testing", "vandvandjv : ${allPost}")
         }
-
-        val today = mutableStateOf(0)
-        val month = mutableStateOf(0)
-        val recent = mutableStateOf(0)
 
         setContent {
             val verticalScroll = rememberScrollState()
@@ -114,7 +93,36 @@ class CloudListActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            allPost = Post.getPostByUID(User.getCurrentUser()?.uid).toMutableList()
+            Log.e("Testing", "vandvandjv : ${allPost}")
+            launch {
+                today.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())
+                )
+                Log.d(TAG, "today: ${today.value} / ${Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant())}")
+            }
+            launch {
+                month.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusMonths(1).toInstant()))
+                )
+                Log.d(TAG, "month: ${month.value} / ${Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusMonths(1).toInstant()))}")
+            }
+            launch {
+                recent.value = Post.getPostCountByDate(User.getCurrentUser()!!.uid!!,
+                    Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(50).toInstant()))
+                )
+                Log.d(TAG, "recent: ${recent.value} / ${Date.from(Instant.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).minusYears(50).toInstant()))}")
+            }
+        }
+    }
 }
+
+
 
 @Preview
 @Composable

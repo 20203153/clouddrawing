@@ -8,7 +8,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.location.Location
@@ -424,13 +423,15 @@ class MainActivity : AppCompatActivity() {
             launch {
                 getCurrentLatLng()
             }
-            delay(400L)
+            delay(800L)
 
             val clouds = user?.uid?.let { Post.getPostByUID(it) } ?: listOf()
             if (clouds.isNotEmpty()) {
                 postListOfRecents.value = clouds.take(3)
                 val lists = mutableListOf<Clouds>()
+
                 clouds.forEach {
+                    Log.d(TAG, it.title ?: "NULL")
                     val any = lists.find { it1 ->
                         it1.lat == (it.lat ?: 0.0) && it1.lng == (it.lng ?: 0.0)
                     }
@@ -493,10 +494,6 @@ class MainActivity : AppCompatActivity() {
         mapView.value?.pause()
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -557,9 +554,16 @@ class MainActivity : AppCompatActivity() {
                     viewConvertToBitmap(
                         this@MainActivity,
                         R.drawable.vector,
-                        50, 60
+                        25, 40
                     )
                 ).setZoomLevel(0),
+                LabelStyle.from(
+                    viewConvertToBitmap(
+                        this@MainActivity,
+                        R.drawable.vector,
+                        45, 60
+                    )
+                ).setZoomLevel(10),
                 LabelStyle.from(
                     viewConvertToBitmap(
                         this@MainActivity,
@@ -674,12 +678,6 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                LOCATION_PERMISSIONS,
-                REQUEST_CODE_LOCATION_PERMISSIONS
-            )
-
             null
         } else {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
