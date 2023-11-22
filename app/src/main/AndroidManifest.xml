@@ -53,11 +53,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".LoadingActivity"
-            android:exported="false" />
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
-            android:value="cd83bfe1b110bf47b190ade8001e195b" />
+            android:value="8401001635915f073a78b5337b218485" />
     </application>
 </manifest>

@@ -7,14 +7,15 @@ plugins {
 
 android {
     namespace = "kr.ac.kookmin.clouddrawing"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "kr.ac.kookmin.clouddrawing"
         minSdk = 26
+        //noinspection OldTargetApi
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 11
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

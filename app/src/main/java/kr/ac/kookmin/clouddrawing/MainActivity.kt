@@ -55,7 +55,6 @@ import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
-import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
@@ -156,10 +155,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onMapError(error: Exception?) {
-                TODO("Not yet implemented")
+                Log.d(TAG, error.toString())
             }
         },
         object : KakaoMapReadyCallback() {
+            @RequiresApi(Build.VERSION_CODES.P)
             override fun onMapReady(kakaoMap: KakaoMap) {
                 this@MainActivity.kakaoMap.value = kakaoMap
 
@@ -719,19 +719,17 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun createNotificationChannel() {
-        // API 26 이상에서만 알림 채널을 생성합니다.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name) // 채널 이름
-            val descriptionText = getString(R.string.channel_description) // 채널 설명
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            // 알림 관리자를 통해 채널을 시스템에 등록합니다.
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        // 이미 API 26 이상임이 보장되므로 API 체크를 건너뜁니다. (minSDK = 26)
+        val name = getString(R.string.channel_name) // 채널 이름
+        val descriptionText = getString(R.string.channel_description) // 채널 설명
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
         }
+        // 알림 관리자를 통해 채널을 시스템에 등록합니다.
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     data class Clouds(
