@@ -55,6 +55,7 @@ import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayerOptions
+import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
@@ -328,12 +329,15 @@ class MainActivity : AppCompatActivity() {
                                     }
                                     Log.d(TAG, "raw : $a")
 
-                                    Log.d(TAG, "address: ${this@MainActivity.address}")
-                                    intent.putExtra("address", this@MainActivity.address)
-                                    intent.putExtra("road_address", this@MainActivity.road_address)
-                                    intent.putExtra("region", this@MainActivity.region_1depth_name)
-                                    intent.putExtra("lat", this@MainActivity.lat)
-                                    intent.putExtra("lng", this@MainActivity.lng)
+                                    if (kakaoMap.value?.labelManager?.getLayer(CURRENT_LOC_MARKER)?.labelCount != null) {
+                                        Log.e("anasfasnj", "asfaf : " + kakaoMap.value?.labelManager?.getLayer(CURRENT_LOC_MARKER)?.labelCount)
+                                        Log.d(TAG, "address: ${this@MainActivity.address}")
+                                        intent.putExtra("address", this@MainActivity.address)
+                                        intent.putExtra("road_address", this@MainActivity.road_address)
+                                        intent.putExtra("region", this@MainActivity.region_1depth_name)
+                                        intent.putExtra("lat", this@MainActivity.lat)
+                                        intent.putExtra("lng", this@MainActivity.lng)
+                                    }
                                     startActivity(intent)
 
                                 }
