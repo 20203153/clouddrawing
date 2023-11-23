@@ -14,15 +14,15 @@ android {
         minSdk = 26
         //noinspection OldTargetApi
         targetSdk = 33
-        versionCode = 12
-        versionName = "1.1.2"
+        versionCode = 13
+        versionName = "1.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -70,6 +70,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-storage:20.3.0")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
     val composeVersion = "1.4.3"
     implementation("androidx.compose.animation:animation-core:$composeVersion")

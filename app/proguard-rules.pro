@@ -22,3 +22,6 @@
 
 -keep class com.kakao.vectormap.** { *; }
 -keep interface com.kakao.vectormap.**
+-keep class kr.ac.kookmin.clouddrawing.dto.** { *; }
+-keep class kr.ac.kookmin.clouddrawing.interfaces.** { *; }
+-keep class kr.ac.kookmin.clouddrawing.models.** { *; }

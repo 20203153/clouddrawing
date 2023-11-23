@@ -48,7 +48,10 @@ import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.firebase.Firebase
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.auth
+import com.google.firebase.initialize
 import com.kakao.vectormap.*
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdate
@@ -122,10 +125,18 @@ class MainActivity : AppCompatActivity() {
         private const val CHANNEL_ID = "cloudgreenImagine" //알림 채널 아이디
     }
 
+    private fun init() {
+        Firebase.initialize(context = this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance(),
+        )
+    }
+
     @OptIn(ExperimentalComposeUiApi::class)
     @SuppressLint("StateoFlowValueCalledInComposition", "StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        init()
 
         createNotificationChannel() // 알림 채널 생성 함수 호출
         startService(Intent(this, NotificagtionService::class.java))

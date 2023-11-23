@@ -1,7 +1,10 @@
 package kr.ac.kookmin.clouddrawing.dto
 
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -77,26 +80,6 @@ data class Post(
         fun getNewPostId(): String {
             return post.document().id
         }
-    }
-
-    suspend fun addImage(images: List<ImageInfo>): Boolean {
-        this.image + images
-
-        post.document(this.id!!)
-            .update("image", this.image).await()
-        return true
-    }
-
-    suspend fun removeImage(images: List<ImageInfo>): Boolean {
-        images.forEach {
-            if(it.userId == "") it.userId = uid!!
-            if(it.postId == "") it.postId = id!!
-        }
-
-        post.document(this.id!!)
-            .update("image", FieldValue.arrayRemove(images))
-            .await()
-        return true
     }
 
     suspend fun update(updatePost: Post): Boolean {
