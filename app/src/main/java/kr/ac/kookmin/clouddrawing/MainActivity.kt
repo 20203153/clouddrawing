@@ -336,6 +336,9 @@ class MainActivity : AppCompatActivity() {
                                         Log.d(TAG, "body : $result")
                                     } else {
                                         Log.d(TAG, "None")
+                                        this@MainActivity.address = ""
+                                        this@MainActivity.road_address = ""
+                                        this@MainActivity.region_1depth_name = ""
                                     }
                                     Log.d(TAG, "raw : $a")
 

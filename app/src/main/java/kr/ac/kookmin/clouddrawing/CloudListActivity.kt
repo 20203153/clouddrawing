@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -377,13 +378,14 @@ fun CLContentCard(
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = post?.address ?: "TB_Location",
+                    text = post?.addressAlias ?: "TB_Location",
                     style = TextStyle(
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.inter)),
                         fontWeight = FontWeight(600),
                         color = Color(0xFF727272),
-                    )
+                    ),
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
