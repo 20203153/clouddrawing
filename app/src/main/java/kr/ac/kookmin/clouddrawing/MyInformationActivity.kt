@@ -14,15 +14,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
@@ -43,6 +35,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,7 +156,8 @@ fun MyInformation(
                     )
             )
             IconButton(
-                onClick = { onDoneClick(profileUri) }
+                onClick = { onDoneClick(profileUri) },
+                modifier = Modifier.width(40.dp)
             ) {
                 Text(
                     text = "수정",
@@ -172,7 +166,9 @@ fun MyInformation(
                         fontFamily = FontFamily(Font(R.font.inter)),
                         fontWeight = FontWeight(600),
                         color = Color(0xFF6891FF),
-                    )
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(1f)
                 )
             }
         }

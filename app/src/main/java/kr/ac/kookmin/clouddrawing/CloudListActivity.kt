@@ -1,5 +1,6 @@
 package kr.ac.kookmin.clouddrawing
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -324,6 +325,7 @@ fun ClContentBox(
 }
 
 
+@SuppressLint("SimpleDateFormat")
 @Preview
 @Composable
 fun CLContentCard(
@@ -405,7 +407,8 @@ fun CLContentCard(
                     fontFamily = FontFamily(Font(R.font.inter)),
                     fontWeight = FontWeight(500),
                     color = Color(0xFF474747)
-                )
+                ),
+                overflow = TextOverflow.Ellipsis
             )
         }
 

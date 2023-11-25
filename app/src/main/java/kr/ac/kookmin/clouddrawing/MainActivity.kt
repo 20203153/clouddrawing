@@ -5,8 +5,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -15,6 +17,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -110,6 +113,22 @@ class MainActivity : AppCompatActivity() {
     private var postListOfRecents = mutableStateOf(listOf<Post>())
 
     private var testing = mutableListOf<Post>()
+
+    private var notiService: NotificagtionService? = null
+
+    private final val conn = object: ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            try {
+                notiService = (service as NotificagtionService.NotiBinder).getService
+            } catch(e: java.lang.Exception) {
+                Log.e(TAG, e.message ?: "")
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            notiService = null
+        }
+    }
 
     @OptIn(ExperimentalComposeUiApi::class)
     private var localKeyboardController: SoftwareKeyboardController? = null
@@ -425,6 +444,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         mapView.value?.resume()
+
+        notiService?.getPosts()
 
         CoroutineScope(Dispatchers.Main).launch {
             launch {

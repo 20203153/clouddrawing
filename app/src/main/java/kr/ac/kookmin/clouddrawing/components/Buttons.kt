@@ -3,13 +3,7 @@ package kr.ac.kookmin.clouddrawing.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
@@ -26,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -233,7 +228,7 @@ fun LeftCloseBtn(@PreviewParameter(UnitPreviw::class) onClick: () -> Unit) {
 @Preview(name="SaveBtn", showBackground = true)
 @Composable
 fun SaveButton(@PreviewParameter(UnitPreviw::class) onClick: () -> Unit) {
-     Text(
+    Text(
         text = "저장",
         style = TextStyle(
             fontSize = 17.sp,
@@ -241,7 +236,8 @@ fun SaveButton(@PreviewParameter(UnitPreviw::class) onClick: () -> Unit) {
             fontWeight = FontWeight.W600,
             color = Color(0xFF6891FF),
         ),
-         modifier = Modifier.width(32.dp).height(21.dp)
-             .clickable { onClick() }
-     )
+        textAlign = TextAlign.Center,
+        modifier = Modifier.width(36.dp).height(21.dp)
+            .clickable { onClick() }
+    )
 }

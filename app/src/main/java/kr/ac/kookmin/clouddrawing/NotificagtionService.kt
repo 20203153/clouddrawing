@@ -8,6 +8,7 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Binder
 import android.os.IBinder
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -24,9 +25,10 @@ import java.util.*
 
 class NotificagtionService : Service() {
     private lateinit var locationManager: LocationManager
-    private val postList: MutableList<Post> = mutableListOf()
+    private var postList: MutableList<Post> = mutableListOf()
     private val notifiedLocation: MutableList<LatLng> = mutableListOf()
     private val lastNotificationTime: MutableState<Date> = mutableStateOf(Date())
+    private val mBinder: IBinder = NotiBinder()
 
     private val locationListener = LocationListener { location ->
         // 지정된 위치에 도달했는지 확인
@@ -43,22 +45,27 @@ class NotificagtionService : Service() {
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                postList.addAll(Post.getAllPost())
-            }
+            getPosts()
         } catch (e: SecurityException) {
             // 권한 처리
+        }
+    }
+
+    fun getPosts() {
+        CoroutineScope(Dispatchers.IO).launch {
+            postList = mutableListOf()
+            postList.addAll(Post.getPostByUID(uid = User.getCurrentUser()?.uid ?: ""))
         }
     }
 
     private fun checkLocation(location: Location): Boolean {
         return postList.any {
             !notifiedLocation.any { loc ->
-                round(loc.latitude, 10000.0) == round(location.latitude, 10000.0) &&
-                round(loc.longitude, 10000.0) == round(location.longitude, 10000.0)
+                round(loc.latitude, 1000.0) == round(location.latitude, 1000.0) &&
+                round(loc.longitude, 1000.0) == round(location.longitude, 1000.0)
             } &&
-                round(it.lat?:0.0, 10000.0) == round(location.latitude, 10000.0) &&
-                round(it.lng ?: 0.0, 10000.0) == round(location.longitude, 10000.0)
+                round(it.lat?:0.0, 1000.0) == round(location.latitude, 1000.0) &&
+                round(it.lng ?:0.0, 1000.0) == round(location.longitude, 1000.0)
         }
     }
 
@@ -87,9 +94,17 @@ class NotificagtionService : Service() {
         private const val NOTIFICATION_ID = 20231111
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return START_STICKY
+    }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
+    inner class NotiBinder: Binder() {
+        val getService: NotificagtionService
+            get() = this@NotificagtionService
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        return mBinder
     }
 
 }
