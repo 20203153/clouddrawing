@@ -74,7 +74,6 @@ class NotificagtionService : Service() {
         val notificationManager = ContextCompat.getSystemService(this, NotificationManager::class.java) as NotificationManager
         CoroutineScope(Dispatchers.Main).launch {
             val notification = NotificationCompat.Builder(this@NotificagtionService, CHANNEL_ID)
-                .setContentTitle("알림 제목")
                 .setContentText("${User.getCurrentUser()?.name ?: "OO"}님이 최근에 추억을 그렸던 곳이에요.")
                 .setSmallIcon(R.drawable.v_gurmmy)
                 .setContentIntent(PendingIntent.getActivity(

@@ -12,9 +12,8 @@ android {
     defaultConfig {
         applicationId = "kr.ac.kookmin.clouddrawing"
         minSdk = 26
-        //noinspection OldTargetApi
-        targetSdk = 33
-        versionCode = 20
+        targetSdk = 34
+        versionCode = 23
         versionName = "1.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -28,7 +27,7 @@ android {
                 "proguard-rules.pro"
             )
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE"
+                debugSymbolLevel = "FULL"
             }
         }
     }
@@ -60,22 +59,22 @@ android {
 dependencies {
     // https://mvnrepository.com/artifact/com.google.firebase/firebase-bom
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-    implementation("com.google.firebase:firebase-analytics:21.4.0")
+    implementation("com.google.firebase:firebase-analytics:21.5.0")
     implementation("com.google.firebase:firebase-database:20.3.0")
-    implementation("com.google.firebase:firebase-auth:22.2.0")
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.compose.material3:material3:1.1.2")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.navigation:navigation-fragment:2.5.3")
-    implementation("androidx.navigation:navigation-ui:2.5.3")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
-    val composeVersion = "1.4.3"
+    val composeVersion = "1.5.4"
     implementation("androidx.compose.animation:animation-core:$composeVersion")
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -92,9 +91,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-util:$composeVersion")
     implementation("androidx.compose.ui:ui-viewbinding:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-compose:1.8.1")
     implementation ("androidx.compose.material:material:$composeVersion")
-    implementation ("androidx.core:core:1.6.0") //알림기능
+    implementation ("androidx.core:core:1.12.0") //알림기능
 
 
 
@@ -105,15 +104,15 @@ dependencies {
     implementation("com.kakao.maps.open:android:2.6.0")
 
     // 뷰 모델 라이브러리 의존성 추가
-    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.3.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel:2.6.2")
 
     // 이미지 업로드 (갤러리 접속)
-    implementation ("androidx.activity:activity-compose:1.3.1")
-    implementation ("androidx.core:core-ktx:1.7.0")
-    implementation ("io.coil-kt:coil-compose:2.4.0")
+    implementation ("androidx.activity:activity-compose:1.8.1")
+    implementation ("androidx.core:core-ktx:1.12.0")
+    implementation ("io.coil-kt:coil-compose:2.5.0")
 
     // grid layout
-    implementation("io.woong.compose.grid:grid:0.2.0")
+    implementation("io.woong.compose.grid:grid:1.0.0")
 
 
     // get current location by play-service

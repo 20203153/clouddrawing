@@ -54,6 +54,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.appcheck.appCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.Source
 import com.google.firebase.initialize
 import com.kakao.vectormap.*
 import com.kakao.vectormap.camera.CameraAnimation
@@ -164,6 +165,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             delay(2500)
             isLoadingModalOpen.value = false
+
         }
 
         if(Firebase.auth.currentUser == null) {
@@ -198,7 +200,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (postId != CURRENT_LOC_MARKER) {
                         CoroutineScope(Dispatchers.Main).launch {
-                            val post = Post.getPostById(postId)
+                            val post = Post.getPostById(postId, Source.SERVER)
                             mutatePostList = Post.getPostByLatLng(
                                 post?.uid!!,
                                 round(post.lat ?: 37.335887), round(post.lng ?: 126.584063)

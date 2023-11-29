@@ -20,13 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Clouddrawing"
         android:appCategory="social"
-        tools:targetApi="31">
+        tools:targetApi="34">
 
         <service
-            android:name=".NotificagtionService"
-            android:enabled="true"
-            android:exported="true" />
-
+                android:name=".NotificagtionService"
+                android:enabled="true"
+                android:exported="true" android:permission="android.permission.ACCESS_FINE_LOCATION"/>
         <activity
             android:name=".MyInformationActivity"
             android:exported="false" />
@@ -55,6 +54,6 @@
         </activity>
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
-            android:value="8401001635915f073a78b5337b218485" />
+            android:value="@string/kakao_map_api_key" />
     </application>
 </manifest>

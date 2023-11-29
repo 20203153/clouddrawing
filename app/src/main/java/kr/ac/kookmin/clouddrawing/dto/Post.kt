@@ -1,10 +1,7 @@
 package kr.ac.kookmin.clouddrawing.dto
 
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.AggregateSource
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.toObject
+import com.google.firebase.firestore.*
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -35,8 +32,8 @@ data class Post(
             return result.filterNotNull()
         }
 
-        suspend fun getPostById(id: String): Post? {
-            return post.document(id).get().await().toObject()
+        suspend fun getPostById(id: String, source: Source = Source.DEFAULT): Post? {
+            return post.document(id).get(source).await().toObject()
         }
 
         suspend fun getPostByUID(uid: String?, limit: Long = 10L): List<Post> {
